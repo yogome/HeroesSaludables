@@ -25,32 +25,8 @@ local BUTTON_HEIGHT = 60
 local BUTTON_MARGIN = 5
 local SIZE_TEXT = 45
 ----------------------------------------------- Functions
-local function goYogome()
-	composer.gotoScene("scenes.intro.yogome")
-end
-local function unlockAllLevels()
-	local currentPlayer = players.getCurrent()
-	local worldsdata = require( "data.worldsdata" )
-	for world = 1, #worldsdata do
-		currentPlayer.unlockedWorlds[world] = {unlocked = true, levels = {}, watchedEnd = false}
-		for level = 1, #worldsdata[world] do
-			currentPlayer.unlockedWorlds[world].levels[level] = {unlocked = true, stars = 1}
-		end
-	end
-	players.save(currentPlayer)
-end
-
 local function clearQueue()
 	offlinequeue.clear()
-end
-local function internalVideo()
-	video.play("videos/yogoVideo_1.mp4", "internal", false, true)
-end
-local function externalVideo()
-	video.play("videos/yogoVideo_1.mp4", "external", false, true)
-end
-local function testReadyGo()
-	banners.newReadyGo()
 end
 
 local function giveCoins()
@@ -73,22 +49,6 @@ local function resetPlayer()
 		currentPlayer.remoteID = remoteID
 		players.save(currentPlayer)
 	end
-end
-
-local function goManager()
-	composer.gotoScene("scenes.minigames.manager", {params = {minigameIndexes = {1}}})
-end
-local function goHome()
-	composer.gotoScene("scenes.menus.home")
-end
-local function goHero()
-	composer.gotoScene("scenes.menus.selecthero")
-end
-local function goWorlds()
-	composer.gotoScene("scenes.menus.worlds")
-end
-local function goLevels()
-	composer.gotoScene("scenes.menus.levels")
 end
 
 local function toggleFPS()
@@ -168,29 +128,17 @@ end
 
 function scene:createView()
 	------------------------- Buttons
-	self:addButton("Go Home", goHome, {0.5,0.5,0.5})
-	self:addButton("Go Hero", goHero, {0.5,0.5,0.5})
-	self:addButton("Go Worlds", goWorlds, {0.5,0.5,0.5})
-	self:addButton("Go Levels", goLevels, {0.5,0.5,0.5})
 	self:addButton("Clear queue", clearQueue, {0.5,0.6,0.3})
-	self:addButton("Go Manager", goManager, {0.5,0.6,0.3})
-	
 	
 	self:skipColumn()
 	self:addButton("Give Coins", giveCoins,{0.2,0.8,0.2})
 	self:skipColumn()
 	self:addButton("Toggle FPS", toggleFPS,{0.3,0.3,0.8})
     internetButton = self:addButton("Test internet", testInternet, {0.6,0.8,0.4})
-    
-	self:addButton("Internal video", internalVideo,{0.8,0.3,0.5})
-	self:addButton("External video", externalVideo,{0.8,0.3,0.5})
-	self:addButton("Test ReadyGo", testReadyGo,{0.8,0.7,0.5})
-	self:addButton("Go Yogome", goYogome, {0.3,0.3,0.3})
 	
 	self:skipColumn()
 	
 	self:addButton("Reset player", resetPlayer,{0.8,0.2,0.2})
-	self:addButton("Unlock levels", unlockAllLevels,{0.8,0.8,0.2})
 end
 
 function scene:create(event)
