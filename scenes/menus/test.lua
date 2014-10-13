@@ -30,7 +30,7 @@ local function clearQueue()
 end
 
 local function goGame()
-	composer.gotoScene("scenes.game.game")
+	composer.gotoScene("scenes.game.shooter")
 end
 
 local function giveCoins()
