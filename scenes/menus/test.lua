@@ -29,6 +29,10 @@ local function clearQueue()
 	offlinequeue.clear()
 end
 
+local function goGame()
+	composer.gotoScene("scenes.game.game")
+end
+
 local function giveCoins()
 	local player = players.getCurrent()
 	if player.coins then
@@ -128,6 +132,8 @@ end
 
 function scene:createView()
 	------------------------- Buttons
+
+	self:addButton("Go Game", goGame, {0.5,0.5,0.5})
 	self:addButton("Clear queue", clearQueue, {0.5,0.6,0.3})
 	
 	self:skipColumn()
