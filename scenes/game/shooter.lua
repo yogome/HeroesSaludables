@@ -25,7 +25,7 @@ local SIZE_BACKGROUND = 1024
 local OBJECTS_TOLERANCE_X = 100
 local OBJECTS_TOLERANCE_Y = 100
 local STARS_LAYER_DEPTH_RATIO = 0.08
-local STARS_PER_LAYER = 8
+local STARS_PER_LAYER = 20
 local STARS_LAYERS = 6
 ----------------------------------------------- Functions
 --
@@ -82,9 +82,18 @@ local function createBackground(sceneGroup)
 		local starLayer = display.newGroup()
 		backgroundContainer:insert(starLayer)
 		for starsIndex = 1, STARS_PER_LAYER do
-			local scale =  0.05 + layerIndex * 0.05
+			local scale =  0.05 + layerIndex * 0.04
 			
-			local star = display.newCircle(500, 0, 20)
+			local randomStarIndex = math.random(1,3)
+			local star
+			if randomStarIndex == 1 then
+				star = display.newCircle(500, 0, 20)
+			elseif randomStarIndex == 2 then
+				star = display.newImage("images/backgrounds/star01.png")
+			elseif randomStarIndex == 3 then
+				star = display.newImage("images/backgrounds/star02.png")
+			end
+			
 			star.xOffset = math.random(objectSpawnX, objectDespawnX)
 			star.yOffset = math.random(objectSpawnY, objectDespawnY)
 			star.y = math.random(-containerHalfHeight, containerHalfHeight)
@@ -213,7 +222,7 @@ local function enterFrame()
 	--sound.setPitch(0.8 + (math.abs(velocityX) + math.abs(velocityY)) * 0.0005)
 	
 	if analogX and analogY then
-		playerCharacter:analog(analogX * 0.01, analogY * 0.01)
+		playerCharacter:analog(analogX, analogY)
 	end
 end
 
