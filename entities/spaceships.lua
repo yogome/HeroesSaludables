@@ -27,7 +27,7 @@ local function createNewShip(newShip, shipData)
 	newShip.isFixedRotation = true
 	newShip.linearDamping = 2
 	
-	newShip.speedRatio = 75
+	newShip.speedRatio = 5
 	
 	local thrustData = { width = 32, height = 32, numFrames = 2, sheetContentWidth = 64, sheetContentHeight = 32 }
 	local thrustSheet = graphics.newImageSheet( "images/shooter/thrust.png", thrustData )
