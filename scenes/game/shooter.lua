@@ -7,7 +7,11 @@ local perspective = require( "libs.helpers.perspective" )
 local robot = require( "libs.helpers.robot" )
 local spaceships = require( "entities.spaceships" )
 local physics = require( "physics" )
+local worldsData = require("data.worldsdata")
+
 local scene = composer.newScene() 
+
+--physics.setDrawMode("hybrid")
 ----------------------------------------------- Variables
 local buttonBack 
 local camera
@@ -16,9 +20,20 @@ local dynamicObjects
 local analogX, analogY
 local analogCircleBegan
 local analogCircleMove
+----------------------------------------------- Background stars data
 local spaceObjects, objectDespawnX, objectSpawnX, objectDespawnY, objectSpawnY
 local spawnZoneWidth, spawnZoneHeight, halfSpawnZoneWidth, halfSpawnZoneHeight
+-----------------------------------------------
+
 local backgroundGroup
+-----------------------------------------------Vars used by level loader
+local levelBackground
+local levelSize
+local levelSpaceshipPosition
+local levelPlanets
+
+-----------------------------------------------Temporal vars
+local current_level = 1
 ----------------------------------------------- Constants
 local padding = 16
 local SIZE_BACKGROUND = 1024
@@ -27,15 +42,12 @@ local OBJECTS_TOLERANCE_Y = 100
 local STARS_LAYER_DEPTH_RATIO = 0.08
 local STARS_PER_LAYER = 20
 local STARS_LAYERS = 6
+
+local BOUNDARY_SIZE = 200
 ----------------------------------------------- Functions
 --
 
-local function updateWorlds()
-	--ocal scrollX, scrollY = menu:getContentPosition()
-	--if not movingMenu then
-	--	selectedWorldIndex = math.round((-scrollX)/ SIZE_WORLD_ITEM)
-	--end
-	
+local function updateParallax()
 	if spaceObjects then
 		for index = 1, #spaceObjects do
 			local object = spaceObjects[index]
@@ -139,36 +151,52 @@ local function testTouch(event)
 	end	
 end
 
-local function createTestWalls()
+local function createrBorders(level, world)
 	
-	local testRect1 = display.newRect(-1000-25,0,50, 2000)
-	physics.addBody( testRect1, {density = 1.0, friction = 0.1, bounce = 0.5})
+	local levelData = worldsData[level][world]
+	local levelWidth = levelData.levelWidth
+	local levelHeight = levelData.levelHeight
+	
+	local wallPositionX 
+	local wallPositionY
+	
+	wallPositionX = (levelWidth * 0.5 * -1) - (BOUNDARY_SIZE * 0.5)
+	wallPositionY = 0
+	local leftWall = display.newRect(wallPositionX, wallPositionY, BOUNDARY_SIZE, levelHeight)
+	physics.addBody( leftWall, {density = 1.0, friction = 0.1, bounce = 0.5})
 	--testRect1:setFillColor(1,1,0)
-	testRect1.bodyType = "static"
-	camera:add(testRect1)
+	leftWall.bodyType = "static"
+	camera:add(leftWall)
 	
-	local testRect2 = display.newRect(1000+25, 0 ,50,2000)
-	physics.addBody( testRect2, {density = 1.0, friction = 0.1, bounce = 0.5})
+	
+	wallPositionX = (levelWidth * 0.5) + (BOUNDARY_SIZE * 0.5)
+	wallPositionY = 0
+	local rightWall = display.newRect(wallPositionX, wallPositionY ,BOUNDARY_SIZE, levelHeight)
+	physics.addBody( rightWall, {density = 1.0, friction = 0.1, bounce = 0.5})
 	--testRect2:setFillColor(1,1,0)
-	testRect2.bodyType = "static"
-	camera:add(testRect2)
+	rightWall.bodyType = "static"
+	camera:add(rightWall)
 	
-	local testRect3 = display.newRect(0,-1000-25,2000,50)
-	physics.addBody( testRect3, {density = 1.0, friction = 0.1, bounce = 0.5})
+	wallPositionX = 0
+	wallPositionY = (levelHeight * 0.5 * -1) - (BOUNDARY_SIZE * 0.5)
+	local bottomWall = display.newRect(wallPositionX, wallPositionY, levelWidth, BOUNDARY_SIZE)
+	physics.addBody( bottomWall, {density = 1.0, friction = 0.1, bounce = 0.5})
 	--testRect3:setFillColor(1,1,0)
-	testRect3.bodyType = "static"
-	camera:add(testRect3)
+	bottomWall.bodyType = "static"
+	camera:add(bottomWall)
 	
-	local testRect4 = display.newRect(0,1000+25,2000,50)
-	physics.addBody( testRect4, {density = 1.0, friction = 0.1, bounce = 0.5})
+	wallPositionX = 0
+	wallPositionY = (levelHeight * 0.5) + (BOUNDARY_SIZE * 0.5)
+	local topWall = display.newRect(wallPositionX, wallPositionY, levelWidth, BOUNDARY_SIZE)
+	physics.addBody( topWall, {density = 1.0, friction = 0.1, bounce = 0.5})
 	--testRect4:setFillColor(1,1,0)
-	testRect4.bodyType = "static"
-	camera:add(testRect4)
+	topWall.bodyType = "static"
+	camera:add(topWall)
 	
-	addDynamicObject(testRect1)
-	addDynamicObject(testRect2)
-	addDynamicObject(testRect3)
-	addDynamicObject(testRect4)
+	addDynamicObject(leftWall)
+	addDynamicObject(rightWall)
+	addDynamicObject(bottomWall)
+	addDynamicObject(topWall)
 end
 
 local function createTestCubes()
@@ -207,11 +235,24 @@ local function createEnemy()
 	end
 end
 
+local function setUpCamera()
+	
+	local levelData = worldsData[1][1]
+	local levelWidth = levelData.levelWidth
+	local levelHeight = levelData.levelHeight
+	
+	camera = perspective.newCamera()
+	--camera:setBounds((levelWidth * 0.35 * -1), (levelWidth * 0.35), levelHeight * 0.35 * -1, levelHeight * 0.35)
+	camera:setBounds(false)
+end
+
 local function createPlayerCharacter()
 	local shipData = {
 	
 	}
 	playerCharacter = spaceships.new(shipData)
+	playerCharacter.x = -1500
+	playerCharacter.y = -700
 	camera:add(playerCharacter)
 	
 	addDynamicObject(playerCharacter)
@@ -219,13 +260,76 @@ end
 
 local function enterFrame()
 	local velocityX, velocityY = playerCharacter:getLinearVelocity()
-	--sound.setPitch(0.8 + (math.abs(velocityX) + math.abs(velocityY)) * 0.0005)
-	
 	if analogX and analogY then
 		playerCharacter:analog(analogX, analogY)
 	end
 end
 
+local function loadEarth(world, level)
+	local earthData = worldsData[world][level].earth
+	local earth = display.newImage(earthData.asset)
+	
+	earth.x = earthData.position.x
+	earth.y = earthData.position.y
+	
+	camera:add(earth)
+end
+
+local function loadPlanets(world, level)
+	local planets = {}
+	local planetsData = worldsData[world][level].planets
+	
+	for planetIndex = 1, #planetsData do
+		local currentPlanet = planetsData[planetIndex]
+		local planet = display.newImage(currentPlanet.asset)
+		planet.x = currentPlanet.position.x
+		planet.y = currentPlanet.position.y
+		planets[planetIndex] = planet
+		camera:add(planet)
+	end
+end
+
+local function loadAsteroids(world, level)
+	local asteroidData = worldsData[world][level].asteroids
+	
+	for indexAsteroidLine = 1, #asteroidData do
+		local currentAsteroidLine = asteroidData[indexAsteroidLine]
+		local x1 = currentAsteroidLine.lineStart.x
+		local x2 = currentAsteroidLine.lineEnd.x
+		local y1 = currentAsteroidLine.lineStart.y
+		local y2 = currentAsteroidLine.lineEnd.y
+		
+		local asteroidsPerLine = math.sqrt((x1 - x2)*(x1 - x2) + (y1 - y2 )*(y1 - y2 ))/60
+		local asteroidStepX = math.abs(x1 - x2) / asteroidsPerLine
+		local asteroidStepY = math.abs(y1 - y2)/ asteroidsPerLine
+		local asteroidStartX = x1
+		local asteroidStartY = y1
+		
+		for indexAsteroid = 1, asteroidsPerLine do
+			local asteroid = display.newImage("images/enviroment/asteroid.png")
+			asteroid.rotation = math.random(0, 350)
+			
+			asteroid.x = asteroidStartX
+			asteroid.y = asteroidStartY
+			
+			asteroidStartX = asteroidStartX + asteroidStepX
+			asteroidStartY = asteroidStartY - asteroidStepY
+			
+			physics.addBody(asteroid, {density = 1000, friction = 10, bounce = 0.5})
+			asteroid.gravityScale = 0
+			asteroid.bodyType = "static"
+			camera:add(asteroid)
+		end
+		
+	end
+	
+end
+
+local function loadLevel()
+	loadEarth(1,1)
+	loadPlanets(1, current_level)
+	loadAsteroids(1,1)
+end
 ----------------------------------------------- Class functions 
 function scene.backAction()
 	robot.press(buttonBack)
@@ -242,7 +346,6 @@ end
 
 function scene:createGame()
 	system.activate("multitouch")
-	sound.playPitch("machine")
 	Runtime:addEventListener("touch", testTouch)
 	Runtime:addEventListener("enterFrame", enterFrame)
 	
@@ -254,10 +357,12 @@ function scene:createGame()
 	
 	dynamicObjects = {}
 	
+	loadLevel()
+	
 	createPlayerCharacter()
 	--createEnemy()
 	--createTestCubes()
-	createTestWalls()
+	createrBorders(1, 1)
 	
 	spaceships.start()
 	camera:setFocus(playerCharacter)
@@ -286,11 +391,11 @@ function scene:create(event)
 	local sceneGroup = self.view
 
 	createBackground(sceneGroup)
-
 	sceneGroup:insert(backgroundGroup)
-	camera = perspective.newCamera()
-	camera:setBounds(-500, 500, -750, 750)
+	
+	setUpCamera()
 	sceneGroup:insert(camera)
+	
 	buttonList.back.onRelease = onReleasedBack
 	buttonBack = widget.newButton(buttonList.back)
 	buttonBack.x = display.screenOriginX + 64 + padding
@@ -319,7 +424,7 @@ function scene:show( event )
 
     if ( phase == "will" ) then
 		
-		Runtime:addEventListener("enterFrame", updateWorlds)
+		Runtime:addEventListener("enterFrame", updateParallax)
 		self:createGame()
 		self.disableButtons()
 	elseif ( phase == "did" ) then
