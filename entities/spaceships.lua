@@ -9,44 +9,44 @@ local started
 local spaceshipList
 ---------------------------------------------- Constants
 local ANALOG_MAX = 128
+local MAX_SHIP_VELOCITY = 500
+---------------------------------------------- Caches
+local mathAbs = math.abs 
+
 ---------------------------------------------- Functions
 local function enterFrame()
 	for index = #spaceshipList, 1, -1 do
 		local spaceship = spaceshipList[index]
-		if spaceship then
-			local vX, vY = spaceship:getLinearVelocity()
-			spaceship.rotation = extramath.getFullAngle(vX, vY) + 90
-		end
 	end
 end
 
 local function createNewShip(newShip, shipData)
 	
-	physics.addBody( newShip, {density = 0.01, friction = 0.3, bounce = 0.2, radius = 32 * 0.8})
+	physics.addBody( newShip, {density = 0.001, friction = 0.3, bounce = 0.2, radius = 32 * 0.8})
 	newShip.gravityScale = 0
 	newShip.isFixedRotation = true
 	newShip.linearDamping = 2
 	
-	newShip.speedRatio = 5
+	newShip.speedRatio = 0.001
 	
-	local thrustData = { width = 32, height = 32, numFrames = 2, sheetContentWidth = 64, sheetContentHeight = 32 }
-	local thrustSheet = graphics.newImageSheet( "images/shooter/thrust.png", thrustData )
+	--local thrustData = { width = 32, height = 32, numFrames = 2, sheetContentWidth = 64, sheetContentHeight = 32 }
+	--local thrustSheet = graphics.newImageSheet( "images/shooter/thrust.png", thrustData )
 
-	local sequenceData = {
-		{ name="thrust", start = 1, count = 2, time = 100, loopCount = 0 },
-	}
+	--local sequenceData = {
+	--	{ name="thrust", start = 1, count = 2, time = 100, loopCount = 0 },
+	--}
 
-	local thrust = display.newSprite( thrustSheet, sequenceData )
-	thrust.xScale = 0.5
-	thrust.yScale = 0.5
-	thrust.x = -32
-	newShip.thrust = thrust
-	newShip:insert(thrust)
+	--local thrust = display.newSprite( thrustSheet, sequenceData )
+	--thrust.xScale = 0.5
+	--thrust.yScale = 0.5
+	--thrust.x = -32
+	--newShip.thrust = thrust
+	--newShip:insert(thrust)
 	
-	thrust:setSequence("thrust")
-	thrust:play()
+	--thrust:setSequence("thrust")
+	--thrust:play()
 	
-	local shipImage = display.newImageRect("images/shooter/spaceship.png", 64, 64)
+	local shipImage = display.newImageRect("images/ships/yogotarShip.png", 118, 89 )
 	newShip:insert(shipImage)
 	
 	function newShip:analog(analogX, analogY)
@@ -59,7 +59,21 @@ local function createNewShip(newShip, shipData)
 			analogX = analogX * self.speedRatio
 			analogY = analogY * self.speedRatio
 			
-			self:setLinearVelocity(analogX, analogY, 0, 0)
+			local vX, vY = self:getLinearVelocity()
+			
+			if mathAbs(vX) < MAX_SHIP_VELOCITY then
+				self:applyForce(analogX, 0, 0, 0)
+			end
+			
+			if mathAbs(vY) < MAX_SHIP_VELOCITY then
+				self:applyForce(0, analogY, 0, 0)
+			end
+			
+			if analogX < 0 then
+				self.xScale = -1
+			else
+				self.xScale = 1
+			end
 		end
 	end
 end
