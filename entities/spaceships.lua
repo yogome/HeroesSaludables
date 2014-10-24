@@ -22,7 +22,7 @@ end
 
 local function createNewShip(newShip, shipData)
 	
-	physics.addBody( newShip, {density = 0.001, friction = 0.3, bounce = 0.2, radius = 32 * 0.8})
+	physics.addBody( newShip, {density = 0.001, friction = 0.3, bounce = 1, radius = 50 * 0.8})
 	newShip.gravityScale = 0
 	newShip.isFixedRotation = true
 	newShip.linearDamping = 2
