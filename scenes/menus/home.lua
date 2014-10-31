@@ -11,114 +11,92 @@ local mixpanel = require( "libs.helpers.mixpanel" )
 
 local scene = composer.newScene() 
 ----------------------------------------------- Variables
-local buttonPlay, buttonSettings, logo
-local bgAsteroids, bgAsteroids
+local buttonPlay, buttonSettings
+local logoGroup, starfieldGroup
 local currentPlayer
 ----------------------------------------------- Constants 
 local SIZE_BACKGROUND = 1024
-local MARGIN_BUTTON = 20
-local SCALE_LOGO = 1
+local NUMBER_STARS = 500
+local SPEED_STARS = 0.5
+--local MARGIN_BUTTON = 20
+--local SCALE_LOGO = 1
 ----------------------------------------------- Functions
---local function onReleasedPlay()
---	mixpanel.logEvent("pressHomePlay")
---	if currentPlayer.gender == "none" then
---		composer.gotoScene( "scenes.menus.selecthero", { effect = "fade", time = 600, })
---	else
---		composer.gotoScene( "scenes.menus.worlds", { effect = "fade", time = 600, })
---	end
---end
---
---local function onReleasedSettings()
---	composer.showOverlay( "scenes.menus.settings", { isModal = true, effect = "zoomInOutFade", time = 400 } )
---end
---
---local function cancelPlayTransition()
---	if buttonPlay.timer then
---		timer.cancel(buttonPlay.timer)
---	end
---	transition.cancel(buttonPlay)
---end
---
---local function startTransitions()
---	cancelPlayTransition()
---	transition.cancel(logo)
---	
---	buttonPlay.xScale = 1
---	buttonPlay.yScale = 1
---	
---	local smallScale = 0.75
---	local bigScale = 0.85
---	
---	transition.to(buttonPlay, {time = 900, xScale = smallScale, yScale = smallScale, transition = easing.inOutSine})
---	transition.to(buttonPlay, {delay = 900, time = 900, xScale = bigScale, yScale = bigScale, transition = easing.inOutSine})
---	buttonPlay.timer = timer.performWithDelay(1800, function()
---		transition.to(buttonPlay, {time = 900, xScale = smallScale, yScale = smallScale, transition = easing.inOutSine})
---		transition.to(buttonPlay, {delay = 900, time = 900, xScale = bigScale, yScale = bigScale, transition = easing.inOutSine})
---	end, -1)
---	
---	logo.xScale = 0.5
---	logo.yScale = 0.5
---	logo.alpha = 0
---	
---	transition.to(logo, {time = 600, alpha = 1, xScale = SCALE_LOGO, yScale = SCALE_LOGO, transition = easing.outQuad})
---end
---
---local function createBackground(sceneGroup)
---	local dynamicScale = display.viewableContentWidth / SIZE_BACKGROUND
---    local backgroundContainer = display.newContainer(display.viewableContentWidth + 2, display.viewableContentHeight + 2)
---    backgroundContainer.x = display.contentCenterX
---    backgroundContainer.y = display.contentCenterY
---    sceneGroup:insert(backgroundContainer)
---    
---    local background = display.newImage("images/home/screen_home.png", true)
---    background.xScale = dynamicScale
---    background.yScale = dynamicScale
---    backgroundContainer:insert(background)
---end
-------------------------------------------------- Class functions 
---function scene.enableButtons()
---	buttonPlay:setEnabled(true)
---	buttonSettings:setEnabled(true)
---end
---
---function scene.disableButtons()
---	buttonPlay:setEnabled(false)
---	buttonSettings:setEnabled(false)
---end
+
+local function updateStarField()
+	for indexStar = 1, #starfieldGroup.stars do
+		
+		local currentStar = starfieldGroup.stars[indexStar]
+						
+		currentStar.x = currentStar.x + (currentStar.x - currentStar.dx) * 0.001
+		currentStar.y = currentStar.y + (currentStar.y - currentStar.dy) * 0.001
+		currentStar:scale(1.0001, 1.0001)
+				
+	end
+end
+
+local function updateGameLoop()
+	updateStarField()
+end
+
+local function createBackground(group)
+	
+	local ratio = display.viewableContentWidth / SIZE_BACKGROUND
+	local background = display.newImage("images/backgrounds/space.png")
+	background:scale(ratio, ratio)
+	background.x = display.contentCenterX
+	background.y = display.contentCenterY
+	group:insert(background)
+	
+end
+
+local function createLogo(group)
+	
+	logoGroup = display.newGroup()
+	logoGroup.x = display.contentCenterX
+	logoGroup.y = display.contentCenterY * 0.75
+	
+	local logo = display.newImage("images/menus/logo.png")
+	logo:scale(0.75, 0.75)
+	logoGroup:insert(logo)
+	
+	group:insert(logoGroup)
+end
+
+local function createStarfield(group)
+	starfieldGroup = display.newGroup()
+	starfieldGroup.stars = {}
+	for indexStar = 1, NUMBER_STARS do
+		local randomSize = math.random(5, 15)
+		local star = display.newCircle(math.random(display.contentWidth * 0.5 * -1, display.contentWidth * 0.5), math.random(display.contentHeight * 0.5 * -1, display.contentHeight * 0.5), randomSize)
+		starfieldGroup.stars[indexStar] = star
+		starfieldGroup:insert(star)
+	end
+	starfieldGroup.x = display.contentCenterX
+	starfieldGroup.y = display.contentCenterY
+	group:insert(starfieldGroup)
+end
+
+local function initializeStarField()
+	
+	local step = 0
+	for indexStar = 1, #starfieldGroup.stars do
+		
+		local currentStar = starfieldGroup.stars[indexStar]
+		
+		currentStar.dx = math.sin(currentStar.x + step) * display.contentWidth
+		currentStar.dy = math.cos(currentStar.y + step) * display.contentHeight
+		
+		step = step + 50		
+	end
+	
+end
 
 function scene:create(event)
 	local sceneGroup = self.view
---	local testMenuRect = display.newRect(display.screenOriginX + 50, display.screenOriginY + 50, 100, 100)
---	testMenuRect.isHitTestable = true
---	testMenuRect.isVisible = false
---	sceneGroup:insert(testMenuRect)
---	local testTapCount = 0
---	testMenuRect:addEventListener("tap", function()
---		testTapCount = testTapCount + 1
---		if testTapCount == 10 then
---			testTapCount = 0
---			
---		end
---	end)
---	
---	createBackground(sceneGroup)
---	
---	logo = display.newImage("images/home/logo.png", true)
---	logo.x = display.contentCenterX
---	logo.y = display.contentCenterY - 40
---	sceneGroup:insert(logo)
---	
---	buttonList.play.onRelease = onReleasedPlay
---	buttonPlay = widget.newButton(buttonList.play)
---	buttonPlay.x = display.contentCenterX
---	buttonPlay.y = display.screenOriginY + display.viewableContentHeight - 128 - MARGIN_BUTTON
---	sceneGroup:insert(buttonPlay)
---	
---	buttonList.settings.onRelease = onReleasedSettings
---	buttonSettings = widget.newButton(buttonList.settings)
---	buttonSettings.x = display.screenOriginX + buttonSettings.width * 0.5 + MARGIN_BUTTON
---	buttonSettings.y = display.screenOriginY + display.viewableContentHeight - buttonSettings.height * 0.5 - MARGIN_BUTTON
---	sceneGroup:insert(buttonSettings)
+	
+	createBackground(sceneGroup)
+	createLogo(sceneGroup)
+	createStarfield(sceneGroup)
 end
 
 function scene:destroy()
@@ -130,14 +108,13 @@ function scene:show( event )
     local phase = event.phase
 
     if ( phase == "will" ) then
-		--currentPlayer = players.getCurrent()
-		--self.disableButtons()
-		--startTransitions()
+		
+		initializeStarField()
 		
 	elseif ( phase == "did" ) then
-		composer.gotoScene( "scenes.menus.test" )
-		--self.enableButtons()
-		--music.playTrack(1,400)
+		
+		Runtime:addEventListener("enterFrame", updateGameLoop)
+		
 	end
 end
 
