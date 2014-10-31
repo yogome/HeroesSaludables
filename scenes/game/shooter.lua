@@ -49,14 +49,46 @@ local OBJECTS_TOLERANCE_X = 100
 local OBJECTS_TOLERANCE_Y = 100
 local STARS_LAYER_DEPTH_RATIO = 0.08
 local STARS_PER_LAYER = 20
-local STARS_LAYERS = 6
+local STARS_LAYERS = 3
 
 local BOUNDARY_SIZE = 200
 ----------------------------------------------- Functions
 
 local function updateEnemies()
 	for indexEnemy = 1, #enemies do
-		enemies[indexEnemy]:patrol()
+		local currentEnemy = enemies[indexEnemy]
+		if currentEnemy.group.isPlayerOnRange then
+			local ray = physics.rayCast(currentEnemy.group.x, currentEnemy.group.y,	playerCharacter.x, playerCharacter.y)
+			
+			if ray then
+				if ray[1].object.name ~= "asteroid" then
+					currentEnemy.group.canFollowObject = true
+				else
+					currentEnemy.group.canFollowObject = false				
+				end
+			end
+			
+			if currentEnemy.group.canFollowObject then
+				currentEnemy:follow()
+				currentEnemy.group.hasToReturn = true
+			else
+				if currentEnemy.group.hasToReturn then
+					currentEnemy:returnToPatrol()
+				end
+			end
+			
+			if not currentEnemy.group.canFollowObject and not currentEnemy.group.hasToReturn then
+				currentEnemy:patrol()
+			end
+			
+		else
+			if currentEnemy.group.hasToReturn then
+				
+			else
+				currentEnemy:patrol()
+			end
+			
+		end
 	end
 	
 end
@@ -169,8 +201,15 @@ local function localCollision(self, event)
 	
 	if ( event.phase == "began" ) then
 
-		print("I am " .. event.object2.name) 
-			--Collisions on planet range
+		--print("I am " .. event.object2.name) 
+		--Collisions on enemy range
+		if event.object1.name == "canoner" and event.object1.isPlayerOnRange == false then
+			--event.object1:stop()
+			event.object1:setReturnPoint()
+			event.object1:setFollowing(true, event.object2)
+		end
+		
+		--Collisions on planet range
 		if event.object1.name == "fruits" and isFruitSpawned == false then
 			spawnBubble("fruit", event.object1)
 			isFruitSpawned = true
@@ -196,13 +235,19 @@ local function localCollision(self, event)
 			updateScore(playerCharacter.item.type)
 			timer.performWithDelay(100, bubbleToEarth)
 		else
-			print("collided with: " .. event.object1.name)
+			--print("collided with: " .. event.object1.name)
 		end
 		
 
     elseif ( event.phase == "ended" ) then
         if(event.object1.name == "fruits" or event.object1.name == "proteins" or event.object1.name == "vegetables") then
 			print("Outside range with: " .. event.object1.name)
+		end
+		
+		if event.object1.name == "canoner" and event.object1.isPlayerOnRange then
+			--event.object1:move()
+			event.object1:setFollowing(false, nil)
+			--event.object1:returnToPatrol()
 		end
     end
 end
@@ -372,9 +417,9 @@ local function setUpCamera()
 end
 
 local function createPlayerCharacter(world, level)
-	shipPosition = worldsData[world][level].ship.position
+	local shipPosition = worldsData[world][level].ship.position
 	
-	playerCharacter = spaceships.new(shipData)
+	playerCharacter = spaceships.new()
 	playerCharacter.isCarringItem = false
 	playerCharacter.name = "player"
 	playerCharacter.x = shipPosition.x
@@ -568,6 +613,13 @@ local function resetData()
 	totalCollectedVegetables = 0
 	totalCollectedProteins = 0
 end
+
+local function updateGameLoop()
+	updateParallax()
+	updateEnemies()
+	showDebugInformation()
+	enterFrame()
+end
 ----------------------------------------------- Class functions 
 function scene.backAction()
 	robot.press(buttonBack)
@@ -597,7 +649,6 @@ function scene:createGame()
 	loadLevel()
 	
 	createPlayerCharacter(1,2)
-	--createEnemy()
 	createBorders(1, 2)
 	createFoodBubbles()
 	
@@ -609,7 +660,6 @@ function scene:createGame()
 	playerCharacter.preCollision = preCollision
 	
 	Runtime:addEventListener("touch", testTouch)
-	Runtime:addEventListener("enterFrame", enterFrame)
 	Runtime:addEventListener("collision", playerCharacter)
 	Runtime:addEventListener("preCollision", playerCharacter)
 end
@@ -680,9 +730,7 @@ function scene:show( event )
 		self.disableButtons()
 	elseif ( phase == "did" ) then
 		
-		Runtime:addEventListener("enterFrame", updateParallax)
-		Runtime:addEventListener("enterFrame", updateEnemies)
-		Runtime:addEventListener("enterFrame", showDebugInformation)
+		Runtime:addEventListener("enterFrame", updateGameLoop)
 		self.enableButtons()
 	end
 end
