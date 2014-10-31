@@ -33,6 +33,14 @@ local function goGame()
 	composer.gotoScene("scenes.game.shooter")
 end
 
+local function goLabel()
+	composer.gotoScene("scenes.game.label")
+end
+
+local function goHome()
+	composer.gotoScene("scenes.menus.home")
+end
+
 local function giveCoins()
 	local player = players.getCurrent()
 	if player.coins then
@@ -133,7 +141,9 @@ end
 function scene:createView()
 	------------------------- Buttons
 
+	self:addButton("Go Home", goHome, {0.5,0.5,0.5})
 	self:addButton("Go Game", goGame, {0.5,0.5,0.5})
+	self:addButton("Go Label", goLabel, {0.5,0.5,0.5})
 	self:addButton("Clear queue", clearQueue, {0.5,0.6,0.3})
 	
 	self:skipColumn()
