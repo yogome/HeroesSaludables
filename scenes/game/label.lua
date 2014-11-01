@@ -1,6 +1,8 @@
 --------------------------------Label Minigame
 local composer = require( "composer" )
 local settings = require( "settings" )
+local widget = require("widget")
+local buttonList = require("data.buttonlist")
 
 local scene = composer.newScene()
 
@@ -11,6 +13,9 @@ local scene = composer.newScene()
 -- local forward references should go here
 local puzzlePanel, puzzleContainer, smallPanelGroup, largePanelGroup
 local piecesGroup
+local panelText, titleText
+local okButton
+local bgShine
 
 local SIZE_BACKGROUND = 1024
 local NUMBER_PIECES = 9
@@ -41,16 +46,42 @@ local correctPositions = {
 }
 -- -------------------------------------------------------------------------------
 
+local function updateGameLoop()
+	bgShine.rotation = bgShine.rotation + 1
+end
+
+local function onCorrect()
+	
+	titleText.text = "¡Felicidades!"
+	titleText.size = 48
+	
+	okButton.isVisible = true
+	panelText.isVisible = true
+	
+	transition.to(okButton, {alpha = 1, onComplete = function()
+		okButton:setEnabled(true)
+	end})
+	
+	transition.to(panelText, {alpha = 1})
+	
+	Runtime:addEventListener("enterFrame", updateGameLoop)
+	
+	bgShine.isVisible = true
+	transition.to(bgShine, {alpha = 0.7})
+end
+
 local function onTouchPiece(event)
 	local label = event.target
 	local phase = event.phase
 	local parent = label.parent
+	
 	if "began" == phase then
 		
 		parent:insert( label )
 		display.getCurrentStage():setFocus( label )
 
 		label.isFocus = true
+		label.isCorrect = false
 		
 		if label.scaledUp then
 			label:scale(0.7, 0.7)
@@ -60,7 +91,7 @@ local function onTouchPiece(event)
 		label.x0 = event.x - label.x
 		label.y0 = event.y - label.y
 		
-		-------Coordinate Dumper
+		-------Coordinates Dumper
 		--local labelX, labelY = label:localToContent(0,0)
 		--local stageX, stageY = puzzlePanel:contentToLocal(labelX, labelY)
 		--print(string.format("{x = %d, y = %d},", stageX, stageY))
@@ -80,19 +111,28 @@ local function onTouchPiece(event)
 			if distanceToAnswer <= 45 then
 				
 				label.scaledUp = true
+				label.isCorrect = true
 				local correctX, correctY = puzzlePanel:localToContent(correctPositions[label.id].x, correctPositions[label.id].y)
 				local X, Y = puzzleContainer:contentToLocal(correctX, correctY)
 				
 				transition.to(label, {x = X, y = Y, time=100, xScale = 1.3, yScale = 1.3})
-
+				
+				local correctPieces = 0
+				for indexPiece = 1, #piecesGroup.pieces do
+					if piecesGroup.pieces[indexPiece].isCorrect then
+						correctPieces = correctPieces + 1
+					end
+				end
+				
+				if correctPieces >= #piecesGroup.pieces then
+					for indexPiece = 1, #piecesGroup.pieces do
+						piecesGroup.pieces[indexPiece]:removeEventListener("touch", onTouchPiece)
+					end
+					onCorrect()
+				end
 			end
-
-			print(distanceToAnswer)
 		end
 	end		
-
-	-- Important to return true. This tells the system that the event
-	-- should not be propagated to listeners of any objects underneath.
 	return true
 end
 
@@ -108,17 +148,23 @@ end
 
 local function createPuzzlePieces(group)
 	piecesGroup = display.newGroup()
+	piecesGroup.pieces = {}
 	for indexPiece = 1, NUMBER_PIECES do
 		local piece = display.newImage("images/label/piece"..indexPiece..".png")
 		piece.id = indexPiece
 		piece.x = labelpositions[indexPiece].x
 		piece.y = labelpositions[indexPiece].y
 		piece:addEventListener("touch", onTouchPiece)
+		piecesGroup.pieces[indexPiece] = piece
 		piecesGroup:insert(piece)
 	end
 	piecesGroup.isVisible = false
 	piecesGroup.alpha = 0
 	group:insert(piecesGroup)
+end
+
+local function gotoNextScreen()
+	composer.gotoScene("scenes.game.shooter")
 end
 
 ---------------------------------------------------------------------------------
@@ -129,9 +175,16 @@ function scene:create( event )
 	createBackground(sceneGroup)
 	
 	puzzlePanel = display.newImage("images/label/panel_02.png")
-	puzzlePanel.y = display.contentCenterY * 1.15
 	puzzlePanel.x = display.viewableContentWidth + puzzlePanel.width
+	puzzlePanel.y = display.contentCenterY * 1.15
 	sceneGroup:insert(puzzlePanel)
+	
+	bgShine = display.newImage("images/backgrounds/shine.png")
+	bgShine.isVisible = false
+	bgShine.alpha = 0
+	bgShine.x = display.contentCenterX * 1.50
+	bgShine.y = display.contentCenterY * 1.15
+	sceneGroup:insert(bgShine)
 	
 	puzzleContainer = display.newImage("images/label/panel_01.png")
 	puzzleContainer.y = display.contentCenterY * 1.35
@@ -145,10 +198,36 @@ function scene:create( event )
 	smallPanelGroup.y = display.screenOriginY - smallPanel.height
 	smallPanelGroup:insert(smallPanel)
 	
-	local panelText =  display.newText("Arma la etiqueta nutricional", smallPanel.x, smallPanel.y, settings.fontName, 28)
-	smallPanelGroup:insert(panelText)
-	
+	titleText =  display.newText("Arma la etiqueta nutricional", smallPanel.x, smallPanel.y, settings.fontName, 28)
+	smallPanelGroup:insert(titleText)
 	sceneGroup:insert(smallPanelGroup)
+	
+	local textData = {
+		text = "Una etiqueta nuricional es aquella información que nos indica el valor energético y contenido del alimento en cuanto a proteínas, hidratos de carbono, grasas, fibra alimentaria, sodio, vitaminas y minerales. Debe expresarse por 100 gramos o 100 miligramos.",
+		x = display.contentCenterX * 0.48,
+		y = display.contentCenterY * 1.35,
+		width = 400,
+		font = settings.fontName,   
+		fontSize = 28,
+		align = "center"
+	}
+	
+	panelText = display.newText(textData)
+	panelText.isVisible = false
+	panelText.alpha = 0
+	sceneGroup:insert(panelText)
+	
+	local buttonData = buttonList.play
+	buttonData.onRelease = gotoNextScreen
+	
+	okButton = widget.newButton(buttonData)
+	okButton.isVisible = false
+	okButton.alpha = 0
+	okButton:setEnabled(false)
+	okButton.x = display.contentCenterX
+	okButton.y = display.contentCenterY * 1.80
+	
+	sceneGroup:insert(okButton)
 	
 	createPuzzlePieces(sceneGroup)
 	--local background = display.newImage("images/backgrounds/label.png")
@@ -163,7 +242,11 @@ function scene:show( event )
     local phase = event.phase
 
     if ( phase == "will" ) then
+		
+		bgShine.rotation = 0
+		
 	elseif ( phase == "did" ) then
+		
 		transition.to(puzzlePanel, {transition = easing.outBounce, x = display.contentCenterX * 1.50, time=1000})
 		transition.to(puzzleContainer, {transition = easing.outBounce, x = display.contentCenterX * 0.50, time=1000, onComplete = function()
 			piecesGroup.isVisible = true;
