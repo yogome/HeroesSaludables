@@ -37,6 +37,10 @@ local function goLabel()
 	composer.gotoScene("scenes.game.label")
 end
 
+local function goHero()
+	composer.gotoScene("scenes.menus.selecthero")
+end
+
 local function goHome()
 	composer.gotoScene("scenes.menus.home")
 end
@@ -142,6 +146,7 @@ function scene:createView()
 	------------------------- Buttons
 
 	self:addButton("Go Home", goHome, {0.5,0.5,0.5})
+	self:addButton("Go Hero", goHero, {0.5,0.5,0.5})
 	self:addButton("Go Game", goGame, {0.5,0.5,0.5})
 	self:addButton("Go Label", goLabel, {0.5,0.5,0.5})
 	self:addButton("Clear queue", clearQueue, {0.5,0.6,0.3})
