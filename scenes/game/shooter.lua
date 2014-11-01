@@ -517,7 +517,7 @@ local function loadAsteroids(world, level)
 		local asteroidStartY = y1
 		
 		for indexAsteroid = 1, asteroidsPerLine do
-			local asteroid = display.newImage("images/enviroment/asteroid.png")
+			local asteroid = display.newImage("images/enviroment/asteroid1.png")
 			asteroid.rotation = math.random(0, 350)
 			
 			asteroid.x = asteroidStartX
