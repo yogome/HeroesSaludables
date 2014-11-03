@@ -117,14 +117,14 @@ local function onReleasedBack()
 end
 
 local function onReleasedOK()
-	composer.gotoScene("scenes.game.labelpuzzle", {effect = "fade", time = 600})
+	composer.gotoScene("scenes.menus.worlds", {effect = "fade", time = 600})
 end
 
 local function updateShipMovement(time)
 	
 	local floatingPosition = math.sin(time * 0.005) * 0.5
 	for indexShip = 1, #shipsPreview.ships do
-		currentShip = shipsPreview.ships[indexShip]
+		local currentShip = shipsPreview.ships[indexShip]
 		if currentShip.isVisible then
 			currentShip.y = currentShip.y + floatingPosition
 		end
@@ -144,7 +144,7 @@ end
 local function showShip(index)
 	
 	for indexShip = 1, #shipsPreview.ships do
-		currentShip = shipsPreview.ships[indexShip]
+		local currentShip = shipsPreview.ships[indexShip]
 		currentShip.isVisible = false
 	end
 	
@@ -377,7 +377,7 @@ local function createShips(group)
 			{name = "play", start = 1 , count = 4, time = 500, loopCount = 0},
 		}
 		local shipSpriteSheet = graphics.newImageSheet(spritesheet, {width = 256, height = 256, numFrames = 4 })
-		playerShip = display.newSprite(shipSpriteSheet, markSequenceData)
+		local playerShip = display.newSprite(shipSpriteSheet, markSequenceData)
 		
 		playerShip.xScale = 0.7
 		playerShip.yScale = 0.7
