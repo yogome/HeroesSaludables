@@ -1,15 +1,36 @@
 local enemies = {
-	{
-		type = "canoner",
-		asset = "images/enemies/canon.png"
+	["canoner"] = {
+		asset = "images/enemies/canon.png",
+		speed = 1,
+		viewRadius = 400,
+		onHasTarget = "shoot",
+		projectileData = {
+			fireFrame = 25,
+			speed = 15,
+			asset = "images/enemies/proyectil-02.png",
+		},
 	},
-	{	
-		type = "shooter",
-		asset = "images/enemies/shooter.png"
+	["shooter"] = {
+		asset = "images/enemies/shooter.png",
+		speed = 1,
+		viewRadius = 300,
+		onHasTarget = "shoot",
+		projectileData = {
+			fireFrame = 15,
+			speed = 5,
+			asset = "images/enemies/proyectil-02.png",
+		},
 	},
-	{
-		type = "follower",
-		asset = "images/enemies/follower.png"
+	["follower"] = {
+		asset = "images/enemies/follower.png",
+		speed = 1,
+		viewRadius = 300,
+		onHasTarget = "follow",
+		projectileData = {
+			fireFrame = 50,
+			speed = 5,
+			asset = "images/enemies/proyectil-02.png",
+		},
 	}
 }
 

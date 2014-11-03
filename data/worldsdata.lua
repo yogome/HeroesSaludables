@@ -1,34 +1,98 @@
 local worldsData = {
 	-- World 1
 	[1] = {
-		--Level 1
 		[1] = {
+			background = "images/backgrounds/space.png",
+			levelWidth = 2000,
+			levelHeight = 2000,
+			ship = {position = {x = 500, y = -200}},
+			objectives = {
+				fruit = 8,
+				vegetable = 10,
+				protein = 5
+			},
+			enemySpawnData = {
+				{
+					type = "follower",
+					spawnPoint = { x = -500, y = 0},
+					patrolPath = {
+						[1] = { x = -500, y = 0},
+						[2] = {x = 0, y = 500}
+					}
+				},
+				{
+					type = "canoner",
+					spawnPoint = { x = 400, y = -800},
+					patrolPath = {
+						[1] = { x = 400, y = -800},
+						[2] = {x = 0, y = -400}
+					}
+				},
+			},
+			earth = {
+				name = "earth",
+				asset = "images/planets/earth_happy.png",
+				position = {x = -600, y = -700},
+				scaleFactor = 0.75
+			},
+			planets = {
+				[1] = {
+					foodType = "fruit",
+					asset = "images/planets/fruits_1.png",
+					position = {x = -700, y = 700}
+				},
+				[2] = {
+					foodType = "protein",
+					asset = "images/planets/proteins_1.png",
+					position = {x = 500, y = 550}
+				},
+				[3] = {
+					foodType = "vegetable",
+					asset = "images/planets/vegetables_1.png",
+					position = {x = 740, y = -800}
+				}
+			},
+			asteroids = {
+				[1] = {
+						lineStart = {x = -200, y = 600},
+						lineEnd = {x = -700, y = 100},
+						easingX = easing.inSine,
+						easingY = easing.outSine,
+				},
+				[2] = {
+						lineStart = {x = 100, y = -200},
+						lineEnd = {x = 600, y = -700},
+						easingX = easing.inSine,
+						easingY = easing.outSine,
+				},
+			},
+		},
+		--Level 2
+		[2] = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
 			levelHeight = 2000,
 			ship = {position = {x = -1500, y = 800}},
 			objectives = {
-				fruits = 8,
-				vegetables = 10,
-				proteins = 5
+				fruit = 8,
+				vegetable = 10,
+				protein = 5
 			},
-			enemies = {
+			enemySpawnData = {
 				{
 					type = "follower",
-					radius = 250,
-					speed = 300,
-					position = {
-						pathStart = { x = 0, y = 0},
-						pathEnd = {x = 500, y = 500}
+					spawnPoint = { x = 0, y = 0},
+					patrolPath = {
+						[1] = { x = 0, y = 0},
+						[2] = {x = 500, y = 500}
 					}
 				},
 				{
 					type = "canoner",
-					radius = 500,
-					speed = 450,
-					position = {
-						pathStart = { x = 0, y = 0},
-						pathEnd = {x = 800, y = -500}
+					spawnPoint = { x = 0, y = 0},
+					patrolPath = {
+						[1] = { x = 0, y = 0},
+						[2] = {x = 800, y = -500}
 					}
 				},
 			},
@@ -130,86 +194,22 @@ local worldsData = {
 			},
 			planets = {
 				[1] = {
-					name = "fruits",
+					foodType = "fruit",
 					asset = "images/planets/fruits_1.png",
 					position = {x = -1400, y = -700}
 				},
 				[2] = {
-					name = "proteins",
+					foodType = "protein",
 					asset = "images/planets/proteins_1.png",
 					position = {x = 1800, y = 900}
 				},
 				[3] = {
-					name = "vegetables",
+					foodType = "vegetable",
 					asset = "images/planets/vegetables_1.png",
 					position = {x = -600, y = 800}
 				}
 			}
 		},
-		[2] = {
-			background = "images/backgrounds/space.png",
-			levelWidth = 2000,
-			levelHeight = 2000,
-			ship = {position = {x = 700, y = -200}},
-			objectives = {
-				fruits = 8,
-				vegetables = 10,
-				proteins = 5
-			},
-			enemies = {
-				{
-					type = "follower",
-					radius = 250,
-					speed = 300,
-					position = {
-						pathStart = { x = -500, y = 0},
-						pathEnd = {x = 0, y = 500}
-					}
-				},
-				{
-					type = "canoner",
-					radius = 500,
-					speed = 450,
-					position = {
-						pathStart = { x = 400, y = -800},
-						pathEnd = {x = 0, y = -400}
-					}
-				},
-			},
-			earth = {
-				name = "earth",
-				asset = "images/planets/earth_happy.png",
-				position = {x = -800, y = -700},
-				scaleFactor = 0.75
-			},
-			planets = {
-				[1] = {
-					name = "fruits",
-					asset = "images/planets/fruits_1.png",
-					position = {x = -700, y = 700}
-				},
-				[2] = {
-					name = "proteins",
-					asset = "images/planets/proteins_1.png",
-					position = {x = 500, y = 400}
-				},
---				[3] = {
---					name = "vegetables",
---					asset = "images/planets/vegetables_1.png",
---					position = {x = -600, y = 800}
---				}
-			},
-			asteroids = {
-				[1] = {
-						lineStart = {x = -200, y = 600},
-						lineEnd = {x = -700, y = 100}
-				},
-				[2] = {
-						lineStart = {x = 100, y = -200},
-						lineEnd = {x = 600, y = -700}
-				},
-			},
-		}
 	},
 	-- World 2
 	[2] = {
