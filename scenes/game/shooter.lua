@@ -33,7 +33,7 @@ local spawnZoneWidth, spawnZoneHeight, halfSpawnZoneWidth, halfSpawnZoneHeight
 local backgroundGroup
 local foodBubbleGroup
 local enemies
-local isFruitSpawned, isVegetableSpawned, isProteinSpawned
+local isFoodSpawned
 local totalCollectedFruits, totalCollectedVegetables, totalCollectedProteins
 -----------------------------------------------Vars used by level loader
 local levelBackground
@@ -80,9 +80,9 @@ local function showDebugInformation()
 	Player x: %d
 	Player y: %d]], 
 	tostring(playerCharacter.isCarringItem),
-	tostring(isFruitSpawned),
-	tostring(isVegetableSpawned),
-	tostring(isProteinSpawned),
+	tostring(isFoodSpawned["fruit"]),
+	tostring(isFoodSpawned["vegetable"]),
+	tostring(isFoodSpawned["protein"]),
 	totalCollectedFruits,
 	totalCollectedVegetables,
 	totalCollectedProteins,
@@ -102,23 +102,26 @@ local function randomFoodByType(foodType)
 	return bubbleSearchIndexes[math.random(1, #bubbleSearchIndexes)]
 end
 
-local function spawnBubble(foodType, planet)
-	local foodBubbleIndex = randomFoodByType(foodType)
-	local foundBubble = foodBubbleGroup.bubbles[foodBubbleIndex]
-	
-	local showBubble = function()
-		foundBubble.x = planet.x
-		foundBubble.y = planet.y + planet.width * 0.5
-		foundBubble.alpha = 1
-		foundBubble.isVisible = true
-		foundBubble.isSpawned = true
-		
-		physics.addBody(foundBubble, "dynamic", {density = 0, friction = 0, bounce = 0.1, radius = 30})
-		foundBubble.gravityScale = 0
-		foundBubble:applyLinearImpulse( math.random(-5,5)/100, math.random(-5,5)/100, foundBubble.x, foundBubble.y)
+local function spawnBubble(planet)
+	if not isFoodSpawned[planet.foodType] then
+		isFoodSpawned[planet.foodType] = true
+		local foodBubbleIndex = randomFoodByType(planet.foodType)
+		local foundBubble = foodBubbleGroup.bubbles[foodBubbleIndex]
+
+		local showBubble = function()
+			foundBubble.x = planet.x
+			foundBubble.y = planet.y + planet.width * 0.5
+			foundBubble.alpha = 1
+			foundBubble.isVisible = true
+			foundBubble.isSpawned = true
+
+			physics.addBody(foundBubble, "dynamic", {density = 0, friction = 0, bounce = 0.1, radius = 30})
+			foundBubble.gravityScale = 0
+			foundBubble:applyLinearImpulse( math.random(-5,5)/100, math.random(-5,5)/100, foundBubble.x, foundBubble.y)
+		end
+
+		timer.performWithDelay(100, showBubble)
 	end
-	
-	timer.performWithDelay(100, showBubble)
 end
 
 local function grabFruit(fruit)
@@ -154,14 +157,8 @@ end
 local function hideBubble()
 	playerCharacter.item.isVisible = false
 	playerCharacter.isCarringItem = false
-	if playerCharacter.item.type == "fruit" then
-		isFruitSpawned = false
-	elseif playerCharacter.item.type == "vegetable" then
-		isVegetableSpawned = false
-	elseif playerCharacter.item.type == "protein" then
-		isProteinSpawned = false
-	end
-	--playerCharacter.item = nil
+	
+	isFoodSpawned[playerCharacter.item.type] = false
 end
 
 local function updateScore(type)
@@ -173,62 +170,61 @@ local function updateScore(type)
 		totalCollectedProteins = totalCollectedProteins + 1
 	end
 end
+
+local function addEnemyTarget(enemy, target)
+	if enemy.name == "enemy" then
+		if target.name == "player" then
+			enemy:setTarget(target)
+		end
+	end
+end
+
+local function removeEnemyTarget(enemy, target)
+	if enemy.name == "enemy" then
+		if target.name == "player" then
+			enemy:setTarget(nil)
+		end
+	end
+end
+
+local function collectBubble(earth)
+	if playerCharacter.isCarringItem then
+		foodBubbleGroup:insert(playerCharacter.item)
+		playerCharacter.item.x = playerCharacter.x
+		playerCharacter.item.y = playerCharacter.y
+		transition.to(playerCharacter.item, {transition = easing.outBounce, xScale = 1, yScale = 1, time = 500, onComplete = function()
+			transition.to(playerCharacter.item, {alpha = 0, xScale = 0.5, yScale = 0.5, transition = easing.outCubic, time = 1000, x = earth.x, y = earth.y, onComplete = function()
+				hideBubble()
+			end})
+		end})
+
+		updateScore(playerCharacter.item.type)
+	end
+end
+
+local function checkPlayerCollision(player, otherObject)
+	if player.name == "player" then
+		if otherObject.name == "planet" then
+			spawnBubble(otherObject)
+		elseif otherObject.name == "earth" then
+			collectBubble(otherObject)
+		end
+	end
+end
 	
 local function collisionListener(event)
-	event.object1.name = event.object1.name or "unknown"
-	event.object2.name = event.object2.name or "unknown"
+	if event.phase == "began" then
+		addEnemyTarget(event.object1, event.object2)
+		addEnemyTarget(event.object2, event.object1)
+		
+		checkPlayerCollision(event.object1, event.object2)
+		checkPlayerCollision(event.object2, event.object1)
+	end
 	
-	if ( event.phase == "began" ) then
-
-		--print("I am " .. event.object2.name) 
-		--Collisions on enemy range
-		if event.object1.name == "canoner" and event.object1.isPlayerOnRange == false then
-			--event.object1:stop()
-			event.object1:setReturnPoint()
-			event.object1:setFollowing(true, event.object2)
-		end
-		
-		--Collisions on planet range
-		if event.object1.name == "fruits" and isFruitSpawned == false then
-			spawnBubble("fruit", event.object1)
-			isFruitSpawned = true
-		elseif event.object1.name == "proteins" and isProteinSpawned == false then
-			spawnBubble("protein", event.object1)
-			isProteinSpawned = true
-		elseif event.object1.name == "vegetables" and isVegetableSpawned == false then
-			spawnBubble("vegetable", event.object1)
-			isVegetableSpawned = true
-		elseif event.object1.name == "earth" and playerCharacter.isCarringItem then
-		
-			local function bubbleToEarth()
-				foodBubbleGroup:insert(playerCharacter.item)
-				playerCharacter.item.x = playerCharacter.x
-				playerCharacter.item.y = playerCharacter.y
-				transition.to(playerCharacter.item, {transition = easing.outBounce, xScale = 1, yScale = 1, time = 500, onComplete = function()
-					transition.to(playerCharacter.item, {alpha = 0, xScale = 0.5, yScale = 0.5, transition = easing.outCubic, time = 1000, x = event.object1.x, y = event.object1.y, onComplete = function()
-						hideBubble()
-					end})
-				end})
-			end
-			
-			updateScore(playerCharacter.item.type)
-			timer.performWithDelay(100, bubbleToEarth)
-		else
-			--print("collided with: " .. event.object1.name)
-		end
-		
-
-    elseif ( event.phase == "ended" ) then
-        if(event.object1.name == "fruits" or event.object1.name == "proteins" or event.object1.name == "vegetables") then
-			print("Outside range with: " .. event.object1.name)
-		end
-		
-		if event.object1.name == "canoner" and event.object1.isPlayerOnRange then
-			--event.object1:move()
-			event.object1:setFollowing(false, nil)
-			--event.object1:returnToPatrol()
-		end
-    end
+	if event.phase == "ended" then
+		removeEnemyTarget(event.object1, event.object2)
+		removeEnemyTarget(event.object2, event.object1)
+	end
 end
 
 
@@ -471,13 +467,14 @@ local function loadPlanets()
 	local planetsData = worldsData[worldIndex][levelIndex].planets
 	
 	for planetIndex = 1, #planetsData do
-		local currentPlanet = planetsData[planetIndex]
-		local planet = display.newImage(currentPlanet.asset)
+		local currentPlanetData = planetsData[planetIndex]
+		local planet = display.newImage(currentPlanetData.asset)
 		physics.addBody(planet, "static", {density = 1, friction = 1, bounce = 1, radius = 200, isSensor = true})
-		planet.name = currentPlanet.name
+		planet.name = "planet"
+		planet.foodType = currentPlanetData.foodType
 		
-		planet.x = currentPlanet.position.x
-		planet.y = currentPlanet.position.y
+		planet.x = currentPlanetData.position.x
+		planet.y = currentPlanetData.position.y
 		planets[planetIndex] = planet
 		camera:add(planet)
 	end
@@ -545,8 +542,8 @@ local function loadEnemies()
 		
 		physics.addBody(enemyObject, "dynamic",  {radius = enemyObject.viewRadius, isSensor = true})
 		enemyObject.gravityScale = 0
-		enemyObject.type = "enemy"
-		enemyObject.name = enemySpawnData[indexEnemy].type
+		enemyObject.type = enemySpawnData[indexEnemy].type
+		enemyObject.name = "enemy"
 		enemies[indexEnemy] = enemyObject
 		camera:add(enemyObject)
 	end
@@ -629,9 +626,11 @@ local function createHUD()
 end
 
 local function initialize()
-	isFruitSpawned = false
-	isVegetableSpawned = false
-	isProteinSpawned = false
+	isFoodSpawned = {
+		["fruit"] = false,
+		["vegetable"] = false,
+		["protein"] = false,
+	}
 	
 	worldIndex = 1
 	levelIndex = 2

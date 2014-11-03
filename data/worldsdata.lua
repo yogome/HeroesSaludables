@@ -128,17 +128,17 @@ local worldsData = {
 			},
 			planets = {
 				[1] = {
-					name = "fruits",
+					foodType = "fruit",
 					asset = "images/planets/fruits_1.png",
 					position = {x = -1400, y = -700}
 				},
 				[2] = {
-					name = "proteins",
+					foodType = "protein",
 					asset = "images/planets/proteins_1.png",
 					position = {x = 1800, y = 900}
 				},
 				[3] = {
-					name = "vegetables",
+					foodType = "vegetable",
 					asset = "images/planets/vegetables_1.png",
 					position = {x = -600, y = 800}
 				}
@@ -180,17 +180,17 @@ local worldsData = {
 			},
 			planets = {
 				[1] = {
-					name = "fruits",
+					foodType = "fruit",
 					asset = "images/planets/fruits_1.png",
 					position = {x = -700, y = 700}
 				},
 				[2] = {
-					name = "proteins",
+					foodType = "protein",
 					asset = "images/planets/proteins_1.png",
 					position = {x = 500, y = 400}
 				},
 --				[3] = {
---					name = "vegetables",
+--					foodType = "vegetable",
 --					asset = "images/planets/vegetables_1.png",
 --					position = {x = -600, y = 800}
 --				}

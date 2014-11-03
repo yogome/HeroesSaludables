@@ -11,6 +11,7 @@ local COLOR_OUTER_RANGE_CIRCLE = {0.5,0.1}
 local COLOR_INNER_RANGE_CIRCLE = {0.5,0.1}
 local THRESHOLD_PATROLTIME = 8
 local TOLERANCE_PATROL = 10
+local THRESHOLD_FOLLOWSPEED = 0.01
 ---------------------------------------------- Caches
 local mathAbs = math.abs 
 local squareRoot = math.sqrt
@@ -32,7 +33,7 @@ local function isTargetViewable(self)
 		local rayCast = physics.rayCast(self.x, self.y,	self.target.x, self.target.y)
 			
 		if rayCast and rayCast[1] and rayCast[1].object then
-			return not rayCast[1].object.name == "asteroid"
+			return rayCast[1].object.name == "player"
 		end
 	end
 end
@@ -70,6 +71,24 @@ local function updatePatrol(self)
 		end
 	end
 end
+
+local function followTarget(self)
+	if self.target then
+		if self.isPatroling then
+			transition.cancel(self)
+			self.isPatroling = false
+		end
+		
+		local stepX = self.target.x - self.x
+		local stepY = self.target.y - self.y
+		
+		local differenceX = self.target.x - self.x
+		self.xScale = differenceX > 0 and 1 or -1
+
+		self.x = self.x + (stepX  * THRESHOLD_FOLLOWSPEED)
+		self.y = self.y + (stepY  * THRESHOLD_FOLLOWSPEED)
+	end
+end
 ---------------------------------------------- Module functions
 function enemyFactory.newEnemy(enemySpawnData)
 	local currentEnemyData = enemydata[enemySpawnData.type]
@@ -89,11 +108,14 @@ function enemyFactory.newEnemy(enemySpawnData)
 	
 	enemy.isTargetViewable = isTargetViewable
 	enemy.updatePatrol = updatePatrol
+	enemy.followTarget = followTarget
 	
 	function enemy:update()
 		if self.target then
 			if self:isTargetViewable() then
-				
+				if currentEnemyData.onHasTarget == "follow" then
+					self:followTarget()
+				end
 			else
 				self:updatePatrol()
 			end
