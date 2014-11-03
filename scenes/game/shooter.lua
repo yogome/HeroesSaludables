@@ -26,6 +26,7 @@ local heartIndicator
 local worldIndex, levelIndex
 local hudGroup
 local foodTexts, targetAmounts
+local asteroidGroup, disposableAsteroidGroup
 ----------------------------------------------- Background stars data
 local spaceObjects, objectDespawnX, objectSpawnX, objectDespawnY, objectSpawnY
 local spawnZoneWidth, spawnZoneHeight, halfSpawnZoneWidth, halfSpawnZoneHeight
@@ -37,11 +38,6 @@ local enemies
 local isFoodSpawned
 local collectedFood
 -----------------------------------------------Vars used by level loader
-local levelBackground
-local levelSize
-local levelSpaceshipPosition
-local levelPlanets
-
 local debugText
 ----------------------------------------------- Caches
 local squareRoot = math.sqrt 
@@ -198,32 +194,34 @@ local function gameOver()
 end
 
 local function addDamage(bullet)
-	local explosionData = { width = 128, height = 128, numFrames = 16 }
-	local explosionSheet = graphics.newImageSheet( "images/enemies/explosion.png", explosionData )
+	if not bullet.removeFromWorld then
+		local explosionData = { width = 128, height = 128, numFrames = 16 }
+		local explosionSheet = graphics.newImageSheet( "images/enemies/explosion.png", explosionData )
 
-	local sequenceData = {
-		{name = "explosion", sheet = explosionSheet, start = 1, count = 16, 1200, loopCount = 1},
-	}
-	
-	local explosionSprite = display.newSprite( explosionSheet, sequenceData )
-	explosionSprite:scale(SCALE_EXPLOSION, SCALE_EXPLOSION)
-	explosionSprite:setSequence("explosion")
-	explosionSprite.x = bullet.x
-	explosionSprite.y = bullet.y
-	explosionSprite:play()
-	bullet.parent:insert(explosionSprite)
-	bullet.removeFromWorld = true
+		local sequenceData = {
+			{name = "explosion", sheet = explosionSheet, start = 1, count = 16, 1200, loopCount = 1},
+		}
 
-	explosionSprite:addEventListener("sprite", function(event)
-		if event.phase == "ended" then
-			if explosionSprite.sequence == "closing" then
-				display.remove(explosionSprite)
+		local explosionSprite = display.newSprite( explosionSheet, sequenceData )
+		explosionSprite:scale(SCALE_EXPLOSION, SCALE_EXPLOSION)
+		explosionSprite:setSequence("explosion")
+		explosionSprite.x = bullet.x
+		explosionSprite.y = bullet.y
+		explosionSprite:play()
+		bullet.parent:insert(explosionSprite)
+		bullet.removeFromWorld = true
+
+		explosionSprite:addEventListener("sprite", function(event)
+			if event.phase == "ended" then
+				if explosionSprite.sequence == "closing" then
+					display.remove(explosionSprite)
+				end
 			end
+		end)
+
+		if not heartIndicator:removeHeart() then
+			gameOver()
 		end
-	end)
-	
-	if not heartIndicator:removeHeart() then
-		gameOver()
 	end
 end
 
@@ -278,8 +276,6 @@ local function createBackground(sceneGroup)
     local background = display.newImage("images/backgrounds/space.png", true)
     background.xScale = dynamicScale
     background.yScale = dynamicScale
-	--background.fill.effect = "filter.monotone"
-	--background.fill.effect.r, background.fill.effect.g, background.fill.effect.b = unpack(COLOR_BACKGROUND)
     backgroundContainer:insert(background)
 	
 	local containerHalfWidth = backgroundContainer.width * 0.5
@@ -316,6 +312,7 @@ local function createBackground(sceneGroup)
 			
 			star.xOffset = math.random(objectSpawnX, objectDespawnX)
 			star.yOffset = math.random(objectSpawnY, objectDespawnY)
+			star.x = math.random(-containerHalfWidth, containerHalfWidth)
 			star.y = math.random(-containerHalfHeight, containerHalfHeight)
 			star.xScale = scale
 			star.yScale = scale
@@ -500,6 +497,7 @@ local function loadEarth()
 	
 	physics.addBody(earth, "static", {radius = earth.width * earth.xScale, isSensor = true})
 	camera:add(earth)
+	addPhysicsObject(earth)
 end
 
 local function loadPlanets()
@@ -517,11 +515,17 @@ local function loadPlanets()
 		planet.y = currentPlanetData.position.y
 		planets[planetIndex] = planet
 		camera:add(planet)
+		addPhysicsObject(planet)
 	end
 end
 
 local function loadAsteroids()
 	local asteroidData = worldsData[worldIndex][levelIndex].asteroids
+	
+	display.remove(disposableAsteroidGroup)
+	disposableAsteroidGroup = display.newGroup()
+	
+	asteroidGroup:insert(disposableAsteroidGroup)
 	
 	for indexAsteroidLine = 1, #asteroidData do
 		local currentAsteroidLine = asteroidData[indexAsteroidLine]
@@ -547,7 +551,8 @@ local function loadAsteroids()
 			asteroid.y = asteroidEasingY(index, iterations, p1.y, distanceY)
 			asteroid:scale(randomScale, randomScale)
 			asteroid.rotation = math.random(0,360)
-			camera:add(asteroid)
+			
+			disposableAsteroidGroup:insert(asteroid)
 			
 			chainBodyPoints[#chainBodyPoints + 1] = asteroid.x
 			chainBodyPoints[#chainBodyPoints + 1] = asteroid.y
@@ -590,6 +595,7 @@ local function loadEnemies()
 		enemyObject.name = "enemy"
 		enemies[indexEnemy] = enemyObject
 		camera:add(enemyObject)
+		addPhysicsObject(enemyObject)
 	end
 end
 
@@ -601,7 +607,7 @@ local function loadLevel()
 	loadEnemies()
 end
 
-local function createHUD()
+local function createHUD(sceneView)
 	local levelData = worldsData[worldIndex][levelIndex]
 	
 	display.remove(hudGroup)
@@ -687,9 +693,12 @@ local function createHUD()
 	heartIndicator.y = display.screenOriginY + PADDING + heartIndicatorBG.height * 0.5 * SCALE_HEARTINDICATOR
 	hudGroup:insert(heartIndicator)
 	
+	sceneView:insert(hudGroup)
 end
 
-local function initialize()
+local function initialize(event)
+	local params = event.params or {}
+	
 	isFoodSpawned = {
 		["fruit"] = false,
 		["vegetable"] = false,
@@ -703,8 +712,8 @@ local function initialize()
 		["protein"] = 0,
 	}
 	
-	worldIndex = 1
-	levelIndex = 1
+	worldIndex = params.worldIndex or 1
+	levelIndex = params.levelIndex or 1
 	
 	collectedFood = {
 		["fruit"] = 0,
@@ -739,6 +748,7 @@ local function createGame()
 	physics.setPositionIterations(1)
 	physics.setVelocityIterations(1)
 	physics.start()
+--	physics.setDrawMode("hybrid")
 	physics.setContinuous(false)
 	physics.setGravity(0, 0)
 	
@@ -785,8 +795,10 @@ function scene:create(event)
 	sceneGroup:insert(backgroundGroup)
 	
 	camera = perspective.newCamera()
-
 	sceneGroup:insert(camera)
+	
+	asteroidGroup = display.newGroup()
+	camera:add(asteroidGroup)
 	
 	buttonList.back.onRelease = onReleasedBack
 	buttonBack = widget.newButton(buttonList.back)
@@ -826,15 +838,15 @@ function scene:show( event )
     local phase = event.phase
 
     if ( phase == "will" ) then
-		initialize()
+		initialize(event)
 		createGame()
 		setUpCamera()
 		createHUD(sceneGroup)
+		Runtime:addEventListener("enterFrame", updateGameLoop)
 
 		self.disableButtons()
 	elseif ( phase == "did" ) then
 		
-		Runtime:addEventListener("enterFrame", updateGameLoop)
 		self.enableButtons()
 	end
 end
@@ -846,6 +858,7 @@ function scene:hide( event )
     if ( phase == "will" ) then
 		self.disableButtons()
 	elseif ( phase == "did" ) then
+		Runtime:removeEventListener("enterFrame", updateGameLoop)
 		destroyGame()
 	end
 end

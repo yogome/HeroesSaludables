@@ -82,7 +82,7 @@ local function followTarget(self)
 	self.rotation = (self.rotation + (vY * THRESHOLD_ROTATION_ANIMATION) * self.xScale) * 0.5
 	self.oldY = self.y
 	
-	if self.target then
+	if self.target and not self.target.removeFromWorld then
 		if self.isPatroling then
 			transition.cancel(self)
 			self.isPatroling = false
@@ -100,7 +100,7 @@ local function followTarget(self)
 end
 
 local function shootTarget(self)
-	if self.target then
+	if self.target and not self.target.removeFromWorld then
 		if self.isPatroling then
 			transition.cancel(self)
 			self.isPatroling = false
