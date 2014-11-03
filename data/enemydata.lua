@@ -1,15 +1,18 @@
 local enemies = {
-	{
-		type = "canoner",
-		asset = "images/enemies/canon.png"
+	["canoner"] = {
+		asset = "images/enemies/canon.png",
+		speed = 200,
+		viewRadius = 200,
 	},
-	{	
-		type = "shooter",
-		asset = "images/enemies/shooter.png"
+	["shooter"] = {
+		asset = "images/enemies/shooter.png",
+		speed = 200,
+		viewRadius = 200,
 	},
-	{
-		type = "follower",
-		asset = "images/enemies/follower.png"
+	["follower"] = {
+		asset = "images/enemies/follower.png",
+		speed = 50,
+		viewRadius = 300,
 	}
 }
 

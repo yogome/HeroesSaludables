@@ -15,20 +15,16 @@ local worldsData = {
 			enemies = {
 				{
 					type = "follower",
-					radius = 250,
-					speed = 300,
-					position = {
-						pathStart = { x = 0, y = 0},
-						pathEnd = {x = 500, y = 500}
+					patrolData = {
+						startPoint = { x = 0, y = 0},
+						endPoint = {x = 500, y = 500}
 					}
 				},
 				{
 					type = "canoner",
-					radius = 500,
-					speed = 450,
-					position = {
-						pathStart = { x = 0, y = 0},
-						pathEnd = {x = 800, y = -500}
+					patrolData = {
+						startPoint = { x = 0, y = 0},
+						endPoint = {x = 800, y = -500}
 					}
 				},
 			},
@@ -159,20 +155,16 @@ local worldsData = {
 			enemies = {
 				{
 					type = "follower",
-					radius = 250,
-					speed = 300,
-					position = {
-						pathStart = { x = -500, y = 0},
-						pathEnd = {x = 0, y = 500}
+					patrolData = {
+						startPoint = { x = -500, y = 0},
+						endPoint = {x = 0, y = 500}
 					}
 				},
 				{
 					type = "canoner",
-					radius = 500,
-					speed = 450,
-					position = {
-						pathStart = { x = 400, y = -800},
-						pathEnd = {x = 0, y = -400}
+					patrolData = {
+						startPoint = { x = 400, y = -800},
+						endPoint = {x = 0, y = -400}
 					}
 				},
 			},

@@ -22,8 +22,9 @@ local physicsObjectList
 local analogX, analogY
 local analogCircleBegan
 local analogCircleMove
-
+local heartIndicator
 local worldIndex, levelIndex
+local hudGroup
 ----------------------------------------------- Background stars data
 local spaceObjects, objectDespawnX, objectSpawnX, objectDespawnY, objectSpawnY
 local spawnZoneWidth, spawnZoneHeight, halfSpawnZoneWidth, halfSpawnZoneHeight
@@ -44,15 +45,18 @@ local debugText
 ----------------------------------------------- Caches
 local squareRoot = math.sqrt 
 ----------------------------------------------- Constants
-local padding = 16
+local PADDING = 16
+local SCALE_HEARTINDICATOR = 0.3
 local SIZE_BACKGROUND = 1024
 local OBJECTS_TOLERANCE_X = 100
 local OBJECTS_TOLERANCE_Y = 100
 local STARS_LAYER_DEPTH_RATIO = 0.08
 local STARS_PER_LAYER = 20
 local STARS_LAYERS = 3
-
+local SCALE_BUTTON_BACK = 0.9
+local NUMBER_HEARTS = 3
 local BOUNDARY_SIZE = 200
+local  SIZE_FOOD_CONTAINER = {width = 120, height = 260}
 ----------------------------------------------- Functions
 
 local function updateEnemies()
@@ -551,7 +555,7 @@ local function loadAsteroids()
 			connectFirstAndLastChainVertex = false,
 		})
 		camera:add(asteroidLineBody)
-		
+		addPhysicsObject(asteroidLineBody)
 	end
 end
 
@@ -563,7 +567,7 @@ local function loadEnemies()
 	local enemyData = worldsData[worldIndex][levelIndex].enemies
 	for indexEnemy = 1, #enemyData do
 		local currentEnemy = enemyData[indexEnemy]
-		local enemyObject = enemy.newEnemy(currentEnemy.type, currentEnemy.speed, currentEnemy.radius, currentEnemy.position.pathStart, currentEnemy.position.pathEnd)
+		local enemyObject = enemy.newEnemy(currentEnemy.type, currentEnemy.patrolData)
 		enemyObject.group.type = "enemy"
 		enemyObject.group.name = enemyData[indexEnemy].type
 		enemies[indexEnemy] = enemyObject
@@ -579,36 +583,71 @@ local function loadLevel()
 	loadEnemies()
 end
 
-local function createGUI()
-	local userGUI = display.newGroup()
-	userGUI.x = display.screenOriginX
-	userGUI.y = display.screenOriginY
+local function createHUD()
+	display.remove(hudGroup)
+	hudGroup = display.newGroup()
+	hudGroup.x = display.screenOriginX
+	hudGroup.y = display.screenOriginY
 	
-	local container =  display.newRoundedRect( 100, 300, 150, 250, 30)
-	container.strokeWidth = 3
-	container:setFillColor( 0.5, 0.5, 0.5, 0.5 )
-	container:setStrokeColor( 0.5,0,0 )
-	userGUI:insert(container)
+	local foodContainer = display.newGroup()
+	foodContainer.x = display.screenOriginX + SIZE_FOOD_CONTAINER.width * 0.5 + PADDING
+	foodContainer.y = display.contentCenterY
+	hudGroup:insert(foodContainer)
 	
-	local fruitGroup = display.newGroup()
-	local fruitIcon = display.newImage("images/food/strawberry.png")
-	fruitIcon:scale(0.5,0.5)
-	fruitIcon.x = (container.x - container.width * 0.5) + container.width * 0.2
-	fruitIcon.y = container.y - (container.height * 0.5) + container.height * 0.20
+	local containerBG =  display.newRoundedRect( 0, 0, SIZE_FOOD_CONTAINER.width, SIZE_FOOD_CONTAINER.height, 30)
+	containerBG.strokeWidth = 3
+	containerBG:setFillColor( 0.5, 0.5, 0.5, 0.5 )
+	containerBG:setStrokeColor( 0.5,0,0 )
+	foodContainer:insert(containerBG)
 	
+	local foods = {
+		[1] = {image = "images/food/strawberry.png"},
+		[2] = {image = "images/food/carrot.png"},
+		[3] = {image = "images/food/meat.png"},
+	}
 	
-	local vegetableIcon = display.newImage("images/food/carrot.png")
-	vegetableIcon:scale(0.5,0.5)
-	vegetableIcon.x = (container.x - container.width * 0.5) + container.width * 0.2
-	vegetableIcon.y = fruitIcon.y + fruitIcon.height * 0.5
-	local proteinIcon= display.newImage("images/food/meat.png")
-	proteinIcon:scale(0.5,0.5)
-	proteinIcon.x = (container.x - container.width * 0.5) + container.width * 0.2
-	proteinIcon.y = vegetableIcon.y + vegetableIcon.height * 0.5
+	for index = 1, #foods do
+		local foodIcon = display.newImage(foods[index].image)
+		foodIcon:scale(0.5,0.5)
+		foodIcon.x = -containerBG.width * 0.2
+		foodIcon.y = -containerBG.height * 0.5 + (containerBG.height / (#foods + 1)) * index
+		foodContainer:insert(foodIcon)
+		
+		local foodAmountOptions = {
+			x = containerBG.width * 0.15,
+			y = foodIcon.y,
+			font = settings.fontName,
+			fontSize = 32,
+			width = 100,
+			text = "0",
+			align = "left",
+		}
+
+		local foodAmount = display.newText(foodAmountOptions)
+		foodAmount.anchorX = 0
+		foodContainer:insert(foodAmount)
+	end
 	
-	userGUI:insert(fruitIcon)
-	userGUI:insert(vegetableIcon)
-	userGUI:insert(proteinIcon)
+	heartIndicator = display.newGroup()
+	
+	local heartIndicatorBG = display.newImage("images/shooter/3heart.png")
+	heartIndicatorBG.x = 0
+	heartIndicatorBG.y = 0
+	heartIndicator:insert(heartIndicatorBG)
+	
+	local heartSpacing = 230
+	
+	local heartStartX = -((NUMBER_HEARTS - 1) * heartSpacing) * 0.5
+	for index = 1, NUMBER_HEARTS do
+		local heart = display.newImage("images/shooter/heart.png")
+		heart.x = heartStartX + (index - 1) * heartSpacing
+		heartIndicator:insert(heart)
+	end
+	
+	heartIndicator:scale(SCALE_HEARTINDICATOR, SCALE_HEARTINDICATOR)
+	heartIndicator.x = display.contentCenterX
+	heartIndicator.y = display.screenOriginY + PADDING + heartIndicatorBG.height * 0.5 * SCALE_HEARTINDICATOR
+	hudGroup:insert(heartIndicator)
 	
 end
 
@@ -695,8 +734,6 @@ end
 
 function scene:create(event)
 	local sceneGroup = self.view
-
-	createGUI(sceneGroup)
 	
 	createBackground(sceneGroup)
 	sceneGroup:insert(backgroundGroup)
@@ -707,8 +744,9 @@ function scene:create(event)
 	
 	buttonList.back.onRelease = onReleasedBack
 	buttonBack = widget.newButton(buttonList.back)
-	buttonBack.x = display.screenOriginX + 64 + padding
-	buttonBack.y = display.screenOriginY + 64 + padding
+	buttonBack:scale(SCALE_BUTTON_BACK, SCALE_BUTTON_BACK)
+	buttonBack.x = display.screenOriginX + buttonBack.width * SCALE_BUTTON_BACK * 0.5 + PADDING
+	buttonBack.y = display.screenOriginY + buttonBack.height * SCALE_BUTTON_BACK * 0.5 + PADDING
 	sceneGroup:insert(buttonBack)
 	
 	analogCircleBegan = display.newCircle(0, 0, 30)
@@ -742,10 +780,10 @@ function scene:show( event )
     local phase = event.phase
 
     if ( phase == "will" ) then
-		
 		initialize()
 		createGame()
 		setUpCamera()
+		createHUD(sceneGroup)
 
 		self.disableButtons()
 	elseif ( phase == "did" ) then

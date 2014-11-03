@@ -7,19 +7,21 @@ local enemyEntity = {}
 ---------------------------------------------- Variables
 
 ---------------------------------------------- Constants
-
+local COLOR_OUTER_RANGE_CIRCLE = {0.5,0.1}
+local COLOR_INNER_RANGE_CIRCLE = {0.5,0.1}
 ---------------------------------------------- Caches
 local mathAbs = math.abs 
 ---------------------------------------------- Functions
 
 --physics.setDrawMode("hybrid")
 
-function enemyEntity.newEnemy(enemyType, speed, radius, pathStart, pathEnd)
+function enemyEntity.newEnemy(enemyType, patrolData)
+	local currentEnemyData = enemydata[enemyType]
 	local enemy = {}
-	enemy.radius = radius or 250
-	enemy.pathStart = pathStart or {x = 0,y = 0}
-	enemy.pathEnd = pathEnd or {x = 0, y = 0}
-	enemy.shipSpeed = speed
+	enemy.radius = currentEnemyData.viewRadius
+	enemy.pathStart = patrolData.startPoint
+	enemy.pathEnd = patrolData.endPoint
+	enemy.shipSpeed = currentEnemyData.speed
 	
 	enemy.lengthX = enemy.pathEnd.x - enemy.pathStart.x
 	enemy.lengthY = enemy.pathEnd.y - enemy.pathStart.y
@@ -208,41 +210,23 @@ function enemyEntity.newEnemy(enemyType, speed, radius, pathStart, pathEnd)
 		return enemyTypes
 	end
 	
-	local function getAssetByType(type)
-		local enemyTypes = getEnemyTypes()
-		local asset = enemyTypes[type]
-		return asset
-	end
-	
-	local function createDisplayObject(type)
-		local enemyAsset = getAssetByType(type)
-		local enemyDisplay = display.newImage(enemyAsset)
-		return enemyDisplay
-	end
-	
-	local function drawEnemyRange(radius)
-		radius = radius or 250
+	local function createVisualRange()
+		local visualRange = display.newGroup()
+		local outerRangeCircle = display.newCircle(0, 0, enemy.radius)
+		outerRangeCircle:setFillColor(unpack(COLOR_OUTER_RANGE_CIRCLE))
+		visualRange:insert(outerRangeCircle)
 		
-		local group = display.newGroup()
-		local x, y = 0, 0
-		local step = (math.pi * 2)/(enemy.radius * 0.2)
-		for indexDots = 0, math.pi*2, step do
-			local dot = display.newCircle(radius * math.sin(x), radius * math.cos(y), 5)
-			x = x + step
-			y = y + step
-			
-			dot.alpha = 0.5
-			group:insert(dot)
-		end
-		
-		return group
+		local innerRangeCircle = display.newCircle(0, 0, enemy.radius * 0.8)
+		innerRangeCircle:setFillColor(unpack(COLOR_INNER_RANGE_CIRCLE))
+		visualRange:insert(innerRangeCircle)
+		return visualRange
 	end
 
-	local enemyShip = createDisplayObject(enemyType)
-	enemyShip:scale(0.25, 0.25)
-	enemy.group:insert(enemyShip)
+	local enemyImage = display.newImage(currentEnemyData.asset)
+	enemyImage:scale(0.25, 0.25)
+	enemy.group:insert(enemyImage)
 	
-	local enemyRange = drawEnemyRange(enemy.radius)
+	local enemyRange = createVisualRange()
 	enemy.group:insert(enemyRange)
 	
 	enemy:setPosition(enemy.pathStart)
