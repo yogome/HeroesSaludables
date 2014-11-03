@@ -4,6 +4,8 @@ local settings = require( "settings" )
 local widget = require("widget")
 local buttonList = require("data.buttonlist")
 local animator = require("units.animator")
+local players = require("models.players")
+local heroList = require("data.herolist")
 
 local scene = composer.newScene()
 
@@ -21,7 +23,9 @@ local currentQuestion
 local playerCharacter
 local answerRect
 local marks
-local buttonOK
+local currentPlayer
+local playerShip, shipGroup
+
 
 local SIZE_BACKGROUND = 1024
 local NUMBER_PIECES = 9
@@ -75,20 +79,10 @@ local function onCorrectAnswer()
 	marks.correct.isVisible = true
 	marks.correct:play()
 	
-	
-	--panelText.isVisible = true
-	
 	okButton.isVisible = true
 	transition.to(okButton, {alpha = 1, onComplete = function()
 		okButton:setEnabled(true)
 	end})
-	
-	--transition.to(panelText, {alpha = 1})
-	
-	--Runtime:addEventListener("enterFrame", updateGameLoop)
-	
-	--bgShine.isVisible = true
-	--transition.to(bgShine, {alpha = 0.7})
 end
 
 local function onWrongAnswer()
@@ -164,19 +158,10 @@ local function onTouchPiece(event)
 	elseif label.isFocus then
 		if "moved" == phase then
 			
-			--label.x = event.x - label.x0
-			--label.y = event.y - label.y0
 	
 		elseif "ended" == phase or "cancelled" == phase then
 			display.getCurrentStage():setFocus( nil )
 			label.isFocus = false
-				
-				
-			--local x,y = answerPanelGroup:contentToLocal(label.x, label.y)
-			--print(string.format("{x = %d, y = %d}", x, y))
-			--print(labelpositions[label.id].answer)
-			--print(currentQuestion.answerid)
-			
 			
 			answerRect.isVisible = true
 			
@@ -205,9 +190,29 @@ local function onTouchPiece(event)
 	end
 	
 	return true
+end	
+
+local function createPlayerShip(group)
+	
+	local spritesheet = "images/ships/ship3_a.png"
+	local markSequenceData = {
+		{name = "play", start = 1 , count = 4, time = 500, loopCount = 0},
+	}
+	local shipSpriteSheet = graphics.newImageSheet(spritesheet, {width = 256, height = 256, numFrames = 4 })
+	
+	playerShip = display.newSprite(shipSpriteSheet, markSequenceData)
+
+--	shipSprite:addEventListener("sprite", function(event)
+--		local sprite = event.target
+--	end)
+
+	playerShip.xScale = 2.5
+	playerShip.yScale = 2.5
+	
+	group:insert(playerShip)
+	--marks[currentMark.name] = markSprite
+	
 end
-
-
 
 local function createBackground(group)
 	local dynamicScale = display.viewableContentWidth / SIZE_BACKGROUND
@@ -234,6 +239,7 @@ end
 local function gotoNextScreen()
 	
 	okButton:setEnabled(false)
+	shipGroup.isVisible = true
 	
 	transition.to(bgShine, {alpha = 0, time = 500})
 	transition.to(piecesGroup, {alpha = 0, time = 500})
@@ -241,10 +247,24 @@ local function gotoNextScreen()
 	transition.to(answerPanelGroup, {delay = 600, transition = easing.inBack, x = display.viewableContentWidth + answerPanelGroup.width, time=1000})
 	transition.to(questionPanelGroup, {delay = 600, transition = easing.inBack, y = display.screenOriginY - questionPanelGroup.height, time=1000})
 	transition.to(answerRect, {alpha = 0, transition = easing.inQuad, time = 1000})
-	transition.to(okButton, {delay = 600, transition = easing.inBack, y = display.viewableContentHeight + okButton.width, time = 1000, onComplete = function()
-	composer.gotoScene("scenes.game.label")
+	transition.to(okButton, {delay = 600, transition = easing.inBack, y = display.viewableContentHeight + okButton.width, time = 1000})
+	transition.to(shipGroup, {delay = 1300, transition = easing.inQuad, x = display.viewableContentWidth + 500, time = 1500, onComplete = function()
+	--	transition.to(shipGroup, {delay = 1500, transition = easing.inQuad, x = display.contentCenterX, time = 1500, onComplete = function()
+		composer.gotoScene("scenes.game.label", {effect = "fade", time = 400})
 	end})
-
+	
+	local function yogotarJump()
+		playerCharacter:setAnimationAndIdle("WIN")
+		transition.to(playerCharacter.group, {time = 500, transition = easing.inQuint, xScale = 0.8, yScale = 0.8, y = playerCharacter.group.y - 100, onComplete = function()
+			shipGroup:insert(playerCharacter.group)
+			shipGroup:insert(playerShip)
+			playerCharacter.group.x = 85
+			playerCharacter.group.y = 150
+		end})
+	end
+	
+	timer.performWithDelay(1700, yogotarJump)
+	
 end
 
 local function initScreenElements()
@@ -295,14 +315,27 @@ local function initScreenElements()
 	playerCharacter:setAnimation("WALK")
 	playerCharacter.group.x = display.screenOriginX - 200
 	playerCharacter.group.y = display.contentCenterY * 1.90
+	playerCharacter.group.xScale = 1
+	playerCharacter.group.yScale = 1
 	
 	marks.correct.isVisible = false
 	marks.wrong.isVisible = false
 	
+	shipGroup.isVisible = true
+	shipGroup.x = display.screenOriginX - playerShip.width * 2.5
+	shipGroup.y = display.contentCenterY
+	
 end
 
 local function createPlayerCharacter(group)
-	playerCharacter = animator.newCharacter("Heroboy1", "PLACEHOLDER", "units/hero/skeleton.json", "units/hero/")
+	local heroSkin = heroList[currentPlayer.heroIndex].skinName
+	playerCharacter = animator.newCharacter(heroSkin, "PLACEHOLDER", "units/hero/skeleton.json", "units/hero/")
+	playerCharacter:setHat(string.format("hat_extra_%02d", (currentPlayer.hatIndex-1)))
+	local playerShadow = display.newCircle(0,-10,40)
+	playerShadow.xScale = 3
+	playerShadow:setFillColor(0)
+	playerShadow.alpha = 0.3
+	playerCharacter.group:insert(playerShadow)
 	group:insert(playerCharacter.group)
 end
 ---------------------------------------------------------------------------------
@@ -311,6 +344,8 @@ function scene:create( event )
     local sceneGroup = self.view
 	
 	createBackground(sceneGroup)
+	
+	currentPlayer = players.getCurrent()
 	
 	answerPanelGroup = display.newGroup()
 	sceneGroup:insert(answerPanelGroup)
@@ -353,6 +388,10 @@ function scene:create( event )
 	
 	createPlayerCharacter(sceneGroup)
 	
+	shipGroup = display.newGroup()
+	sceneGroup:insert(shipGroup)
+	createPlayerShip(shipGroup)
+	
 	createMark(sceneGroup)
 end
 
@@ -363,8 +402,8 @@ function scene:show( event )
 
     if ( phase == "will" ) then
 		initScreenElements()
-		--print("WHAT?")
 		Runtime:addEventListener("enterFrame", updateGameloop)
+		
 	elseif ( phase == "did" ) then
 		transition.to(answerPanelGroup, {delay = 300, transition = easing.outBounce, x = display.contentCenterX * 1.50, time=1000})
 		transition.to(questionPanelGroup, {delay = 300, transition = easing.outBounce, y = display.contentCenterY * 0.40, time=1000})
