@@ -64,8 +64,6 @@ local function onCorrect()
 	
 	transition.to(panelText, {alpha = 1})
 	
-	Runtime:addEventListener("enterFrame", updateGameLoop)
-	
 	bgShine.isVisible = true
 	transition.to(bgShine, {alpha = 0.7})
 end
@@ -169,7 +167,7 @@ local function gotoNextScreen()
 	transition.to(puzzleContainer, {delay = 600, transition = easing.inBack, x = display.screenOriginX - puzzleContainer.width, time=1000})
 	transition.to(smallPanelGroup, {delay = 600, transition = easing.inBack, y = display.screenOriginY - smallPanelGroup.height, time=1000})
 	transition.to(okButton, {delay = 600, transition = easing.inBack, y = display.viewableContentHeight + okButton.width, time = 1000, onComplete = function()
-		composer.gotoScene("scenes.game.tool")
+		composer.gotoScene("scenes.game.labelquiz")
 	end})
 
 end
@@ -275,6 +273,7 @@ function scene:show( event )
     if ( phase == "will" ) then
 		
 		initScreenElements()
+		Runtime:addEventListener("enterFrame", updateGameLoop)
 		
 	elseif ( phase == "did" ) then
 		
@@ -299,7 +298,7 @@ function scene:hide( event )
     if ( phase == "will" ) then
 		
 	elseif ( phase == "did" ) then
-		
+		Runtime:removeEventListener("enterFrame", updateGameLoop)
 
     end
 end
