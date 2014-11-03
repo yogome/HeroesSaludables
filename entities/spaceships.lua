@@ -11,6 +11,7 @@ local spaceshipList
 local ANALOG_MAX = 128
 local MAX_SHIP_VELOCITY = 500
 local THRESHOLD_ROTATION_ANIMATION = 0.1
+local SCALE_SHIP = 0.5
 ---------------------------------------------- Caches
 local mathAbs = math.abs 
 
@@ -48,8 +49,40 @@ local function createNewShip(newShip, shipData)
 	--thrust:setSequence("thrust")
 	--thrust:play()
 	
-	local shipImage = display.newImageRect("images/ships/yogotarShip.png", 118, 89 )
-	newShip:insert(shipImage)
+	local shipBack = display.newImage("images/ships/ship1_b.png")
+	shipBack:scale(SCALE_SHIP, SCALE_SHIP)
+	newShip:insert(shipBack)
+	
+	local shipData = { width = 256, height = 256, numFrames = 16 }
+	local shipSheet = graphics.newImageSheet( "images/ships/ship1_a.png", shipData )
+
+	local shipSequenceData = {
+		{name = "idleOpen", sheet = shipSheet, start = 1, count = 4, 800},
+		{name = "closing", sheet = shipSheet, start = 5, count = 4, 1200, loopCount = 1},
+		{name = "idleClosed", sheet = shipSheet, start = 9, count = 4, 800},
+		{name = "opening", sheet = shipSheet, start = 13, count = 4, 1200, loopCount = 1},
+	}
+	
+	local shipSprite = display.newSprite( shipSheet, shipSequenceData )
+	shipSprite:scale(SCALE_SHIP, SCALE_SHIP)
+	shipSprite:setSequence("idleOpen")
+	shipSprite:play()
+	newShip:insert(shipSprite)
+	
+	shipSprite:addEventListener("sprite", function(event)
+		if event.phase == "ended" then
+			if shipSprite.sequence == "closing" then
+				newShip:setAnimation("idleClosed")
+			elseif shipSprite.sequence == "opening" then
+				newShip:setAnimation("idleOpen")
+			end
+		end
+	end)
+	
+	function newShip:setAnimation(animationName)
+		shipSprite:setSequence(animationName)
+		shipSprite:play()
+	end
 	
 	function newShip:update()
 		local vX, vY = self:getLinearVelocity()

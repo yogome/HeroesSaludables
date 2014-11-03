@@ -57,6 +57,7 @@ local SCALE_BUTTON_BACK = 0.9
 local NUMBER_HEARTS = 3
 local BOUNDARY_SIZE = 200
 local  SIZE_FOOD_CONTAINER = {width = 120, height = 260}
+local OFFSET_GRABFRUIT = {x = -62, y = 17}
 ----------------------------------------------- Functions
 
 local function updateEnemies()
@@ -125,12 +126,15 @@ local function spawnBubble(planet)
 end
 
 local function grabFruit(fruit)
-	--transition.to(fruit, { x = playerCharacter.x - 62, y = playerCharacter.y + 5 , onComplete = function()
-			physics.removeBody(fruit)
-			fruit.x = -62
-			fruit.y = 5
-			playerCharacter:insert(fruit)
-	--end})
+	physics.removeBody(fruit)
+	local contentX, contentY = fruit:localToContent(0,0)
+	local firstX, firstY = playerCharacter:contentToLocal(contentX, contentY)
+
+	fruit.x = firstX
+	fruit.y = firstY
+	playerCharacter:setAnimation("closing")
+	transition.to(fruit, {x = OFFSET_GRABFRUIT.x, y = OFFSET_GRABFRUIT.y, time = 500, transition = easing.inOutSine})
+	playerCharacter:insert(fruit)
 end
 
 local function checkPlayerPreCollision(player, object)
@@ -192,6 +196,7 @@ local function collectBubble(earth)
 		foodBubbleGroup:insert(playerCharacter.item)
 		playerCharacter.item.x = playerCharacter.x
 		playerCharacter.item.y = playerCharacter.y
+		playerCharacter:setAnimation("opening")
 		transition.to(playerCharacter.item, {transition = easing.outBounce, xScale = 1, yScale = 1, time = 500, onComplete = function()
 			transition.to(playerCharacter.item, {alpha = 0, xScale = 0.5, yScale = 0.5, transition = easing.outCubic, time = 1000, x = earth.x, y = earth.y, onComplete = function()
 				hideBubble()
