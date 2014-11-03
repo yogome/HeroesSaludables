@@ -7,7 +7,7 @@ function animator.createCharacter(skin, cType, skeletonPath, imagePath)
 	local frameCounter = 0
 	
 	local SPEED_ANIMATION = 0.03
-	local FACTOR_ANIMATION = 4.5 / math.random(8,10)
+	local FACTOR_ANIMATION = 0.4
 
 	local json = spine.SkeletonJson.new()
 	json.scale = 0.8
@@ -43,19 +43,8 @@ function animator.createCharacter(skin, cType, skeletonPath, imagePath)
 
 	local animationStateData = spine.AnimationStateData.new(skeletonData)
 	animationStateData:setMix("WALK", "IDLE", 0.05)
---	animationStateData:setMix("IDLE2", "IDLE", 0.05)
---	animationStateData:setMix("WIN", "IDLE", 0.05)
---	animationStateData:setMix("WRONG", "IDLE", 0.05)
---	animationStateData:setMix("APPLAUSE", "IDLE", 0.05)
---	animationStateData:setMix("LOSE", "IDLE", 0.05)
---	animationStateData:setMix("RIGHT", "IDLE", 0.05)
---	animationStateData:setMix("LOSECHEERS", "IDLE", 0.05)
---	animationStateData:setMix("WIN", "IDLEHERO", 0.05)
---	animationStateData:setMix("WRONG", "IDLEHERO", 0.05)
---	animationStateData:setMix("APPLAUSE", "IDLEHERO", 0.05)
---	animationStateData:setMix("LOSE", "IDLEHERO", 0.05)
---	animationStateData:setMix("RIGHT", "IDLEHERO", 0.05)
---	animationStateData:setMix("LOSECHEERS", "IDLEHERO", 0.05)
+	animationStateData:setMix("WIN", "IDLE", 0.05)
+	animationStateData:setMix("LOSE", "IDLE", 0.05)
 	local animationState = spine.AnimationState.new(animationStateData)
 
 	function spineCharacter:update()
