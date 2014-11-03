@@ -59,6 +59,7 @@ local NUMBER_HEARTS = 3
 local BOUNDARY_SIZE = 200
 local SIZE_FOOD_CONTAINER = {width = 140, height = 260}
 local OFFSET_GRABFRUIT = {x = -62, y = 17}
+local SCALE_EXPLOSION = 0.75
 ----------------------------------------------- Functions
 
 local function updateEnemies()
@@ -193,13 +194,35 @@ local function collectBubble(earth)
 end
 
 local function gameOver()
-	
+	playerCharacter:destroy()
 end
 
 local function addDamage(bullet)
-	bullet.removeFromWorld = true
+	local explosionData = { width = 128, height = 128, numFrames = 16 }
+	local explosionSheet = graphics.newImageSheet( "images/enemies/explosion.png", explosionData )
+
+	local sequenceData = {
+		{name = "explosion", sheet = explosionSheet, start = 1, count = 16, 1200, loopCount = 1},
+	}
 	
-	if heartIndicator:removeHeart() then
+	local explosionSprite = display.newSprite( explosionSheet, sequenceData )
+	explosionSprite:scale(SCALE_EXPLOSION, SCALE_EXPLOSION)
+	explosionSprite:setSequence("explosion")
+	explosionSprite.x = bullet.x
+	explosionSprite.y = bullet.y
+	explosionSprite:play()
+	bullet.parent:insert(explosionSprite)
+	bullet.removeFromWorld = true
+
+	explosionSprite:addEventListener("sprite", function(event)
+		if event.phase == "ended" then
+			if explosionSprite.sequence == "closing" then
+				display.remove(explosionSprite)
+			end
+		end
+	end)
+	
+	if not heartIndicator:removeHeart() then
 		gameOver()
 	end
 end
@@ -446,16 +469,22 @@ local function createFoodBubbles()
 end
 
 local function enterFrame()
-	local velocityX, velocityY = playerCharacter:getLinearVelocity()
-	if analogX and analogY then
-		playerCharacter:analog(analogX, analogY)
+	if playerCharacter and not playerCharacter.removeFromWorld then
+		local velocityX, velocityY = playerCharacter:getLinearVelocity()
+		if analogX and analogY then
+			playerCharacter:analog(analogX, analogY)
+		end
 	end
-	
+
 	for index = #physicsObjectList, 1, -1 do
 		local physicsObject = physicsObjectList[index]
-		if physicsObject.removeFromWorld then
+		if physicsObject and physicsObject.removeFromWorld then
+			if physicsObject.name == "player" then
+				camera:setFocus(nil)
+			end
+			camera:remove(physicsObject)
 			display.remove(physicsObject)
-			physicsObjectList[index] = nil
+			table.remove(physicsObjectList, index)
 		end
 	end
 end

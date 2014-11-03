@@ -37,6 +37,14 @@ local function goLabelQuiz()
 	composer.gotoScene("scenes.game.labelquiz")
 end
 
+local function goWorlds()
+	composer.gotoScene("scenes.menus.worlds")
+end
+
+local function goLevels()
+	composer.gotoScene("scenes.menus.levels")
+end
+
 local function goLabel()
 	composer.gotoScene("scenes.game.label")
 end
@@ -148,6 +156,10 @@ end
 
 function scene:createView()
 	------------------------- Buttons
+
+
+	self:addButton("Go Worlds", goWorlds, {0.5,0.5,0.5})
+	self:addButton("Go Levels", goLevels, {0.5,0.5,0.5})
 
 	self:addButton("Go Home", goHome, {0.5,0.5,0.5})
 	self:addButton("Go Hero", goHero, {0.5,0.5,0.5})

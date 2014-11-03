@@ -2,6 +2,9 @@
 local extramath = require( "libs.helpers.extramath" ) 
 local logger = require( "libs.helpers.logger" )
 local physics = require( "physics" )
+local animator = require( "units.animator" )
+local heroList = require( "data.herolist" )
+local players = require( "models.players" )
 
 local spaceships = {}
 ---------------------------------------------- Variables
@@ -12,6 +15,8 @@ local ANALOG_MAX = 128
 local MAX_SHIP_VELOCITY = 500
 local THRESHOLD_ROTATION_ANIMATION = 0.1
 local SCALE_SHIP = 0.5
+local SCALE_YOGOTAR = 0.17
+local OFFSET_YOGOTAR = {x = 16, y = 32}
 ---------------------------------------------- Caches
 local mathAbs = math.abs 
 
@@ -19,7 +24,9 @@ local mathAbs = math.abs
 local function enterFrame()
 	for index = #spaceshipList, 1, -1 do
 		local spaceship = spaceshipList[index]
-		spaceship:update()
+		if not spaceship.removeFromWorld then
+			spaceship:update()
+		end
 	end
 end
 
@@ -53,6 +60,17 @@ local function createNewShip(newShip, shipData)
 	shipBack:scale(SCALE_SHIP, SCALE_SHIP)
 	newShip:insert(shipBack)
 	
+	local currentPlayer = players.getCurrent()
+	local heroSkin = heroList[currentPlayer.heroIndex].skinName
+	local playerCharacter = animator.newCharacter(heroSkin, "PLACEHOLDER", "units/hero/skeleton.json", "units/hero/")
+	playerCharacter:setHat(string.format("hat_extra_%02d", (currentPlayer.hatIndex-1)))
+	playerCharacter.group:scale(SCALE_YOGOTAR, SCALE_YOGOTAR)
+	playerCharacter.group.x = OFFSET_YOGOTAR.x
+	playerCharacter.group.y = OFFSET_YOGOTAR.y
+	newShip:insert(playerCharacter.group)
+	
+	newShip.playerCharacter = playerCharacter
+	
 	local shipData = { width = 256, height = 256, numFrames = 16 }
 	local shipSheet = graphics.newImageSheet( "images/ships/ship1_a.png", shipData )
 
@@ -78,6 +96,10 @@ local function createNewShip(newShip, shipData)
 			end
 		end
 	end)
+	
+	function newShip:destroy()
+		self.removeFromWorld = true
+	end
 	
 	function newShip:setAnimation(animationName)
 		shipSprite:setSequence(animationName)
