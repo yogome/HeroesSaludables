@@ -27,6 +27,8 @@ local worldIndex, levelIndex
 local hudGroup
 local foodTexts, targetAmounts
 local asteroidGroup, disposableAsteroidGroup
+local planets, earth
+local cameraEdit, editCircle
 ----------------------------------------------- Background stars data
 local spaceObjects, objectDespawnX, objectSpawnX, objectDespawnY, objectSpawnY
 local spawnZoneWidth, spawnZoneHeight, halfSpawnZoneWidth, halfSpawnZoneHeight
@@ -56,7 +58,61 @@ local BOUNDARY_SIZE = 200
 local SIZE_FOOD_CONTAINER = {width = 140, height = 260}
 local OFFSET_GRABFRUIT = {x = -62, y = 17}
 local SCALE_EXPLOSION = 0.75
+local SPEED_CAMERA = 100
 ----------------------------------------------- Functions
+local function onKeyEvent( event )
+	local handled = false
+	local phase = event.phase
+	local nativeKeyCode = event.nativeKeyCode
+	
+	local isShiftDown = event.isShiftDown
+	local multiplier = isShiftDown and 0.1 or 1
+	print(nativeKeyCode)
+	if phase == "down" then
+		if 14 == nativeKeyCode then -- E
+			editCircle.isVisible = true
+			camera:setFocus(editCircle)
+			debugText.isVisible = true
+		end
+		if 15 == nativeKeyCode then -- R
+			print("{"..editCircle.x..", "..editCircle.y.."},")
+		end
+		if 6 == nativeKeyCode then -- Z
+			currentEasingXIndex = currentEasingXIndex - 1
+			if currentEasingXIndex <= 0 then currentEasingXIndex = #easingFunctions end
+			currentEasingX = easingFunctions[currentEasingXIndex].name
+		end
+		if 7 == nativeKeyCode then -- X
+			currentEasingXIndex = currentEasingXIndex + 1
+			if currentEasingXIndex > #easingFunctions then currentEasingXIndex = 1 end
+			currentEasingX = easingFunctions[currentEasingXIndex].name
+		end
+		if 0 == nativeKeyCode then -- A
+			currentEasingYIndex = currentEasingYIndex - 1
+			if currentEasingYIndex <= 0 then currentEasingYIndex = #easingFunctions end
+			currentEasingY = easingFunctions[currentEasingYIndex].name
+		end
+		if 1 == nativeKeyCode then -- S
+			currentEasingYIndex = currentEasingYIndex + 1
+			if currentEasingYIndex > #easingFunctions then currentEasingYIndex = 1 end
+			currentEasingY = easingFunctions[currentEasingYIndex].name
+		end
+		if 123 == nativeKeyCode then -- Left
+			editCircle.x = editCircle.x - SPEED_CAMERA * multiplier
+		end
+		if 124 == nativeKeyCode then -- Right
+			editCircle.x = editCircle.x + SPEED_CAMERA * multiplier
+		end
+		if nativeKeyCode == 125 then -- Down key
+			editCircle.y = editCircle.y + SPEED_CAMERA * multiplier
+		end
+		if nativeKeyCode == 126 then -- Up key
+			editCircle.y = editCircle.y - SPEED_CAMERA * multiplier
+		end
+	end
+	
+	return handled
+end 
 
 local function updateEnemies()
 	for indexEnemy = 1, #enemies do
@@ -66,21 +122,22 @@ local function updateEnemies()
 end
 
 local function showDebugInformation()
-	debugText.text = string.format([[
-	ShipHasItem: %s
-	SpawnedFruit: %s
-	SpawnedVegetable: %s
-	SpawnedProtein: %s
-	Enemies: %d
-	Player x: %d
-	Player y: %d]], 
-	tostring(playerCharacter.isCarringItem),
-	tostring(isFoodSpawned["fruit"]),
-	tostring(isFoodSpawned["vegetable"]),
-	tostring(isFoodSpawned["protein"]),
-	#enemies,
-	playerCharacter.x,
-	playerCharacter.y)
+	debugText.text = [[
+		Press Q for player mode
+		Press E for edit mode
+		Press R to dump coordinate
+		
+		Press U to create asteroids
+		Press I to delete asteroids
+		
+		Press Z for previous easingX
+		Press X for next easingX
+		Current easingX: ]]..currentEasingX..[[
+		
+		Press A for previous easingY
+		Press S for next easingY
+		Current easingY: ]]..currentEasingY..[[
+	]]
 end
 
 local function randomFoodByType(foodType)
@@ -491,7 +548,7 @@ end
 
 local function loadEarth()
 	local earthData = worldsData[worldIndex][levelIndex].earth
-	local earth = display.newImage(earthData.asset)
+	earth = display.newImage(earthData.asset)
 	earth.xScale = earthData.scaleFactor
 	earth.yScale = earthData.scaleFactor
 	earth.x = earthData.position.x
@@ -504,7 +561,7 @@ local function loadEarth()
 end
 
 local function loadPlanets()
-	local planets = {}
+	planets = {}
 	local planetsData = worldsData[worldIndex][levelIndex].planets
 	
 	for planetIndex = 1, #planetsData do
@@ -728,13 +785,52 @@ local function initialize(event)
 		["vegetable"] = 0,
 		["protein"] = 0,
 	}
+	
+	cameraEdit = {x = 0, y = 0}
+	
+	editCircle.isVisible = false
+	
+	easingFunctions = {}
+	for key, value in pairs(easing) do
+		easingFunctions[#easingFunctions + 1] = {name = key, value = value}
+	end
+	
+	currentEasingXIndex = 1
+	currentEasingYIndex = 1
+	currentEasingX = easingFunctions[currentEasingXIndex].name
+	currentEasingY = easingFunctions[currentEasingYIndex].name
+	
+	buttonBack.alpha = 0
 end
 
 local function updateGameLoop()
 	updateParallax()
 	updateEnemies()
-	--showDebugInformation()
+	showDebugInformation()
 	enterFrame()
+end
+
+local function intro()
+	local function trackNextPlanet(planetIndex)
+		if planetIndex <= #planets then
+			camera:setFocus(planets[planetIndex])
+			timer.performWithDelay(1800, function()
+				trackNextPlanet(planetIndex + 1)
+			end)
+		else
+			camera.damping = 10
+			camera:setFocus(playerCharacter)
+			transition.to(buttonBack, {alpha = 1, time = 500, transition = easing.outQuad})
+			scene.enableButtons()
+		end
+	end
+		
+	camera.damping = 35
+	camera:setFocus(earth)
+	timer.performWithDelay(1500, function()
+		trackNextPlanet(1)
+	end)
+	
 end
 ----------------------------------------------- Class functions 
 function scene.backAction()
@@ -770,7 +866,7 @@ local function createGame()
 	createFoodBubbles()
 	
 	spaceships.start()
-	camera:setFocus(playerCharacter)
+	camera:toPoint(0,0)
 	camera:start()
 	
 	Runtime:addEventListener("touch", testTouch)
@@ -808,6 +904,10 @@ function scene:create(event)
 	asteroidGroup = display.newGroup()
 	camera:add(asteroidGroup)
 	
+	editCircle = display.newCircle(0,0,20,20)
+	editCircle.isVisible = false
+	asteroidGroup:insert(editCircle)
+	
 	buttonList.back.onRelease = onReleasedBack
 	buttonBack = widget.newButton(buttonList.back)
 	buttonBack:scale(SCALE_BUTTON_BACK, SCALE_BUTTON_BACK)
@@ -835,6 +935,8 @@ function scene:create(event)
 	}
 	
 	debugText = display.newText(debugTextOptions)
+	debugText.anchorY = 0
+	debugText.isVisible = false
 end
 
 function scene:destroy()
@@ -851,11 +953,10 @@ function scene:show( event )
 		setUpCamera()
 		createHUD(sceneGroup)
 		Runtime:addEventListener("enterFrame", updateGameLoop)
-
+		Runtime:addEventListener( "key", onKeyEvent )
 		self.disableButtons()
 	elseif ( phase == "did" ) then
-		
-		self.enableButtons()
+		intro()
 	end
 end
 
@@ -867,6 +968,7 @@ function scene:hide( event )
 		self.disableButtons()
 	elseif ( phase == "did" ) then
 		Runtime:removeEventListener("enterFrame", updateGameLoop)
+		Runtime:removeEventListener( "key", onKeyEvent )
 		destroyGame()
 	end
 end
