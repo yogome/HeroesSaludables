@@ -520,19 +520,38 @@ local function loadAsteroids()
 		
 		local asteroidEasingX = currentAsteroidLine.easingX or easing.linear
 		local asteroidEasingY = currentAsteroidLine.easingY or easing.linear
+		
+		local chainBodyPoints = {}
 
 		local iterations = math.ceil(distance / 55)
 		for index = 1, iterations do
-			local asteroid = display.newImage("images/enviroment/asteroid1.png")
+			local randomSideMultiplier = index % 2 * 2 -3
+			local randomScale = math.random(90,110) * 0.01
+			local asteroid = display.newImage("images/enviroment/asteroid"..math.random(1,3)..".png")
 			asteroid.x = asteroidEasingX(index, iterations, p1.x, distanceX)
 			asteroid.y = asteroidEasingY(index, iterations, p1.y, distanceY)
+			asteroid:scale(randomScale, randomScale)
 			asteroid.rotation = math.random(0,360)
-			physics.addBody(asteroid, {density = 1000, friction = 10, bounce = 0.5, radius = asteroid.width * 0.5})
-			asteroid.gravityScale = 0
-			asteroid.bodyType = "static"
-			asteroid.name = "asteroid"
 			camera:add(asteroid)
+			
+			chainBodyPoints[#chainBodyPoints + 1] = asteroid.x
+			chainBodyPoints[#chainBodyPoints + 1] = asteroid.y
+			
+			asteroid.x = asteroid.x + math.random(0,10) * randomSideMultiplier
+			asteroid.y = asteroid.y - math.random(0,10) * randomSideMultiplier
 		end
+		
+		local asteroidLineBody = display.newRect( 0, 0, 5, 5 )
+		asteroidLineBody.name = "asteroid"
+		asteroidLineBody.isVisible = false
+		physics.addBody( asteroidLineBody, "static", {
+			friction = 2,
+			bounce = 0.5,
+			chain = chainBodyPoints,
+			connectFirstAndLastChainVertex = false,
+		})
+		camera:add(asteroidLineBody)
+		
 	end
 end
 
