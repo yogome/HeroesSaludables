@@ -1,6 +1,7 @@
 local worldsData = {
 	-- World 1
 	[1] = {
+		icon = "images/worlds/Mundos-03.png",
 		[1] = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 2000,
@@ -212,9 +213,9 @@ local worldsData = {
 		},
 	},
 	-- World 2
-	[2] = {
-		[1] = {}, -- Level data goes here
-	}
+--	[2] = {
+--		[1] = {}, -- Level data goes here
+--	}
 }
 
 return worldsData

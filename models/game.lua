@@ -4,7 +4,7 @@ local mixpanel = require( "libs.helpers.mixpanel" )
 local game = {}
 ----------------------------------------------
 function game.create(version, exec)
-	if version < 1 then		
+	if version < 1 then
 		local createPlayers = [[CREATE TABLE IF NOT EXISTS players (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			data TEXT);]]
