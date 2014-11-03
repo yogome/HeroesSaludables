@@ -2,241 +2,120 @@
 local extramath = require( "libs.helpers.extramath" ) 
 local physics = require( "physics" )
 local enemydata = require("data.enemydata")
-
-local enemyEntity = {}
+local extratable = require( "libs.helpers.extratable" )
+local enemyFactory = {}
 ---------------------------------------------- Variables
 
 ---------------------------------------------- Constants
 local COLOR_OUTER_RANGE_CIRCLE = {0.5,0.1}
 local COLOR_INNER_RANGE_CIRCLE = {0.5,0.1}
+local THRESHOLD_PATROLTIME = 8
+local TOLERANCE_PATROL = 10
 ---------------------------------------------- Caches
 local mathAbs = math.abs 
+local squareRoot = math.sqrt
 ---------------------------------------------- Functions
+local function createVisualRange(radius)
+	local visualRange = display.newGroup()
+	local outerRangeCircle = display.newCircle(0, 0, radius)
+	outerRangeCircle:setFillColor(unpack(COLOR_OUTER_RANGE_CIRCLE))
+	visualRange:insert(outerRangeCircle)
 
---physics.setDrawMode("hybrid")
+	local innerRangeCircle = display.newCircle(0, 0, radius * 0.8)
+	innerRangeCircle:setFillColor(unpack(COLOR_INNER_RANGE_CIRCLE))
+	visualRange:insert(innerRangeCircle)
+	return visualRange
+end 
 
-function enemyEntity.newEnemy(enemyType, patrolData)
-	local currentEnemyData = enemydata[enemyType]
-	local enemy = {}
-	enemy.radius = currentEnemyData.viewRadius
-	enemy.pathStart = patrolData.startPoint
-	enemy.pathEnd = patrolData.endPoint
-	enemy.shipSpeed = currentEnemyData.speed
-	
-	enemy.lengthX = enemy.pathEnd.x - enemy.pathStart.x
-	enemy.lengthY = enemy.pathEnd.y - enemy.pathStart.y
-	enemy.speedX = enemy.lengthX / enemy.shipSpeed
-	enemy.speedY = enemy.lengthY / enemy.shipSpeed
-	
-	enemy.group = display.newGroup()
-	enemy.group.isStoped = false
-	enemy.group.isPlayerOnRange = false
-	enemy.group.hasToReturn = false
-	enemy.group.canFollowObject = false
-	enemy.group.objectToFollow = nil
-	enemy.group.flipSide = "right"
-	enemy.group.returnX = 0
-	enemy.group.returnY = 0
-	enemy.group.returnSpeedX = 0
-	enemy.group.returnSpeedY = 0
-	enemy.group.calculatedDistance = false
-	
-	function enemy.group:flip(side)
-		if side == "right" then
-			if self.flipSide ~= "right" then
-				self.flipSide = "right"
-				self.xScale = 1
-			end
-		elseif side == "left" then
-			if self.flipSide ~= "left" then
-				self.flipSide = "left"
-				self.xScale = -1
-			end
-		end
-	end
-	
-	function enemy:setPosition(position)
-		if self.pathStart.x > self.pathEnd.x then
-			self.group:flip("left")
-		end
-		
-		self.group.x = position.x
-		self.group.y = position.y
-	end
-	
-	function enemy.group:stop()
-		self.isStoped = true
-	end
-	
-	function enemy.group:move()
-		self.isStoped = false
-	end
-	
-	function enemy.group:shoot()
-		
-	end
-	
-	function enemy:follow()
-		local stepX = self.group.objectToFollow.x - self.group.x
-		local stepY = self.group.objectToFollow.y - self.group.y
-		
-		if stepX > 0 then
-			self.group:flip("right")
-		else
-			self.group:flip("left")
-		end
-		
-		self.group.x = self.group.x + (stepX  * 0.006)
-		self.group.y = self.group.y + (stepY  * 0.006)
-	end
-	
-	function enemy:returnToPatrol()
-		--local distanceFromStart = math.sqrt((enemy.pathEnd.x - enemy.pathStart.x)*(enemy.pathEnd.x - enemy.pathStart.x) + (enemy.pathEnd.y - enemy.pathStart.y)*(enemy.pathEnd.y - enemy.pathStart.y))
-		self.group.calculatedDistance = false
-		if not self.group.calculatedDistance then
+local function isTargetViewable(self)
+	if self.target then
+		local rayCast = physics.rayCast(self.x, self.y,	self.target.x, self.target.y)
 			
-			self.group.returnSpeedX = mathAbs(self.group.x - self.group.returnX) * 0.005
-			self.group.returnSpeedY = mathAbs(self.group.y - self.group.returnY) * 0.005
-			
-			self.group.calculatedDistance = true
+		if rayCast and rayCast[1] and rayCast[1].object then
+			return not rayCast[1].object.name == "asteroid"
 		end
-		
-		if self.group.x > self.pathStart.x then
-			self.group.returnSpeedX = self.group.returnSpeedX * -1
-			self.group:flip("left")
-		else
-			self.group:flip("right")
-		end
-		
-		if self.group.y > self.pathStart.y then
-			self.group.returnSpeedY = self.group.returnSpeedY * -1
-		end
-		
-		self.group.x = self.group.x + self.group.returnSpeedX
-		self.group.y = self.group.y + self.group.returnSpeedY
-		
+	end
+end
+
+local function updatePatrol(self)
+	local targetPathPoint = self.spawnData.patrolPath[self.targetPatrolPoint]
+	local targetX = targetPathPoint.x
+	local targetY = targetPathPoint.y
+	
+	local differenceX = targetX - self.x
+	local differenceY = targetY - self.y
+	self.xScale = differenceX > 0 and 1 or -1
+	
+	local function startPatrol()
+		local distance = squareRoot(differenceX * differenceX + differenceY * differenceY)
+		local patrolTime = (distance / self.speed) * THRESHOLD_PATROLTIME
+		transition.cancel(self)
+		self.isPatroling = true
+		transition.to(self, {delay = 200, time = patrolTime ,x = targetX, y = targetY, transition = easing.inOutQuad})
 	end
 	
-	function enemy.group:setReturnPoint()
-		if enemy.pathStart.x > enemy.pathEnd.x then
-			self.returnX = (enemy.pathStart.x - enemy.pathEnd.x)/2	
-		else
-			self.returnX = (enemy.pathStart.x + enemy.pathEnd.x)/2
-		end
-		
-		if enemy.pathStart.y > enemy.pathEnd.x then
-			self.returnY = (enemy.pathStart.y - enemy.pathEnd.y)/2
-		else
-			self.returnY = (enemy.pathStart.y + enemy.pathEnd.y)/2
-		end
-		
-	end
-	
-	function enemy.group:setFollowing(onrange, object)
-		self.isPlayerOnRange = onrange
-		self.objectToFollow = object
-	end
-	
-	function enemy:patrol()
-	
-		--if not self.group.isStoped and not self.group.isPlayerOnRange and not self.group.hasToReturn then
-			if self.pathEnd.x > self.pathStart.x then
-				if self.group.x < self.pathStart.x then
-					self.group.x = self.pathStart.x
-					self.group.y = self.pathStart.y
-					self.speedX = self.speedX * -1
-					self.group:flip("right")
-				end
+	if not self.isPatroling then
+		startPatrol()
+	else
+		local hasArrivedX = targetX - TOLERANCE_PATROL < self.x and self.x < targetX + TOLERANCE_PATROL
+		local hasArrivedY = targetY - TOLERANCE_PATROL < self.y and self.y < targetY + TOLERANCE_PATROL
 
-				if self.group.x > self.pathEnd.x then
-					self.group.x = self.pathEnd.x
-					self.group.y = self.pathEnd.y
-					self.speedX = self.speedX * -1
-					self.group:flip("left")
-				end
-			else
-
-				if self.group.x > self.pathStart.x then
-					self.group.x = self.pathStart.x
-					self.group.y = self.pathStart.y
-					self.speedX = self.speedX * -1
-					self.group:flip("left")
-				end
-
-				if self.group.x < self.pathEnd.x then
-					self.group.x = self.pathEnd.x
-					self.group.y = self.pathEnd.y
-					self.speedX = self.speedX * -1
-					self.group:flip("right")
-				end
+		if hasArrivedX and hasArrivedY then
+			local nextTargetPatrolPoint = self.targetPatrolPoint + 1
+			if nextTargetPatrolPoint > #self.spawnData.patrolPath then
+				nextTargetPatrolPoint = 1
 			end
-
-			if self.pathEnd.y > self.pathStart.y then
-				if self.group.y < self.pathStart.y then
-					self.group.y = self.pathStart.y
-					self.group.x = self.pathStart.x
-					self.speedY = self.speedY * -1
-				end
-				if self.group.y > self.pathEnd.y then
-					self.group.y = self.pathEnd.y
-					self.group.x = self.pathEnd.x
-					self.speedY = self.speedY * -1
-				end
-
-			else
-				if self.group.y > self.pathStart.y then
-					self.group.y = self.pathStart.y
-					self.group.y = self.pathStart.y
-					self.speedY = self.speedY * -1
-				end
-
-				if self.group.y < self.pathEnd.y then
-					self.group.y = self.pathEnd.y
-					self.group.y = self.pathEnd.y
-					self.speedY = self.speedY * -1
-				end
-			end
-
-			self.group.x = self.group.x + self.speedX
-			self.group.y = self.group.y + self.speedY
-		--end
-	end
-	
-	local function getEnemyTypes()
-		local enemyTypes = {}
-		for indexType = 1, #enemydata do
-			enemyTypes[enemydata[indexType].type] = enemydata[indexType].asset
+			self.targetPatrolPoint = nextTargetPatrolPoint
+			self.isPatroling = false
 		end
-		return enemyTypes
+	end
+end
+---------------------------------------------- Module functions
+function enemyFactory.newEnemy(enemySpawnData)
+	local currentEnemyData = enemydata[enemySpawnData.type]
+	
+	local enemy = display.newGroup()
+	enemy.spawnData = extratable.deepcopy(enemySpawnData)
+	
+	enemy.x = enemy.spawnData.spawnPoint.x
+	enemy.y = enemy.spawnData.spawnPoint.y
+	
+	enemy.viewRadius = currentEnemyData.viewRadius
+	enemy.speed = currentEnemyData.speed
+	
+	enemy.targetPatrolPoint = 1
+	enemy.target = nil
+	enemy.isPatroling = false
+	
+	enemy.isTargetViewable = isTargetViewable
+	enemy.updatePatrol = updatePatrol
+	
+	function enemy:update()
+		if self.target then
+			if self:isTargetViewable() then
+				
+			else
+				self:updatePatrol()
+			end
+		else
+			self:updatePatrol()
+		end
 	end
 	
-	local function createVisualRange()
-		local visualRange = display.newGroup()
-		local outerRangeCircle = display.newCircle(0, 0, enemy.radius)
-		outerRangeCircle:setFillColor(unpack(COLOR_OUTER_RANGE_CIRCLE))
-		visualRange:insert(outerRangeCircle)
-		
-		local innerRangeCircle = display.newCircle(0, 0, enemy.radius * 0.8)
-		innerRangeCircle:setFillColor(unpack(COLOR_INNER_RANGE_CIRCLE))
-		visualRange:insert(innerRangeCircle)
-		return visualRange
+	function enemy:setTarget(newTarget)
+		self.target = newTarget
 	end
-
+	
 	local enemyImage = display.newImage(currentEnemyData.asset)
 	enemyImage:scale(0.25, 0.25)
-	enemy.group:insert(enemyImage)
+	enemy:insert(enemyImage)
 	
-	local enemyRange = createVisualRange()
-	enemy.group:insert(enemyRange)
-	
-	enemy:setPosition(enemy.pathStart)
-	
-	physics.addBody(enemy.group, "dynamic",  {radius = enemy.radius, isSensor = true})
-	enemy.group.gravityScale = 0
+	local enemyRange = createVisualRange(enemy.viewRadius)
+	enemy:insert(enemyRange)
 	
 	return enemy
 end
 
 
-return enemyEntity
+return enemyFactory
 

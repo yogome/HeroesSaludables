@@ -10,7 +10,7 @@ local spaceships = require( "entities.spaceships" )
 local physics = require( "physics" )
 local worldsData = require("data.worldsdata")
 local foodlist = require("data.foodlist")
-local enemy = require("entities.enemies")
+local enemyFactory = require("entities.enemies")
 local extramath = require( "libs.helpers.extramath" )
 
 local scene = composer.newScene() 
@@ -62,40 +62,8 @@ local  SIZE_FOOD_CONTAINER = {width = 120, height = 260}
 local function updateEnemies()
 	for indexEnemy = 1, #enemies do
 		local currentEnemy = enemies[indexEnemy]
-		if currentEnemy.group.isPlayerOnRange then
-			local ray = physics.rayCast(currentEnemy.group.x, currentEnemy.group.y,	playerCharacter.x, playerCharacter.y)
-			
-			if ray then
-				if ray[1].object.name ~= "asteroid" then
-					currentEnemy.group.canFollowObject = true
-				else
-					currentEnemy.group.canFollowObject = false				
-				end
-			end
-			
-			if currentEnemy.group.canFollowObject then
-				currentEnemy:follow()
-				currentEnemy.group.hasToReturn = true
-			else
-				if currentEnemy.group.hasToReturn then
-					currentEnemy:returnToPatrol()
-				end
-			end
-			
-			if not currentEnemy.group.canFollowObject and not currentEnemy.group.hasToReturn then
-				currentEnemy:patrol()
-			end
-			
-		else
-			if currentEnemy.group.hasToReturn then
-				
-			else
-				currentEnemy:patrol()
-			end
-			
-		end
+		currentEnemy:update()
 	end
-	
 end
 
 local function showDebugInformation()
@@ -162,19 +130,25 @@ local function grabFruit(fruit)
 	--end})
 end
 
-local function preCollision(self, event)
-	if not playerCharacter.isCarringItem then
-		if event.object1.name == "player" and event.object2.type == "fruit" or event.object2.type == "protein" or event.object2.type == "vegetable" then
-			playerCharacter.isCarringItem = true
-			playerCharacter.item = event.object2
-			event.object2.isSensor = true
-			local function fruitLister()
-				grabFruit(event.object2)
+local function checkPlayerPreCollision(player, object)
+	if player.name == "player" then
+		if not player.isCarringItem then
+			if object.name == "food" then
+				playerCharacter.isCarringItem = true
+				playerCharacter.item = object
+				object.isSensor = true
+				local function fruitLister()
+					grabFruit(object)
+				end
+				timer.performWithDelay(100, fruitLister)
 			end
-			timer.performWithDelay(100, fruitLister)
 		end
 	end
-	
+end
+
+local function preCollisionListener(event)
+	checkPlayerPreCollision(event.object1, event.object2)
+	checkPlayerPreCollision(event.object2, event.object1)
 end
 
 local function hideBubble()
@@ -200,7 +174,7 @@ local function updateScore(type)
 	end
 end
 	
-local function localCollision(self, event)
+local function collisionListener(event)
 	event.object1.name = event.object1.name or "unknown"
 	event.object2.name = event.object2.name or "unknown"
 	
@@ -444,7 +418,7 @@ local function createBubble(type)
 	local food = display.newImage(type.asset)
 	local bubbleGroup = display.newGroup()
 
-	bubbleGroup.name = type.name
+	bubbleGroup.name = "food"
 	bubbleGroup.type = type.type
 	bubbleGroup.isSpawned = false
 	bubbleGroup.isVisible = false
@@ -564,14 +538,17 @@ local function loadObjetives()
 end
 
 local function loadEnemies()
-	local enemyData = worldsData[worldIndex][levelIndex].enemies
-	for indexEnemy = 1, #enemyData do
-		local currentEnemy = enemyData[indexEnemy]
-		local enemyObject = enemy.newEnemy(currentEnemy.type, currentEnemy.patrolData)
-		enemyObject.group.type = "enemy"
-		enemyObject.group.name = enemyData[indexEnemy].type
+	local enemySpawnData = worldsData[worldIndex][levelIndex].enemySpawnData
+	for indexEnemy = 1, #enemySpawnData do
+		local currentEnemySpawnData = enemySpawnData[indexEnemy]
+		local enemyObject = enemyFactory.newEnemy(currentEnemySpawnData)
+		
+		physics.addBody(enemyObject, "dynamic",  {radius = enemyObject.viewRadius, isSensor = true})
+		enemyObject.gravityScale = 0
+		enemyObject.type = "enemy"
+		enemyObject.name = enemySpawnData[indexEnemy].type
 		enemies[indexEnemy] = enemyObject
-		camera:add(enemyObject.group)
+		camera:add(enemyObject)
 	end
 end
 
@@ -706,12 +683,9 @@ local function createGame()
 	camera:setFocus(playerCharacter)
 	camera:start()
 	
-	playerCharacter.collision = localCollision
-	playerCharacter.preCollision = preCollision
-	
 	Runtime:addEventListener("touch", testTouch)
-	Runtime:addEventListener("collision", playerCharacter)
-	Runtime:addEventListener("preCollision", playerCharacter)
+	Runtime:addEventListener("collision", collisionListener)
+	Runtime:addEventListener("preCollision", preCollisionListener)
 end
 
 local function destroyGame()

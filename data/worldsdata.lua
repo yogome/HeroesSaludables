@@ -12,19 +12,21 @@ local worldsData = {
 				vegetables = 10,
 				proteins = 5
 			},
-			enemies = {
+			enemySpawnData = {
 				{
 					type = "follower",
-					patrolData = {
-						startPoint = { x = 0, y = 0},
-						endPoint = {x = 500, y = 500}
+					spawnPoint = { x = 0, y = 0},
+					patrolPath = {
+						[1] = { x = 0, y = 0},
+						[2] = {x = 500, y = 500}
 					}
 				},
 				{
 					type = "canoner",
-					patrolData = {
-						startPoint = { x = 0, y = 0},
-						endPoint = {x = 800, y = -500}
+					spawnPoint = { x = 0, y = 0},
+					patrolPath = {
+						[1] = { x = 0, y = 0},
+						[2] = {x = 800, y = -500}
 					}
 				},
 			},
@@ -152,19 +154,21 @@ local worldsData = {
 				vegetables = 10,
 				proteins = 5
 			},
-			enemies = {
+			enemySpawnData = {
 				{
 					type = "follower",
-					patrolData = {
-						startPoint = { x = -500, y = 0},
-						endPoint = {x = 0, y = 500}
+					spawnPoint = { x = -500, y = 0},
+					patrolPath = {
+						[1] = { x = -500, y = 0},
+						[2] = {x = 0, y = 500}
 					}
 				},
 				{
 					type = "canoner",
-					patrolData = {
-						startPoint = { x = 400, y = -800},
-						endPoint = {x = 0, y = -400}
+					spawnPoint = { x = 400, y = -800},
+					patrolPath = {
+						[1] = { x = 400, y = -800},
+						[2] = {x = 0, y = -400}
 					}
 				},
 			},
