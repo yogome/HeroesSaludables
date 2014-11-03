@@ -88,6 +88,7 @@ function players.new()
 		coins = 0,
 		hatIndex = 1,
 		heroIndex = 1,
+		shipIndex = 1,
 		firstRun = 1,
 		firstMenu = false,
 		timePlayed = 0,
@@ -100,6 +101,9 @@ function players.new()
 				[1] = {locked = false},
 			},
 			["hats"] = {
+				[1] = {locked = false},
+			},
+			["ships"] = {
 				[1] = {locked = false},
 			},
 		},
