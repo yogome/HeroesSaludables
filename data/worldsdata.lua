@@ -42,17 +42,23 @@ local worldsData = {
 			planets = {
 				[1] = {
 					foodType = "fruit",
-					asset = "images/planets/fruits_1.png",
+					asset = "images/planets/fruits_2.png",
+					scale = 0.5,
+					foodOffset = {x = 0, y = -100},
 					position = {x = -700, y = 700}
 				},
 				[2] = {
 					foodType = "protein",
-					asset = "images/planets/proteins_1.png",
+					asset = "images/planets/proteins_2.png",
+					scale = 0.5,
+					foodOffset = {x = 0, y = 100},
 					position = {x = 500, y = 550}
 				},
 				[3] = {
 					foodType = "vegetable",
-					asset = "images/planets/vegetables_1.png",
+					asset = "images/planets/vegetables_2.png",
+					scale = 0.5,
+					foodOffset = {x = -100, y = 15},
 					position = {x = 740, y = -800}
 				}
 			},

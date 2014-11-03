@@ -6,7 +6,7 @@ local enemies = {
 		onHasTarget = "shoot",
 		projectileData = {
 			fireFrame = 25,
-			speed = 15,
+			speed = 7,
 			asset = "images/enemies/proyectil-02.png",
 		},
 	},
@@ -17,7 +17,7 @@ local enemies = {
 		onHasTarget = "shoot",
 		projectileData = {
 			fireFrame = 15,
-			speed = 5,
+			speed = 2.5,
 			asset = "images/enemies/proyectil-02.png",
 		},
 	},

@@ -101,11 +101,13 @@ local function spawnBubble(planet)
 		local foundBubble = foodBubbleGroup.bubbles[foodBubbleIndex]
 
 		local showBubble = function()
-			foundBubble.x = planet.x
-			foundBubble.y = planet.y + planet.width * 0.5
-			foundBubble.alpha = 1
+			foundBubble.x = planet.x + planet.foodOffset.x
+			foundBubble.y = planet.y + planet.foodOffset.y
+			foundBubble.alpha = 0
 			foundBubble.isVisible = true
 			foundBubble.isSpawned = true
+			
+			transition.to(foundBubble, {time = 400, alpha = 1, transition = easing.outQuad})
 
 			physics.addBody(foundBubble, "dynamic", {density = 0, friction = 0, bounce = 0.1, radius = 30})
 			foundBubble.gravityScale = 0
@@ -462,6 +464,7 @@ local function createFoodBubbles()
 
 		foodBubbleGroup:insert(newBubble)
 		camera:add(foodBubbleGroup)
+		addPhysicsObject(newBubble)
 	end
 end
 
@@ -510,6 +513,11 @@ local function loadPlanets()
 		physics.addBody(planet, "static", {density = 1, friction = 1, bounce = 1, radius = 200, isSensor = true})
 		planet.name = "planet"
 		planet.foodType = currentPlanetData.foodType
+		
+		if currentPlanetData.scale then
+			planet:scale(currentPlanetData.scale, currentPlanetData.scale)
+		end
+		planet.foodOffset = currentPlanetData.foodOffset or {x = 0, y = 0}
 		
 		planet.x = currentPlanetData.position.x
 		planet.y = currentPlanetData.position.y
