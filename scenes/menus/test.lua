@@ -34,7 +34,7 @@ local function goGame()
 end
 
 local function goLabelQuiz()
-	composer.gotoScene("scenes.game.labelquiz")
+	composer.gotoScene("scenes.game.labelpuzzle")
 end
 
 local function goWorlds()
@@ -48,6 +48,11 @@ end
 local function goLabel()
 	composer.gotoScene("scenes.game.label")
 end
+
+local function goQuestion()
+	composer.gotoScene("scenes.game.questionquiz")
+end
+
 
 local function goHero()
 	composer.gotoScene("scenes.menus.selecthero")
@@ -166,6 +171,7 @@ function scene:createView()
 	self:addButton("Go Game", goGame, {0.5,0.5,0.5})
 	self:addButton("Go Label", goLabel, {0.5,0.5,0.5})
 	self:addButton("Go Label Quiz", goLabelQuiz, {0.5,0.5,0.5})
+	self:addButton("Go Question Quiz", goQuestion, {0.5,0.5,0.5})
 	self:addButton("Clear queue", clearQueue, {0.5,0.6,0.3})
 	
 	self:skipColumn()
