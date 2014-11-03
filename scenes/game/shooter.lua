@@ -11,6 +11,7 @@ local physics = require( "physics" )
 local worldsData = require("data.worldsdata")
 local foodlist = require("data.foodlist")
 local enemy = require("entities.enemies")
+local extramath = require( "libs.helpers.extramath" )
 
 local scene = composer.newScene() 
 ----------------------------------------------- Variables
@@ -40,7 +41,8 @@ local levelSpaceshipPosition
 local levelPlanets
 
 local debugText
------------------------------------------------Temporal vars
+----------------------------------------------- Caches
+local squareRoot = math.sqrt 
 ----------------------------------------------- Constants
 local padding = 16
 local SIZE_BACKGROUND = 1024
@@ -508,46 +510,30 @@ local function loadAsteroids()
 	
 	for indexAsteroidLine = 1, #asteroidData do
 		local currentAsteroidLine = asteroidData[indexAsteroidLine]
-		local x1 = currentAsteroidLine.lineStart.x
-		local x2 = currentAsteroidLine.lineEnd.x
-		local y1 = currentAsteroidLine.lineStart.y
-		local y2 = currentAsteroidLine.lineEnd.y
+			
+		local p2 = {x = currentAsteroidLine.lineStart.x, y = currentAsteroidLine.lineStart.y}
+		local p1 = {x = currentAsteroidLine.lineEnd.x, y = currentAsteroidLine.lineEnd.y}
+
+		local distanceX = p2.x - p1.x
+		local distanceY = p2.y - p1.y
+		local distance = squareRoot((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y))
 		
-		local asteroidsPerLine = math.ceil(math.sqrt((x1 - x2)*(x1 - x2) + (y1 - y2 )*(y1 - y2 ))/60)
-		local asteroidStepX = math.abs(x1 - x2) / asteroidsPerLine
-		local asteroidStepY = math.abs(y1 - y2)/ asteroidsPerLine
-		local asteroidStartX = x1
-		local asteroidStartY = y1
-		
-		for indexAsteroid = 1, asteroidsPerLine do
+		local asteroidEasingX = currentAsteroidLine.easingX or easing.linear
+		local asteroidEasingY = currentAsteroidLine.easingY or easing.linear
+
+		local iterations = math.ceil(distance / 55)
+		for index = 1, iterations do
 			local asteroid = display.newImage("images/enviroment/asteroid1.png")
-			asteroid.rotation = math.random(0, 350)
-			
-			asteroid.x = asteroidStartX
-			asteroid.y = asteroidStartY
-			
-			if x2 > x1 then
-				asteroidStartX = asteroidStartX + asteroidStepX
-			else
-				asteroidStartX = asteroidStartX - asteroidStepX
-			end
-			
-			if y2 > y1 then
-				asteroidStartY = asteroidStartY + asteroidStepY
-			else
-				asteroidStartY = asteroidStartY - asteroidStepY
-			end
-			
-			
+			asteroid.x = asteroidEasingX(index, iterations, p1.x, distanceX)
+			asteroid.y = asteroidEasingY(index, iterations, p1.y, distanceY)
+			asteroid.rotation = math.random(0,360)
 			physics.addBody(asteroid, {density = 1000, friction = 10, bounce = 0.5, radius = asteroid.width * 0.5})
 			asteroid.gravityScale = 0
 			asteroid.bodyType = "static"
 			asteroid.name = "asteroid"
 			camera:add(asteroid)
 		end
-		
 	end
-	
 end
 
 local function loadObjetives()
@@ -654,8 +640,8 @@ local function createGame()
 	
 	loadLevel()
 	
-	createPlayerCharacter(1,2)
-	createBorders(1, 2)
+	createPlayerCharacter()
+	createBorders()
 	createFoodBubbles()
 	
 	spaceships.start()

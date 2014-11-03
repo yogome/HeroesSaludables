@@ -202,11 +202,15 @@ local worldsData = {
 			asteroids = {
 				[1] = {
 						lineStart = {x = -200, y = 600},
-						lineEnd = {x = -700, y = 100}
+						lineEnd = {x = -700, y = 100},
+						easingX = easing.inSine,
+						easingY = easing.outSine,
 				},
 				[2] = {
 						lineStart = {x = 100, y = -200},
-						lineEnd = {x = 600, y = -700}
+						lineEnd = {x = 600, y = -700},
+						easingX = easing.inSine,
+						easingY = easing.outSine,
 				},
 			},
 		}
