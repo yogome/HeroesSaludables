@@ -25,6 +25,8 @@ local selectedStroke
 local nameTextField, namePlaceholder
 local nameBackground
 local coinsText
+local shipsPreview
+local selectedShip
 ----------------------------------------------- Constants
 local MARGIN_BUTTON = 20 
 local WIDTH_BACKGROUND = 1024
@@ -78,6 +80,11 @@ local ITEMS_MENU = {
 		[26] = {price = 5000, image = "images/hats/s25a.png"},
 		[27] = {price = 9000, image = "images/hats/s26a.png"},
 	},
+	["ships"] = {
+		[1] = {price = 0, image = "images/ships/shop_ship1.png"},
+		[2] = {price = 0, image = "images/ships/shop_ship2.png"},
+		[3] = {price = 0, image = "images/ships/shop_ship3.png"},
+	},
 }
 local SIZE_IMAGE_RECT = 190
 
@@ -110,11 +117,23 @@ local function onReleasedBack()
 end
 
 local function onReleasedOK()
-	composer.gotoScene("scenes.game.label", {effect = "fade", time = 600})
+	composer.gotoScene("scenes.game.labelpuzzle", {effect = "fade", time = 600})
 end
 
-local function enterFrame()
+local function updateShipMovement(time)
+	
+	local floatingPosition = math.sin(time * 0.005) * 0.5
+	for indexShip = 1, #shipsPreview.ships do
+		currentShip = shipsPreview.ships[indexShip]
+		if currentShip.isVisible then
+			currentShip.y = currentShip.y + floatingPosition
+		end
+	end
+end
+
+local function enterFrame(event)
 	hero:update()
+	updateShipMovement(event.time)
 end
 
 local function removeHero()
@@ -122,11 +141,24 @@ local function removeHero()
 	display.remove(hero.group)
 end
 
+local function showShip(index)
+	
+	for indexShip = 1, #shipsPreview.ships do
+		currentShip = shipsPreview.ships[indexShip]
+		currentShip.isVisible = false
+	end
+	
+	shipsPreview.ships[index].isVisible = true
+	
+end
+
 local function previewItem(tabName, itemIndex)
 	if tabName == "girls" or tabName == "boys" then
 		hero:setSkin(herolist[ITEMS_MENU[tabName][itemIndex].heroIndex].skinName)
 	elseif tabName == "hats" then
 		hero:setHat(string.format("hat_extra_%02d", (itemIndex - 1)))
+	elseif tabName == "ships" then
+		showShip(itemIndex)
 	end
 end
 
@@ -135,6 +167,8 @@ local function chooseItem(tabName, itemIndex)
 		currentPlayer.heroIndex = ITEMS_MENU[tabName][itemIndex].heroIndex
 	elseif tabName == "hats" then
 		currentPlayer.hatIndex = itemIndex
+	elseif tabName == "ships" then
+		currentPlayer.shipIndex = itemIndex
 	end
 end
 
@@ -164,9 +198,18 @@ local function itemTouched(item)
 		selectedStroke.stroke = colors.cyan
 		priceLabel.isVisible = false
 		buttonBuy.isVisible = false
-		buttonChoose.isVisible = true
+		--buttonChoose.isVisible = true
 	end
 	selectedItem = item
+end
+
+local function chooseTapped()
+	if buttonsEnabled then
+		sound.play("pop")
+		if selectedItem and not selectedItem.locked then
+			chooseItem(selectedItem.tabName, selectedItem.index)
+		end
+	end
 end
 
 local function buyTapped()
@@ -178,18 +221,11 @@ local function buyTapped()
 				currentPlayer.unlockedItems[selectedItem.tabName][selectedItem.index] = {locked = false}
 				heroPanel:populateHeroPanel(selectedItem.tabName, selectedItem.pageNumber)
 				itemTouched(currentItems[selectedItem.panelIndex])
+				chooseTapped()
 				-- Play buy sound
 			else
 				-- Play wrong sound
 			end
-		end
-	end
-end
-local function chooseTapped()
-	if buttonsEnabled then
-		sound.play("pop")
-		if selectedItem and not selectedItem.locked then
-			chooseItem(selectedItem.tabName, selectedItem.index)
 		end
 	end
 end
@@ -324,6 +360,50 @@ function scene.disableButtons()
 	buttonsEnabled = false
 end
 
+local function createShips(group)
+	shipsPreview = display.newGroup()
+	shipsPreview.ships = {}
+	
+	local shipsData = {
+		[1] = {spritesheet = "images/ships/ship1_a.png"},
+		[2] = {spritesheet = "images/ships/ship2_a.png"},
+		[3] = {spritesheet = "images/ships/ship3_a.png"},
+	}
+	
+	for indexShip = 1, #shipsData do
+		
+		local spritesheet = shipsData[indexShip].spritesheet
+		local markSequenceData = {
+			{name = "play", start = 1 , count = 4, time = 500, loopCount = 0},
+		}
+		local shipSpriteSheet = graphics.newImageSheet(spritesheet, {width = 256, height = 256, numFrames = 4 })
+		playerShip = display.newSprite(shipSpriteSheet, markSequenceData)
+		
+		playerShip.xScale = 0.7
+		playerShip.yScale = 0.7
+
+		shipsPreview.ships[indexShip] = playerShip
+		shipsPreview:insert(playerShip)
+	end
+	
+	group:insert(shipsPreview)
+	
+end
+
+local function initializeShips()
+	
+	for indexShip = 1, #shipsPreview.ships do
+		local currentShip = shipsPreview.ships[indexShip]
+		currentShip.isVisible = false
+		currentShip.x = display.contentCenterX * 0.95
+		currentShip.y = display.contentCenterY * 0.50
+		currentShip:play()
+	end
+	
+	local selectedShipIndex = currentPlayer.shipIndex
+	shipsPreview.ships[selectedShipIndex].isVisible = true
+end
+
 function scene:create(event)
 	local sceneGroup = self.view
 	
@@ -364,21 +444,27 @@ function scene:create(event)
 	
 	local tabBoy = display.newImage("images/selecthero/boys.png")
 	tabBoy.x = display.screenOriginX + display.viewableContentWidth - panelBackground.width + OFFSET_X_TABS
-	tabBoy.y = display.screenOriginY + display.viewableContentHeight - (newHeight * 0.78)
+	tabBoy.y = display.screenOriginY + display.viewableContentHeight - (newHeight * 0.83)
 	tabBoy:scale(SCALE_TABS, SCALE_TABS)
 	heroPanel:insert(tabBoy)
 	
 	local tabGirl = display.newImage("images/selecthero/girls.png")
 	tabGirl.x = display.screenOriginX + display.viewableContentWidth - panelBackground.width + OFFSET_X_TABS
-	tabGirl.y = display.screenOriginY + display.viewableContentHeight - (newHeight * 0.55)
+	tabGirl.y = display.screenOriginY + display.viewableContentHeight - (newHeight * 0.60)
 	tabGirl:scale(SCALE_TABS, SCALE_TABS)
 	heroPanel:insert(tabGirl)
 	
 	local tabHats = display.newImage("images/selecthero/sombreros.png")
 	tabHats.x = display.screenOriginX + display.viewableContentWidth - panelBackground.width + OFFSET_X_TABS
-	tabHats.y = display.screenOriginY + display.viewableContentHeight - (newHeight * 0.32)
+	tabHats.y = display.screenOriginY + display.viewableContentHeight - (newHeight * 0.37)
 	tabHats:scale(SCALE_TABS, SCALE_TABS)
 	heroPanel:insert(tabHats)
+	
+	local tabShips = display.newImage("images/selecthero/ships.png")
+	tabShips.x = display.screenOriginX + display.viewableContentWidth - panelBackground.width + OFFSET_X_TABS
+	tabShips.y = display.screenOriginY + display.viewableContentHeight - (newHeight * 0.135)
+	tabShips:scale(SCALE_TABS, SCALE_TABS)
+	heroPanel:insert(tabShips)
 	
 	selectedStroke = display.newRoundedRect(0,0, SIZE_IMAGE_RECT, SIZE_IMAGE_RECT, 50 )
 	selectedStroke:scale(SCALE_ITEMS * 0.95, SCALE_ITEMS * 0.95)
@@ -392,6 +478,7 @@ function scene:create(event)
 		["boys"] = tabBoy,
 		["girls"] = tabGirl,
 		["hats"] = tabHats,
+		["ships"] = tabShips,
 	}
 	
 	function heroPanel:populateHeroPanel(tabName, pageNumber)
@@ -514,6 +601,9 @@ function scene:create(event)
 	tabHats:addEventListener("tap", function()
 		heroPanel:selectTab("hats")
 	end)
+	tabShips:addEventListener("tap", function()
+		heroPanel:selectTab("ships")
+	end)
 	
 	local function onReleasedNext()
 		if buttonsEnabled then
@@ -621,6 +711,9 @@ function scene:create(event)
 	buttonChoose:scale(SCALE_BUTTON_BUY, SCALE_BUTTON_BUY)
 	buttonChoose:addEventListener("tap", chooseTapped)
 	sceneGroup:insert(buttonChoose)
+	
+	createShips(sceneGroup)
+	
 end
 
 function scene:destroy()
@@ -634,6 +727,7 @@ function scene:show( event )
 	if ( phase == "will" ) then
 		currentPlayer = players.getCurrent()
 		createHero(sceneGroup)
+		initializeShips()
 		namePlaceholder.text = currentPlayer.characterName
 		coinsText.text = currentPlayer.coins
 		heroPanel:selectTab("boys", true)
@@ -664,3 +758,5 @@ scene:addEventListener( "hide", scene )
 scene:addEventListener( "show", scene )
 
 return scene
+
+
