@@ -12,6 +12,10 @@ local buttonlist = {
 	settings = { width = 128, height = 128, defaultFile = "images/buttons/bnt_settings.png", overFile = "images/buttons/bnt_settings.png", onPress = playSound},
 	next = { width = 128, height = 112, defaultFile = "images/buttons/adelante.png", overFile = "images/buttons/adelante_02.png", onPress = playSound},
 	previous = { width = 128, height = 112, defaultFile = "images/buttons/atras.png", overFile = "images/buttons/atras_02.png", onPress = playSound},
+
+	left = { width = 90, height = 128, defaultFile = "images/buttons/izquierda_1.png", overFile = "images/buttons/izquierda_2.png", onPress = playSound},
+	right = { width = 90, height = 128, defaultFile = "images/buttons/derecha_1.png", overFile = "images/buttons/derecha_2.png", onPress = playSound},
+	
 }
 
 return buttonlist

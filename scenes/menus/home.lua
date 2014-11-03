@@ -16,11 +16,22 @@ local logoGroup, starfieldGroup, asteroidGroup
 local currentPlayer
 ----------------------------------------------- Constants 
 local SIZE_BACKGROUND = 1024
-local NUMBER_STARS = 100
+local NUMBER_STARS = 50
 local NUMBER_ASTEROIDS = 3
 local SPEED_STARS = 0.5
 --local MARGIN_BUTTON = 20
 --local SCALE_LOGO = 1
+----------------------------------------------- Caches
+local doublePi = math.pi * 2
+local mathRandom = math.random
+local mathSin = math.sin
+local mathCos = math.cos
+
+local contentWidth = display.contentWidth
+local contentHeight = display.contentHeight
+
+local halfContentWidth = contentWidth * 0.5
+local halfContentHeight = contentHeight * 0.5
 ----------------------------------------------- Functions
 
 local function updateAsteroids()
@@ -34,11 +45,11 @@ local function updateAsteroids()
 		
 		currentAsteroid.rotation = currentAsteroid.rotation + 0.5
 		
-		if currentAsteroid.x > display.contentWidth + 50 then
+		if currentAsteroid.x > contentWidth + 50 then
 			currentAsteroid.x = display.screenOriginX - 50
 		end
 		
-		if  currentAsteroid.y > display.contentHeight + 50 then	
+		if  currentAsteroid.y > contentHeight + 50 then	
 			currentAsteroid.y = display.screenOriginY - 50
 		end
 		
@@ -50,27 +61,39 @@ local function updateStarField()
 	for indexStar = 1, #starfieldGroup.stars do
 		
 		local currentStar = starfieldGroup.stars[indexStar]
+		
+		local currentX = currentStar.x
+		local currentY = currentStar.y
+		
+		local currentSpeed = currentStar.speed
 						
-		currentStar.x = currentStar.x + (currentStar.x - currentStar.dx) * currentStar.speed
-		currentStar.y = currentStar.y + (currentStar.y - currentStar.dy) * currentStar.speed
+		currentStar.x = currentX + (currentX - currentStar.dx) * currentSpeed
+		currentStar.y = currentY + (currentY - currentStar.dy) * currentSpeed
 		
 		currentStar.xScale = currentStar.xScale + 0.009
 		currentStar.yScale = currentStar.yScale + 0.009
 		
-		if currentStar.x > display.contentWidth or currentStar.x < display.contentWidth * -0.5 or
-		   currentStar.y > display.contentHeight or currentStar.y < display.contentHeight * -0.5 then
-		   
+		local condition1 = currentStar.x > halfContentWidth or currentStar.x < -halfContentWidth
+		local condition2 = currentStar.y > halfContentHeight or currentStar.y < -halfContentHeight
+		
+		if condition1 or condition2 then
 			currentStar.x = 0
 			currentStar.y = 0
-			currentStar.alpha = 1 / math.random(1,5)
+			currentStar.alpha = mathRandom(1,5) * 0.1
 			
 			currentStar.xScale = 1
 			currentStar.yScale = 1
 			
-			local step = (math.pi * 2) / (math.random(1, 1000) / 1000)
+			local step = mathRandom(1,360)
+			
+			local vX = mathSin(step)
+			local vY = mathCos(step)
+			
+			currentStar.x = vX * 30
+			currentStar.y = vY * 30
 		
-			currentStar.dx = math.sin(currentStar.x + step) * display.contentWidth
-			currentStar.dy = math.cos(currentStar.y + step) * display.contentHeight
+			currentStar.dx = vX
+			currentStar.dy = vY
 		end
 				
 	end
@@ -126,7 +149,7 @@ local function initializeStarField()
 		local currentStar = starfieldGroup.stars[indexStar]
 		
 		local step = (math.pi * 2) / (math.random(1, 1000) / 1000)
-		currentStar.speed = math.random(50, 100) / 10000
+		currentStar.speed = math.random(50, 100) * 0.001
 		
 		currentStar.dx = math.sin(currentStar.x + step) * display.contentWidth
 		currentStar.dy = math.cos(currentStar.y + step) * display.contentHeight
@@ -136,7 +159,6 @@ local function initializeStarField()
 		
 		currentStar.x = currentStar.x + vectorSizeX * math.random(0, math.abs(vectorSizeX)) * currentStar.speed
 		currentStar.y = currentStar.y + vectorSizeY * math.random(0, math.abs(vectorSizeY)) * currentStar.speed
-		
 	end
 	
 end
@@ -195,10 +217,8 @@ function scene:show( event )
     local phase = event.phase
 
     if ( phase == "will" ) then
-		
 		initializeStarField()
 		Runtime:addEventListener("enterFrame", updateGameLoop)
-		
 	elseif ( phase == "did" ) then
 		
 	end
@@ -209,7 +229,7 @@ function scene:hide( event )
     local phase = event.phase
 
     if ( phase == "will" ) then
-		Runtime:addEventListener("enterFrame", updateGameLoop)
+		Runtime:removeEventListener("enterFrame", updateGameLoop)
 	elseif ( phase == "did" ) then
 		--cancelPlayTransition()
 	end

@@ -6,7 +6,7 @@ local sound = require( "libs.helpers.sound" )
 local players = require( "models.players" )
 local robot = require( "libs.helpers.robot" )
 local database = require( "libs.helpers.database" )
-local worldsList = require( "data.worldslist" )
+local worldsdata = require( "data.worldsdata" )
 
 local scene = composer.newScene() 
 ----------------------------------------------- Variables
@@ -25,18 +25,18 @@ local HEIGHT_BACKGROUND = 768
 local MARGIN = 20
 local OFFSET_COMPLETION_BACKGROUND = {x = 0, y = 257}
 local OFFSET_COMPLETION_TEXT = {x = 0, y = 255}
-local NUM_BACKGROUNDS = 5
+local NUM_BACKGROUNDS = 2
 local PADDING_CARDS_SIDES = 400
 local SCALE_CARDS = 1.1
 local COLOR_CARD_DISABLED = {0.2}
 ----------------------------------------------- Functions
 local function onReleasedBack()
-	composer.gotoScene( "scenes.menus.home", { effect = "zoomInOutFade", time = 600, } )
+	composer.gotoScene( "scenes.menus.worlds", { effect = "zoomInOutFade", time = 600, } )
 end
 
 local function cardTapped(event)
 	if buttonsEnabled then
-		if worldsList[event.target.index].isAvailable then
+		if worldsdata[event.target.index].isAvailable then
 			buttonsEnabled = false
 			sound.play("pop")
 			composer.gotoScene( "scenes.menus.levels", { effect = "zoomInOutFade", time = 600, params = {worldIndex = event.target.index}} )
@@ -44,49 +44,6 @@ local function cardTapped(event)
 			sound.play("wrongAnswer")
 		end
 	end
-end
-
-local function createTitle()
-	display.remove(title)
-	
-	title = display.newImage("images/worlds/title_central.png")
-	title.x = display.contentCenterX
-	title.y = buttonBack.y
-	title.xScale = SCALE_TITLE
-	title.yScale = SCALE_TITLE
-	titleGroup:insert(title)
-end
-
-local function createCards()
-	
-	local totalWidth = (display.viewableContentHeight / HEIGHT_BACKGROUND) * WIDTH_BACKGROUND * NUM_BACKGROUNDS
-	local paddingCards = (totalWidth - (PADDING_CARDS_SIDES * 2))/(#worldsList - 1)
-	
-	
-	for index = 1, #worldsList do
-		display.remove(cardList[index])
-		cardList[index] = nil
-		
-		local card = display.newGroup()
-		card.index = index
-		card.y = scrollView.height * 0.5
-		card.x = PADDING_CARDS_SIDES + (index - 1) * paddingCards
-		scrollViewButtonGroup:insert(card)
-		card.xScale = SCALE_CARDS
-		card.yScale = SCALE_CARDS
-		
-		local cardImage = display.newImage(worldsList[index].cardName)
-		card:insert(cardImage)
-		
-		if not worldsList[index].isAvailable then
-			cardImage:setFillColor(unpack(COLOR_CARD_DISABLED))
-		end
-		
-		card:addEventListener("tap", cardTapped)
-		
-		cardList[index] = card
-	end
-	
 end
 ----------------------------------------------- Class functions 
 function scene.enableButtons()
@@ -125,7 +82,7 @@ function scene:create(event)
 	local backgroundScale = display.viewableContentHeight / HEIGHT_BACKGROUND
 	
 	for index = 1, NUM_BACKGROUNDS do
-		local background = display.newImage("images/worlds/fondo"..index..".png")
+		local background = display.newImage("images/levels/background0"..index..".png")
 		background.anchorX = 0
 		background.x = ((index - 1) * WIDTH_BACKGROUND) * backgroundScale
 		background.y = scrollView.height * 0.5
@@ -158,8 +115,6 @@ function scene:show( event )
     if ( phase == "will" ) then
 		language = database.config("language") or "en"
 		currentPlayer = players.getCurrent()
-		createTitle()
-		createCards()
 		self.disableButtons()
 	elseif ( phase == "did" ) then
 		self.enableButtons()
