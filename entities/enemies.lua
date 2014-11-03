@@ -34,12 +34,16 @@ local function isTargetViewable(self)
 		local rayCast = physics.rayCast(self.x, self.y,	self.target.x, self.target.y)
 			
 		if rayCast and rayCast[1] and rayCast[1].object then
-			return rayCast[1].object.name == "player"
+			return rayCast[1].object.name ~= "asteroid"
 		end
 	end
 end
 
 local function updatePatrol(self)
+	local vY = -(self.oldY - self.y)
+	self.rotation = (self.rotation + (vY * THRESHOLD_ROTATION_ANIMATION) * self.xScale) * 0.5
+	self.oldY = self.y
+		
 	local targetPathPoint = self.spawnData.patrolPath[self.targetPatrolPoint]
 	local targetX = targetPathPoint.x
 	local targetY = targetPathPoint.y
@@ -74,6 +78,10 @@ local function updatePatrol(self)
 end
 
 local function followTarget(self)
+	local vY = -(self.oldY - self.y)
+	self.rotation = (self.rotation + (vY * THRESHOLD_ROTATION_ANIMATION) * self.xScale) * 0.5
+	self.oldY = self.y
+	
 	if self.target then
 		if self.isPatroling then
 			transition.cancel(self)
@@ -90,12 +98,64 @@ local function followTarget(self)
 		self.y = self.y + (stepY  * THRESHOLD_FOLLOWSPEED)
 	end
 end
+
+local function shootTarget(self)
+	if self.target then
+		if self.isPatroling then
+			transition.cancel(self)
+			self.isPatroling = false
+			self.currentFireFrame = 0
+		end
+		
+		self.currentFireFrame = self.currentFireFrame + 1
+		
+		local differenceX = self.target.x - self.x
+		local differenceY = self.target.y - self.y
+		self.xScale = differenceX > 0 and 1 or -1
+		local distance = squareRoot(differenceX * differenceX + differenceY * differenceY)
+
+		local normalX = differenceX / distance
+		local normalY = differenceY / distance
+
+		local rotation = extramath.getFullAngle(differenceX, differenceY) + 90
+		self.rotation = self.xScale > 0 and rotation or (rotation - 180)
+			
+		if self.currentFireFrame >= self.data.projectileData.fireFrame then
+			local projectileSpeed = self.data.projectileData.speed
+			
+			self.currentFireFrame = 0
+			local bullet = display.newImage(self.data.projectileData.asset)
+			self.parent:insert(bullet)
+			
+			bullet.x = self.x
+			bullet.y = self.y
+			bullet.rotation = rotation
+			bullet.xScale = 0.15
+			bullet.yScale = 0.15
+			bullet.alpha = 0
+			bullet.name = "bullet"
+
+			physics.addBody( bullet, "dynamic", { friction = 1, radius = 15, density=0, isSensor = true } )
+			bullet.isBullet = true
+			bullet.gravityScale = 0
+			bullet.linearDamping = -0.5
+			bullet:applyForce(normalX * projectileSpeed, normalY * projectileSpeed, bullet.x, bullet.y)
+			
+			if self.onBulletCreate then
+				self.onBulletCreate(bullet)
+			end
+			
+			transition.to(bullet, {time = 500, alpha = 1, transition = easing.outQuad})
+		end
+	end
+end
 ---------------------------------------------- Module functions
 function enemyFactory.newEnemy(enemySpawnData)
 	local currentEnemyData = enemydata[enemySpawnData.type]
 	
 	local enemy = display.newGroup()
 	enemy.spawnData = extratable.deepcopy(enemySpawnData)
+	enemy.data = currentEnemyData
 	
 	enemy.x = enemy.spawnData.spawnPoint.x
 	enemy.y = enemy.spawnData.spawnPoint.y
@@ -106,18 +166,22 @@ function enemyFactory.newEnemy(enemySpawnData)
 	enemy.targetPatrolPoint = 1
 	enemy.target = nil
 	enemy.isPatroling = false
+	enemy.currentFireFrame = 0
 	
 	enemy.oldY = 0
 	
 	enemy.isTargetViewable = isTargetViewable
 	enemy.updatePatrol = updatePatrol
 	enemy.followTarget = followTarget
+	enemy.shootTarget = shootTarget
 	
 	function enemy:update()
 		if self.target then
 			if self:isTargetViewable() then
 				if currentEnemyData.onHasTarget == "follow" then
 					self:followTarget()
+				elseif currentEnemyData.onHasTarget == "shoot" then
+					self:shootTarget()
 				end
 			else
 				self:updatePatrol()
@@ -125,10 +189,6 @@ function enemyFactory.newEnemy(enemySpawnData)
 		else
 			self:updatePatrol()
 		end
-		
-		local vY = -(self.oldY - self.y)
-		self.rotation = (self.rotation + (vY * THRESHOLD_ROTATION_ANIMATION) * self.xScale) * 0.5
-		self.oldY = self.y
 	end
 	
 	function enemy:setTarget(newTarget)

@@ -25,6 +25,7 @@ local analogCircleMove
 local heartIndicator
 local worldIndex, levelIndex
 local hudGroup
+local foodTexts, targetAmounts
 ----------------------------------------------- Background stars data
 local spaceObjects, objectDespawnX, objectSpawnX, objectDespawnY, objectSpawnY
 local spawnZoneWidth, spawnZoneHeight, halfSpawnZoneWidth, halfSpawnZoneHeight
@@ -34,7 +35,7 @@ local backgroundGroup
 local foodBubbleGroup
 local enemies
 local isFoodSpawned
-local totalCollectedFruits, totalCollectedVegetables, totalCollectedProteins
+local collectedFood
 -----------------------------------------------Vars used by level loader
 local levelBackground
 local levelSize
@@ -56,7 +57,7 @@ local STARS_LAYERS = 3
 local SCALE_BUTTON_BACK = 0.9
 local NUMBER_HEARTS = 3
 local BOUNDARY_SIZE = 200
-local  SIZE_FOOD_CONTAINER = {width = 120, height = 260}
+local SIZE_FOOD_CONTAINER = {width = 140, height = 260}
 local OFFSET_GRABFRUIT = {x = -62, y = 17}
 ----------------------------------------------- Functions
 
@@ -68,15 +69,11 @@ local function updateEnemies()
 end
 
 local function showDebugInformation()
-	
 	debugText.text = string.format([[
 	ShipHasItem: %s
 	SpawnedFruit: %s
 	SpawnedVegetable: %s
 	SpawnedProtein: %s
-	Fruits: %d
-	Vegetables: %d
-	Proteins: %d
 	Enemies: %d
 	Player x: %d
 	Player y: %d]], 
@@ -84,9 +81,6 @@ local function showDebugInformation()
 	tostring(isFoodSpawned["fruit"]),
 	tostring(isFoodSpawned["vegetable"]),
 	tostring(isFoodSpawned["protein"]),
-	totalCollectedFruits,
-	totalCollectedVegetables,
-	totalCollectedProteins,
 	#enemies,
 	playerCharacter.x,
 	playerCharacter.y)
@@ -165,16 +159,6 @@ local function hideBubble()
 	isFoodSpawned[playerCharacter.item.type] = false
 end
 
-local function updateScore(type)
-	if type == "fruit" then
-		totalCollectedFruits = totalCollectedFruits + 1
-	elseif type == "vegetable" then
-		totalCollectedVegetables = totalCollectedVegetables + 1
-	elseif type == "protein" then
-		totalCollectedProteins = totalCollectedProteins + 1
-	end
-end
-
 local function addEnemyTarget(enemy, target)
 	if enemy.name == "enemy" then
 		if target.name == "player" then
@@ -202,8 +186,21 @@ local function collectBubble(earth)
 				hideBubble()
 			end})
 		end})
+		local foodType = playerCharacter.item.type
+		collectedFood[foodType] = collectedFood[foodType] + 1
+		foodTexts[foodType].text = collectedFood[foodType].."/"..targetAmounts[foodType]
+	end
+end
 
-		updateScore(playerCharacter.item.type)
+local function gameOver()
+	
+end
+
+local function addDamage(bullet)
+	bullet.removeFromWorld = true
+	
+	if heartIndicator:removeHeart() then
+		gameOver()
 	end
 end
 
@@ -213,6 +210,8 @@ local function checkPlayerCollision(player, otherObject)
 			spawnBubble(otherObject)
 		elseif otherObject.name == "earth" then
 			collectBubble(otherObject)
+		elseif otherObject.name == "bullet" then
+			addDamage(otherObject)
 		end
 	end
 end
@@ -304,12 +303,11 @@ local function createBackground(sceneGroup)
 		end
 	end
 	
-	
 	backgroundGroup:insert(backgroundContainer)
 end
 
 local function onReleasedBack()
-	composer.gotoScene( "scenes.menus.map", { effect = "fade", time = 800, } )
+	composer.gotoScene( "scenes.menus.levels", {params = {worldIndex = worldIndex}, effect = "fade", time = 800, } )
 end 
 
 local function addPhysicsObject(object)
@@ -452,6 +450,14 @@ local function enterFrame()
 	if analogX and analogY then
 		playerCharacter:analog(analogX, analogY)
 	end
+	
+	for index = #physicsObjectList, 1, -1 do
+		local physicsObject = physicsObjectList[index]
+		if physicsObject.removeFromWorld then
+			display.remove(physicsObject)
+			physicsObjectList[index] = nil
+		end
+	end
 end
 
 local function loadEarth()
@@ -545,6 +551,10 @@ local function loadEnemies()
 		local currentEnemySpawnData = enemySpawnData[indexEnemy]
 		local enemyObject = enemyFactory.newEnemy(currentEnemySpawnData)
 		
+		enemyObject.onBulletCreate = function(bullet)
+			addPhysicsObject(bullet)
+		end
+		
 		physics.addBody(enemyObject, "dynamic",  {radius = enemyObject.viewRadius, isSensor = true})
 		enemyObject.gravityScale = 0
 		enemyObject.type = enemySpawnData[indexEnemy].type
@@ -563,6 +573,8 @@ local function loadLevel()
 end
 
 local function createHUD()
+	local levelData = worldsData[worldIndex][levelIndex]
+	
 	display.remove(hudGroup)
 	hudGroup = display.newGroup()
 	hudGroup.x = display.screenOriginX
@@ -580,34 +592,50 @@ local function createHUD()
 	foodContainer:insert(containerBG)
 	
 	local foods = {
-		[1] = {image = "images/food/strawberry.png"},
-		[2] = {image = "images/food/carrot.png"},
-		[3] = {image = "images/food/meat.png"},
+		[1] = {image = "images/food/strawberry.png", type = "fruit"},
+		[2] = {image = "images/food/carrot.png", type = "vegetable"},
+		[3] = {image = "images/food/meat.png", type = "protein"},
 	}
 	
 	for index = 1, #foods do
 		local foodIcon = display.newImage(foods[index].image)
 		foodIcon:scale(0.5,0.5)
-		foodIcon.x = -containerBG.width * 0.2
+		foodIcon.x = -containerBG.width * 0.25
 		foodIcon.y = -containerBG.height * 0.5 + (containerBG.height / (#foods + 1)) * index
 		foodContainer:insert(foodIcon)
 		
+		local targetAmount = levelData.objectives[foods[index].type]
+		targetAmounts[foods[index].type] = targetAmount
+		
 		local foodAmountOptions = {
-			x = containerBG.width * 0.15,
+			x = containerBG.width * 0,
 			y = foodIcon.y,
 			font = settings.fontName,
 			fontSize = 32,
 			width = 100,
-			text = "0",
+			text = "0/"..targetAmount,
 			align = "left",
 		}
 
 		local foodAmount = display.newText(foodAmountOptions)
 		foodAmount.anchorX = 0
 		foodContainer:insert(foodAmount)
+		
+		foodTexts[foods[index].type] = foodAmount
 	end
 	
 	heartIndicator = display.newGroup()
+	heartIndicator.currentHearts = NUMBER_HEARTS
+	heartIndicator.hearts = {}
+	
+	function heartIndicator:removeHeart() -- Returns false if dead
+		if self.currentHearts > 0 then
+			transition.to(self.hearts[self.currentHearts], {time = 400, alpha = 0, transition = easing.outinQuad})
+			self.currentHearts = self.currentHearts - 1
+			return self.currentHearts > 0
+		end
+		return false
+	end
 	
 	local heartIndicatorBG = display.newImage("images/shooter/3heart.png")
 	heartIndicatorBG.x = 0
@@ -621,6 +649,8 @@ local function createHUD()
 		local heart = display.newImage("images/shooter/heart.png")
 		heart.x = heartStartX + (index - 1) * heartSpacing
 		heartIndicator:insert(heart)
+		
+		heartIndicator.hearts[index] = heart
 	end
 	
 	heartIndicator:scale(SCALE_HEARTINDICATOR, SCALE_HEARTINDICATOR)
@@ -637,18 +667,27 @@ local function initialize()
 		["protein"] = false,
 	}
 	
+	foodTexts = {}
+	targetAmounts = {
+		["fruit"] = 0,
+		["vegetable"] = 0,
+		["protein"] = 0,
+	}
+	
 	worldIndex = 1
 	levelIndex = 1
 	
-	totalCollectedFruits = 0
-	totalCollectedVegetables = 0
-	totalCollectedProteins = 0
+	collectedFood = {
+		["fruit"] = 0,
+		["vegetable"] = 0,
+		["protein"] = 0,
+	}
 end
 
 local function updateGameLoop()
 	updateParallax()
 	updateEnemies()
-	showDebugInformation()
+	--showDebugInformation()
 	enterFrame()
 end
 ----------------------------------------------- Class functions 
@@ -672,7 +711,7 @@ local function createGame()
 	physics.setVelocityIterations(1)
 	physics.start()
 	physics.setContinuous(false)
-	physics.setGravity(0, 10)
+	physics.setGravity(0, 0)
 	
 	physicsObjectList = {}
 	enemies = {}

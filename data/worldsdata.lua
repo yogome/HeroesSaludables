@@ -7,9 +7,9 @@ local worldsData = {
 			levelHeight = 2000,
 			ship = {position = {x = 500, y = -200}},
 			objectives = {
-				fruits = 8,
-				vegetables = 10,
-				proteins = 5
+				fruit = 8,
+				vegetable = 10,
+				protein = 5
 			},
 			enemySpawnData = {
 				{
@@ -44,13 +44,13 @@ local worldsData = {
 				[2] = {
 					foodType = "protein",
 					asset = "images/planets/proteins_1.png",
-					position = {x = 500, y = 400}
+					position = {x = 500, y = 550}
 				},
---				[3] = {
---					foodType = "vegetable",
---					asset = "images/planets/vegetables_1.png",
---					position = {x = -600, y = 800}
---				}
+				[3] = {
+					foodType = "vegetable",
+					asset = "images/planets/vegetables_1.png",
+					position = {x = 740, y = -800}
+				}
 			},
 			asteroids = {
 				[1] = {
@@ -74,9 +74,9 @@ local worldsData = {
 			levelHeight = 2000,
 			ship = {position = {x = -1500, y = 800}},
 			objectives = {
-				fruits = 8,
-				vegetables = 10,
-				proteins = 5
+				fruit = 8,
+				vegetable = 10,
+				protein = 5
 			},
 			enemySpawnData = {
 				{
