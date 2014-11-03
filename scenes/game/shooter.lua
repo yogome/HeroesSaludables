@@ -13,16 +13,16 @@ local foodlist = require("data.foodlist")
 local enemy = require("entities.enemies")
 
 local scene = composer.newScene() 
-
---physics.setDrawMode("hybrid")
 ----------------------------------------------- Variables
 local buttonBack 
 local camera
 local playerCharacter
-local dynamicObjects
+local physicsObjectList
 local analogX, analogY
 local analogCircleBegan
 local analogCircleMove
+
+local worldIndex, levelIndex
 ----------------------------------------------- Background stars data
 local spaceObjects, objectDespawnX, objectSpawnX, objectDespawnY, objectSpawnY
 local spawnZoneWidth, spawnZoneHeight, halfSpawnZoneWidth, halfSpawnZoneHeight
@@ -41,7 +41,6 @@ local levelPlanets
 
 local debugText
 -----------------------------------------------Temporal vars
-local current_level = 1
 ----------------------------------------------- Constants
 local padding = 16
 local SIZE_BACKGROUND = 1024
@@ -332,8 +331,8 @@ local function onReleasedBack()
 	composer.gotoScene( "scenes.menus.map", { effect = "fade", time = 800, } )
 end 
 
-local function addDynamicObject(object)
-	dynamicObjects[#dynamicObjects + 1] = object
+local function addPhysicsObject(object)
+	physicsObjectList[#physicsObjectList + 1] = object
 end
 
 local function testTouch(event)
@@ -357,67 +356,71 @@ local function testTouch(event)
 	end	
 end
 
-local function createBorders(level, world)
+local function createBorders()
 	
-	local levelData = worldsData[level][world]
+	local levelData = worldsData[worldIndex][levelIndex]
 	local levelWidth = levelData.levelWidth
 	local levelHeight = levelData.levelHeight
+	
+	local halfLevelWidth = levelWidth * 0.5
+	local halfLevelHeight = levelHeight * 0.5
+	
+	local halfBoundarySize = BOUNDARY_SIZE * 0.5
+	local doubleBoundarySize = BOUNDARY_SIZE * 2
 	
 	local wallPositionX 
 	local wallPositionY
 	
-	wallPositionX = (levelWidth * 0.5 * -1) - (BOUNDARY_SIZE * 0.5)
+	wallPositionX = -halfLevelWidth - halfBoundarySize
 	wallPositionY = 0
-	local leftWall = display.newRect(wallPositionX, wallPositionY, BOUNDARY_SIZE, levelHeight)
+	local leftWall = display.newRect(wallPositionX, wallPositionY, BOUNDARY_SIZE, levelHeight + doubleBoundarySize)
 	physics.addBody( leftWall, {density = 1.0, friction = 0.1, bounce = 0.5})
-	--testRect1:setFillColor(1,1,0)
 	leftWall.bodyType = "static"
 	camera:add(leftWall)
 	
-	
-	wallPositionX = (levelWidth * 0.5) + (BOUNDARY_SIZE * 0.5)
+	wallPositionX = halfLevelWidth + halfBoundarySize
 	wallPositionY = 0
-	local rightWall = display.newRect(wallPositionX, wallPositionY ,BOUNDARY_SIZE, levelHeight)
+	local rightWall = display.newRect(wallPositionX, wallPositionY ,BOUNDARY_SIZE, levelHeight + doubleBoundarySize)
 	physics.addBody( rightWall, {density = 1.0, friction = 0.1, bounce = 0.5})
-	--testRect2:setFillColor(1,1,0)
 	rightWall.bodyType = "static"
 	camera:add(rightWall)
 	
 	wallPositionX = 0
-	wallPositionY = (levelHeight * 0.5 * -1) - (BOUNDARY_SIZE * 0.5)
+	wallPositionY = -halfLevelHeight - halfBoundarySize
 	local bottomWall = display.newRect(wallPositionX, wallPositionY, levelWidth, BOUNDARY_SIZE)
 	physics.addBody( bottomWall, {density = 1.0, friction = 0.1, bounce = 0.5})
-	--testRect3:setFillColor(1,1,0)
 	bottomWall.bodyType = "static"
 	camera:add(bottomWall)
 	
 	wallPositionX = 0
-	wallPositionY = (levelHeight * 0.5) + (BOUNDARY_SIZE * 0.5)
+	wallPositionY = halfLevelHeight + halfBoundarySize
 	local topWall = display.newRect(wallPositionX, wallPositionY, levelWidth, BOUNDARY_SIZE)
 	physics.addBody( topWall, {density = 1.0, friction = 0.1, bounce = 0.5})
-	--testRect4:setFillColor(1,1,0)
 	topWall.bodyType = "static"
 	camera:add(topWall)
 	
-	addDynamicObject(leftWall)
-	addDynamicObject(rightWall)
-	addDynamicObject(bottomWall)
-	addDynamicObject(topWall)
+	addPhysicsObject(leftWall)
+	addPhysicsObject(rightWall)
+	addPhysicsObject(bottomWall)
+	addPhysicsObject(topWall)
 end
 
 local function setUpCamera()
-	
-	local levelData = worldsData[1][1]
+	local levelData = worldsData[worldIndex][levelIndex]
 	local levelWidth = levelData.levelWidth
 	local levelHeight = levelData.levelHeight
 	
-	camera = perspective.newCamera()
-	--camera:setBounds((levelWidth * 0.35 * -1), (levelWidth * 0.35), levelHeight * 0.35 * -1, levelHeight * 0.35)
-	camera:setBounds(false)
+	local halfLevelWidth = levelWidth * 0.5
+	local halfLevelHeight = levelHeight * 0.5
+	
+	local halfViewableContentWidth = display.viewableContentWidth * 0.5
+	local halfViewableContentHeight = display.viewableContentHeight * 0.5
+	
+	camera:setBounds(-halfLevelWidth + halfViewableContentWidth, halfLevelWidth - halfViewableContentWidth, -halfLevelHeight + halfViewableContentHeight, halfLevelHeight - halfViewableContentHeight)
 end
 
-local function createPlayerCharacter(world, level)
-	local shipPosition = worldsData[world][level].ship.position
+local function createPlayerCharacter()
+	local shipPosition = worldsData[worldIndex][levelIndex].ship.position
 	
 	playerCharacter = spaceships.new()
 	playerCharacter.isCarringItem = false
@@ -426,7 +429,7 @@ local function createPlayerCharacter(world, level)
 	playerCharacter.y = shipPosition.y
 	camera:add(playerCharacter)
 	
-	addDynamicObject(playerCharacter)
+	addPhysicsObject(playerCharacter)
 end
 
 local function createBubble(type)
@@ -470,8 +473,8 @@ local function enterFrame()
 	end
 end
 
-local function loadEarth(world, level)
-	local earthData = worldsData[world][level].earth
+local function loadEarth()
+	local earthData = worldsData[worldIndex][levelIndex].earth
 	local earth = display.newImage(earthData.asset)
 	earth.xScale = earthData.scaleFactor
 	earth.yScale = earthData.scaleFactor
@@ -483,9 +486,9 @@ local function loadEarth(world, level)
 	camera:add(earth)
 end
 
-local function loadPlanets(world, level)
+local function loadPlanets()
 	local planets = {}
-	local planetsData = worldsData[world][level].planets
+	local planetsData = worldsData[worldIndex][levelIndex].planets
 	
 	for planetIndex = 1, #planetsData do
 		local currentPlanet = planetsData[planetIndex]
@@ -500,8 +503,8 @@ local function loadPlanets(world, level)
 	end
 end
 
-local function loadAsteroids(world, level)
-	local asteroidData = worldsData[world][level].asteroids
+local function loadAsteroids()
+	local asteroidData = worldsData[worldIndex][levelIndex].asteroids
 	
 	for indexAsteroidLine = 1, #asteroidData do
 		local currentAsteroidLine = asteroidData[indexAsteroidLine]
@@ -551,8 +554,8 @@ local function loadObjetives()
 	
 end
 
-local function loadEnemies(world, level)
-	local enemyData = worldsData[world][level].enemies
+local function loadEnemies()
+	local enemyData = worldsData[worldIndex][levelIndex].enemies
 	for indexEnemy = 1, #enemyData do
 		local currentEnemy = enemyData[indexEnemy]
 		local enemyObject = enemy.newEnemy(currentEnemy.type, currentEnemy.speed, currentEnemy.radius, currentEnemy.position.pathStart, currentEnemy.position.pathEnd)
@@ -564,13 +567,11 @@ local function loadEnemies(world, level)
 end
 
 local function loadLevel()
-	local level = 2
-	local world = 1
-	loadObjetives(world, level)
-	loadEarth(world, level)
-	loadPlanets(world, level)
-	loadAsteroids(world, level)
-	loadEnemies(world, level)
+	loadObjetives()
+	loadEarth()
+	loadPlanets()
+	loadAsteroids()
+	loadEnemies()
 end
 
 local function createGUI()
@@ -606,8 +607,13 @@ local function createGUI()
 	
 end
 
-local function resetData()
-	isFruitSpawned, isVegetableSpawned, isProteinSpawned = false, false, false
+local function initialize()
+	isFruitSpawned = false
+	isVegetableSpawned = false
+	isProteinSpawned = false
+	
+	worldIndex = 1
+	levelIndex = 2
 	
 	totalCollectedFruits = 0
 	totalCollectedVegetables = 0
@@ -634,7 +640,7 @@ function scene.disableButtons()
 	buttonBack:setEnabled(false)
 end
 
-function scene:createGame()
+local function createGame()
 	system.activate("multitouch")
 	
 	physics.setPositionIterations(1)
@@ -643,7 +649,7 @@ function scene:createGame()
 	physics.setContinuous(false)
 	physics.setGravity(0, 10)
 	
-	dynamicObjects = {}
+	physicsObjectList = {}
 	enemies = {}
 	
 	loadLevel()
@@ -664,7 +670,7 @@ function scene:createGame()
 	Runtime:addEventListener("preCollision", playerCharacter)
 end
 
-function scene:destroyGame()
+local function destroyGame()
 	system.deactivate("multitouch")
 	physics.pause()
 	sound.stopPitch()
@@ -672,11 +678,11 @@ function scene:destroyGame()
 	Runtime:removeEventListener("enterFrame", enterFrame)
 	camera:stop()
 	
-	for index = #dynamicObjects, 1, -1 do
-		display.remove(dynamicObjects[index])
-		dynamicObjects[index] = nil
+	for index = #physicsObjectList, 1, -1 do
+		display.remove(physicsObjectList[index])
+		physicsObjectList[index] = nil
 	end
-	dynamicObjects = nil
+	physicsObjectList = nil
 	
 	spaceships.stop()
 	physics.stop()
@@ -685,13 +691,13 @@ end
 function scene:create(event)
 	local sceneGroup = self.view
 
-
 	createGUI(sceneGroup)
 	
 	createBackground(sceneGroup)
 	sceneGroup:insert(backgroundGroup)
 	
-	setUpCamera()
+	camera = perspective.newCamera()
+
 	sceneGroup:insert(camera)
 	
 	buttonList.back.onRelease = onReleasedBack
@@ -710,9 +716,16 @@ function scene:create(event)
 	analogCircleMove.isVisible = false
 	sceneGroup:insert(analogCircleMove)
 	
-	debugText = display.newText("", display.contentWidth - 100, display.screenOriginY + 100, settings.fontName, 15)
+	local debugTextOptions = {
+		x = display.contentWidth - 100,
+		y = display.screenOriginY + 100,
+		font = settings.fontName,
+		fontSize = 15,
+		width = 400,
+		text = "",
+	}
 	
-	
+	debugText = display.newText(debugTextOptions)
 end
 
 function scene:destroy()
@@ -725,8 +738,10 @@ function scene:show( event )
 
     if ( phase == "will" ) then
 		
-		resetData()
-		self:createGame()
+		initialize()
+		createGame()
+		setUpCamera()
+
 		self.disableButtons()
 	elseif ( phase == "did" ) then
 		
@@ -742,13 +757,13 @@ function scene:hide( event )
     if ( phase == "will" ) then
 		self.disableButtons()
 	elseif ( phase == "did" ) then
-		self:destroyGame()
+		destroyGame()
 	end
 end
 
-scene:addEventListener( "create", scene )
-scene:addEventListener( "destroy", scene )
-scene:addEventListener( "hide", scene )
-scene:addEventListener( "show", scene )
+scene:addEventListener( "create" )
+scene:addEventListener( "destroy" )
+scene:addEventListener( "hide" )
+scene:addEventListener( "show" )
 
 return scene
