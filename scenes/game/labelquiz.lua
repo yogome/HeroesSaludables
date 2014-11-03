@@ -250,7 +250,7 @@ local function gotoNextScreen()
 	transition.to(okButton, {delay = 600, transition = easing.inBack, y = display.viewableContentHeight + okButton.width, time = 1000})
 	transition.to(shipGroup, {delay = 1300, transition = easing.inQuad, x = display.viewableContentWidth + 500, time = 1500, onComplete = function()
 	--	transition.to(shipGroup, {delay = 1500, transition = easing.inQuad, x = display.contentCenterX, time = 1500, onComplete = function()
-		composer.gotoScene("scenes.game.label", {effect = "fade", time = 400})
+		composer.gotoScene("scenes.game.questionquiz", {effect = "fade", time = 400})
 	end})
 	
 	local function yogotarJump()
@@ -267,7 +267,7 @@ local function gotoNextScreen()
 	
 end
 
-local function initScreenElements()
+local function initScreenElements(group)
 	
 	answerPanelGroup.x = display.viewableContentWidth + answerPanelGroup.width
 	answerPanelGroup.y = display.contentCenterY * 1.15
@@ -317,6 +317,7 @@ local function initScreenElements()
 	playerCharacter.group.y = display.contentCenterY * 1.90
 	playerCharacter.group.xScale = 1
 	playerCharacter.group.yScale = 1
+	group:insert(playerCharacter.group)
 	
 	marks.correct.isVisible = false
 	marks.wrong.isVisible = false
@@ -401,7 +402,7 @@ function scene:show( event )
     local phase = event.phase
 
     if ( phase == "will" ) then
-		initScreenElements()
+		initScreenElements(sceneGroup)
 		Runtime:addEventListener("enterFrame", updateGameloop)
 		
 	elseif ( phase == "did" ) then
