@@ -6,6 +6,7 @@ local buttonList = require("data.buttonlist")
 local animator = require("units.animator")
 local players = require("models.players")
 local heroList = require("data.herolist")
+local shipList = require("data.shiplist")
 
 local scene = composer.newScene()
 
@@ -194,7 +195,7 @@ end
 
 local function createPlayerShip(group)
 	
-	local spritesheet = "images/ships/ship3_a.png"
+	local spritesheet = shipList[currentPlayer.shipIndex].spritesheet
 	local markSequenceData = {
 		{name = "play", start = 1 , count = 4, time = 500, loopCount = 0},
 	}
@@ -310,7 +311,7 @@ local function initScreenElements(group)
 	piecesGroup.alpha = 1
 	
 	answerRect.isVisible = false
-	answerRect.alpha = 1
+	answerRect.alpha = 0.7
 	
 	playerCharacter:setAnimation("WALK")
 	playerCharacter.group.x = display.screenOriginX - 200

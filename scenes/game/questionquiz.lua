@@ -6,6 +6,7 @@ local buttonList = require("data.buttonlist")
 local animator = require("units.animator")
 local players = require("models.players")
 local heroList = require("data.herolist")
+local shipList = require("data.shiplist")
 
 local scene = composer.newScene()
 
@@ -192,7 +193,7 @@ end
 
 local function createPlayerShip(group)
 	
-	local spritesheet = "images/ships/ship3_a.png"
+	local spritesheet = shipList[currentPlayer.shipIndex].spritesheet
 	local markSequenceData = {
 		{name = "play", start = 1 , count = 4, time = 500, loopCount = 0},
 	}
@@ -304,7 +305,7 @@ local function initScreenElements(group)
 	
 	
 	answerRect.isVisible = false
-	answerRect.alpha = 1
+	answerRect.alpha = 0.7
 	
 	playerCharacter:setAnimation("WALK")
 	playerCharacter.group.x = display.screenOriginX - 200
@@ -329,9 +330,9 @@ local function createAnswerSquares(group)
 		local answerGroupRect = display.newGroup()
 		answerGroupRect.id = indexRect
 		
-		local answerRect = display.newRect(0, 0, 350, 100)
+		local answerRect = display.newRoundedRect(0, 0, 350, 100, 30)
 		answerRect:setStrokeColor(0)
-		answerRect.strokeWidth = 2
+		answerRect.strokeWidth = 3
 		answerGroupRect:insert(answerRect)
 		
 		local textData = {
@@ -413,7 +414,7 @@ function scene:create( event )
 	
 	--createPuzzlePieces(answerPanelGroup)
 	
-	answerRect = display.newRect(0,0,0,0)
+	answerRect = display.newRoundedRect(0,0,0,0,30)
 	answerRect.strokeWidth = 10
 	answerRect:setStrokeColor(0)
 	answerRect:setFillColor(0,0,0,0)
