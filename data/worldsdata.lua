@@ -148,7 +148,7 @@ local worldsData = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 2000,
 			levelHeight = 2000,
-			ship = {position = {x = 700, y = -200}},
+			ship = {position = {x = 500, y = -200}},
 			objectives = {
 				fruits = 8,
 				vegetables = 10,
@@ -175,7 +175,7 @@ local worldsData = {
 			earth = {
 				name = "earth",
 				asset = "images/planets/earth_happy.png",
-				position = {x = -800, y = -700},
+				position = {x = -600, y = -700},
 				scaleFactor = 0.75
 			},
 			planets = {
