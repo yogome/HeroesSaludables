@@ -9,6 +9,7 @@ local spine = require( "libs.helpers.spine" )
 local herolist = require( "data.herolist" )
 local settings = require( "settings" )
 local colors = require( "libs.helpers.colors" )
+local shipList = require("data.shiplist")
 
 local scene = composer.newScene() 
 ----------------------------------------------- Variables
@@ -364,15 +365,9 @@ local function createShips(group)
 	shipsPreview = display.newGroup()
 	shipsPreview.ships = {}
 	
-	local shipsData = {
-		[1] = {spritesheet = "images/ships/ship1_a.png"},
-		[2] = {spritesheet = "images/ships/ship2_a.png"},
-		[3] = {spritesheet = "images/ships/ship3_a.png"},
-	}
-	
-	for indexShip = 1, #shipsData do
+	for indexShip = 1, #shipList do
 		
-		local spritesheet = shipsData[indexShip].spritesheet
+		local spritesheet = shipList[indexShip].spritesheet
 		local markSequenceData = {
 			{name = "play", start = 1 , count = 4, time = 500, loopCount = 0},
 		}
@@ -395,8 +390,8 @@ local function initializeShips()
 	for indexShip = 1, #shipsPreview.ships do
 		local currentShip = shipsPreview.ships[indexShip]
 		currentShip.isVisible = false
-		currentShip.x = display.contentCenterX * 0.95
-		currentShip.y = display.contentCenterY * 0.50
+		currentShip.x = display.contentCenterX * 0.18
+		currentShip.y = display.contentCenterY * 0.60
 		currentShip:play()
 	end
 	
