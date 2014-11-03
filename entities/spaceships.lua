@@ -10,6 +10,7 @@ local spaceshipList
 ---------------------------------------------- Constants
 local ANALOG_MAX = 128
 local MAX_SHIP_VELOCITY = 500
+local THRESHOLD_ROTATION_ANIMATION = 0.1
 ---------------------------------------------- Caches
 local mathAbs = math.abs 
 
@@ -17,6 +18,7 @@ local mathAbs = math.abs
 local function enterFrame()
 	for index = #spaceshipList, 1, -1 do
 		local spaceship = spaceshipList[index]
+		spaceship:update()
 	end
 end
 
@@ -48,6 +50,11 @@ local function createNewShip(newShip, shipData)
 	
 	local shipImage = display.newImageRect("images/ships/yogotarShip.png", 118, 89 )
 	newShip:insert(shipImage)
+	
+	function newShip:update()
+		local vX, vY = self:getLinearVelocity()
+		self.rotation = (vY * THRESHOLD_ROTATION_ANIMATION) * self.xScale
+	end
 	
 	function newShip:analog(analogX, analogY)
 		if analogX ~= 0 or analogY ~= 0 then

@@ -633,7 +633,7 @@ local function initialize()
 	}
 	
 	worldIndex = 1
-	levelIndex = 2
+	levelIndex = 1
 	
 	totalCollectedFruits = 0
 	totalCollectedVegetables = 0

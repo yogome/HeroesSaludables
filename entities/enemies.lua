@@ -12,6 +12,7 @@ local COLOR_INNER_RANGE_CIRCLE = {0.5,0.1}
 local THRESHOLD_PATROLTIME = 8
 local TOLERANCE_PATROL = 10
 local THRESHOLD_FOLLOWSPEED = 0.01
+local THRESHOLD_ROTATION_ANIMATION = 2
 ---------------------------------------------- Caches
 local mathAbs = math.abs 
 local squareRoot = math.sqrt
@@ -106,6 +107,8 @@ function enemyFactory.newEnemy(enemySpawnData)
 	enemy.target = nil
 	enemy.isPatroling = false
 	
+	enemy.oldY = 0
+	
 	enemy.isTargetViewable = isTargetViewable
 	enemy.updatePatrol = updatePatrol
 	enemy.followTarget = followTarget
@@ -122,6 +125,10 @@ function enemyFactory.newEnemy(enemySpawnData)
 		else
 			self:updatePatrol()
 		end
+		
+		local vY = -(self.oldY - self.y)
+		self.rotation = (self.rotation + (vY * THRESHOLD_ROTATION_ANIMATION) * self.xScale) * 0.5
+		self.oldY = self.y
 	end
 	
 	function enemy:setTarget(newTarget)

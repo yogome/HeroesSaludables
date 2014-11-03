@@ -1,8 +1,74 @@
 local worldsData = {
 	-- World 1
 	[1] = {
-		--Level 1
 		[1] = {
+			background = "images/backgrounds/space.png",
+			levelWidth = 2000,
+			levelHeight = 2000,
+			ship = {position = {x = 500, y = -200}},
+			objectives = {
+				fruits = 8,
+				vegetables = 10,
+				proteins = 5
+			},
+			enemySpawnData = {
+				{
+					type = "follower",
+					spawnPoint = { x = -500, y = 0},
+					patrolPath = {
+						[1] = { x = -500, y = 0},
+						[2] = {x = 0, y = 500}
+					}
+				},
+				{
+					type = "canoner",
+					spawnPoint = { x = 400, y = -800},
+					patrolPath = {
+						[1] = { x = 400, y = -800},
+						[2] = {x = 0, y = -400}
+					}
+				},
+			},
+			earth = {
+				name = "earth",
+				asset = "images/planets/earth_happy.png",
+				position = {x = -600, y = -700},
+				scaleFactor = 0.75
+			},
+			planets = {
+				[1] = {
+					foodType = "fruit",
+					asset = "images/planets/fruits_1.png",
+					position = {x = -700, y = 700}
+				},
+				[2] = {
+					foodType = "protein",
+					asset = "images/planets/proteins_1.png",
+					position = {x = 500, y = 400}
+				},
+--				[3] = {
+--					foodType = "vegetable",
+--					asset = "images/planets/vegetables_1.png",
+--					position = {x = -600, y = 800}
+--				}
+			},
+			asteroids = {
+				[1] = {
+						lineStart = {x = -200, y = 600},
+						lineEnd = {x = -700, y = 100},
+						easingX = easing.inSine,
+						easingY = easing.outSine,
+				},
+				[2] = {
+						lineStart = {x = 100, y = -200},
+						lineEnd = {x = 600, y = -700},
+						easingX = easing.inSine,
+						easingY = easing.outSine,
+				},
+			},
+		},
+		--Level 2
+		[2] = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
 			levelHeight = 2000,
@@ -144,72 +210,6 @@ local worldsData = {
 				}
 			}
 		},
-		[2] = {
-			background = "images/backgrounds/space.png",
-			levelWidth = 2000,
-			levelHeight = 2000,
-			ship = {position = {x = 500, y = -200}},
-			objectives = {
-				fruits = 8,
-				vegetables = 10,
-				proteins = 5
-			},
-			enemySpawnData = {
-				{
-					type = "follower",
-					spawnPoint = { x = -500, y = 0},
-					patrolPath = {
-						[1] = { x = -500, y = 0},
-						[2] = {x = 0, y = 500}
-					}
-				},
-				{
-					type = "canoner",
-					spawnPoint = { x = 400, y = -800},
-					patrolPath = {
-						[1] = { x = 400, y = -800},
-						[2] = {x = 0, y = -400}
-					}
-				},
-			},
-			earth = {
-				name = "earth",
-				asset = "images/planets/earth_happy.png",
-				position = {x = -600, y = -700},
-				scaleFactor = 0.75
-			},
-			planets = {
-				[1] = {
-					foodType = "fruit",
-					asset = "images/planets/fruits_1.png",
-					position = {x = -700, y = 700}
-				},
-				[2] = {
-					foodType = "protein",
-					asset = "images/planets/proteins_1.png",
-					position = {x = 500, y = 400}
-				},
---				[3] = {
---					foodType = "vegetable",
---					asset = "images/planets/vegetables_1.png",
---					position = {x = -600, y = 800}
---				}
-			},
-			asteroids = {
-				[1] = {
-						lineStart = {x = -200, y = 600},
-						lineEnd = {x = -700, y = 100},
-						easingX = easing.inSine,
-						easingY = easing.outSine,
-				},
-				[2] = {
-						lineStart = {x = 100, y = -200},
-						lineEnd = {x = 600, y = -700},
-						easingX = easing.inSine,
-						easingY = easing.outSine,
-				},
-			},
-		}
 	},
 	-- World 2
 	[2] = {
