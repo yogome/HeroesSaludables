@@ -11,7 +11,7 @@ local scene = composer.newScene()
 -- -----------------------------------------------------------------------------------------------------------------
 
 -- local forward references should go here
-local puzzlePanel, puzzleContainer, smallPanelGroup, largePanelGroup
+local puzzlePanel, puzzleContainer, smallPanelGroup, largePanelGroup, smallPanel
 local piecesGroup
 local panelText, titleText
 local okButton
@@ -104,12 +104,12 @@ local function onTouchPiece(event)
 		elseif "ended" == phase or "cancelled" == phase then
 			display.getCurrentStage():setFocus( nil )
 			label.isFocus = false
+			
 			local labelContentX, labelContentY = label:localToContent(0, 0)
 			local labelInPanelX, labelInPanelY = puzzlePanel:contentToLocal(labelContentX, labelContentY)
 			
 		    local distanceToAnswer = mathSqrt((labelInPanelX - correctPositions[label.id].x)*(labelInPanelX - correctPositions[label.id].x) + (labelInPanelY - correctPositions[label.id].y)*(labelInPanelY - correctPositions[label.id].y))
 			if distanceToAnswer <= 45 then
-				
 				label.scaledUp = true
 				label.isCorrect = true
 				local correctX, correctY = puzzlePanel:localToContent(correctPositions[label.id].x, correctPositions[label.id].y)
@@ -152,21 +152,76 @@ local function createPuzzlePieces(group)
 	for indexPiece = 1, NUMBER_PIECES do
 		local piece = display.newImage("images/label/piece"..indexPiece..".png")
 		piece.id = indexPiece
-		piece.x = labelpositions[indexPiece].x
-		piece.y = labelpositions[indexPiece].y
-		piece:addEventListener("touch", onTouchPiece)
 		piecesGroup.pieces[indexPiece] = piece
 		piecesGroup:insert(piece)
 	end
-	piecesGroup.isVisible = false
-	piecesGroup.alpha = 0
 	group:insert(piecesGroup)
 end
 
 local function gotoNextScreen()
-	composer.gotoScene("scenes.game.shooter")
+	
+	okButton:setEnabled(false)
+	
+	transition.to(bgShine, {alpha = 0, time = 500})
+	transition.to(piecesGroup, {alpha = 0, time = 500})
+	transition.to(panelText, {alpha = 0, time = 500})
+	transition.to(puzzlePanel, {delay = 600, transition = easing.inBack, x = display.viewableContentWidth + puzzlePanel.width, time=1000})
+	transition.to(puzzleContainer, {delay = 600, transition = easing.inBack, x = display.screenOriginX - puzzleContainer.width, time=1000})
+	transition.to(smallPanelGroup, {delay = 600, transition = easing.inBack, y = display.screenOriginY - smallPanelGroup.height, time=1000})
+	transition.to(okButton, {delay = 600, transition = easing.inBack, y = display.viewableContentHeight + okButton.width, time = 1000, onComplete = function()
+		composer.gotoScene("scenes.game.tool")
+	end})
+
 end
 
+local function initScreenElements()
+	
+	puzzlePanel.x = display.viewableContentWidth + puzzlePanel.width
+	puzzlePanel.y = display.contentCenterY * 1.15
+	
+	bgShine.isVisible = false
+	bgShine.alpha = 0
+	bgShine.x = display.contentCenterX * 1.50
+	bgShine.y = display.contentCenterY * 1.15
+	bgShine.rotation = 0
+	
+	puzzleContainer.x = display.screenOriginX - puzzleContainer.width
+	puzzleContainer.y = display.contentCenterY * 1.35
+	
+	smallPanelGroup.x = display.contentCenterX * 0.50
+	smallPanelGroup.y = display.screenOriginY - smallPanel.height
+	
+	titleText.text = "Arma la etiqueta nutricional"
+	titleText.size = 28
+	titleText.x = smallPanel.x
+	titleText.y = smallPanel.y
+	
+	panelText.isVisible = false
+	panelText.alpha = 0
+	panelText.x = display.contentCenterX * 0.48
+	panelText.y = display.contentCenterY * 1.35
+	
+	okButton.isVisible = false
+	okButton.alpha = 0
+	okButton:setEnabled(false)
+	okButton.x = display.contentCenterX
+	okButton.y = display.contentCenterY * 1.80
+	
+	for indexPiece = 1, #piecesGroup.pieces do
+		local currentPiece = piecesGroup.pieces[indexPiece]
+		currentPiece.x = labelpositions[indexPiece].x
+		currentPiece.y = labelpositions[indexPiece].y
+		currentPiece.xScale = 1
+		currentPiece.yScale = 1
+		currentPiece.isCorrect = false
+		currentPiece.scaledUp = false
+		currentPiece:addEventListener("touch", onTouchPiece)
+	end
+	
+	piecesGroup.isVisible = false
+	piecesGroup.alpha = 0
+	
+end
 ---------------------------------------------------------------------------------
 function scene:create( event )
 
@@ -175,37 +230,24 @@ function scene:create( event )
 	createBackground(sceneGroup)
 	
 	puzzlePanel = display.newImage("images/label/panel_02.png")
-	puzzlePanel.x = display.viewableContentWidth + puzzlePanel.width
-	puzzlePanel.y = display.contentCenterY * 1.15
 	sceneGroup:insert(puzzlePanel)
 	
 	bgShine = display.newImage("images/backgrounds/shine.png")
-	bgShine.isVisible = false
-	bgShine.alpha = 0
-	bgShine.x = display.contentCenterX * 1.50
-	bgShine.y = display.contentCenterY * 1.15
 	sceneGroup:insert(bgShine)
 	
 	puzzleContainer = display.newImage("images/label/panel_01.png")
-	puzzleContainer.y = display.contentCenterY * 1.35
-	puzzleContainer.x = display.screenOriginX - puzzleContainer.width
 	sceneGroup:insert(puzzleContainer)
 	
 	smallPanelGroup = display.newGroup()
-	
-	local smallPanel = display.newImage("images/label/smallpanel.png")
-	smallPanelGroup.x = display.contentCenterX * 0.50
-	smallPanelGroup.y = display.screenOriginY - smallPanel.height
+	smallPanel = display.newImage("images/label/smallpanel.png")
 	smallPanelGroup:insert(smallPanel)
 	
-	titleText =  display.newText("Arma la etiqueta nutricional", smallPanel.x, smallPanel.y, settings.fontName, 28)
+	titleText =  display.newText("Arma la etiqueta nutricional", 0, 0, settings.fontName, 28)
 	smallPanelGroup:insert(titleText)
 	sceneGroup:insert(smallPanelGroup)
 	
 	local textData = {
-		text = "Una etiqueta nuricional es aquella información que nos indica el valor energético y contenido del alimento en cuanto a proteínas, hidratos de carbono, grasas, fibra alimentaria, sodio, vitaminas y minerales. Debe expresarse por 100 gramos o 100 miligramos.",
-		x = display.contentCenterX * 0.48,
-		y = display.contentCenterY * 1.35,
+		text = "Una etiqueta nutricional es aquella información que nos indica el valor energético y contenido del alimento en cuanto a proteínas, hidratos de carbono, grasas, fibra alimentaria, sodio, vitaminas y minerales. Debe expresarse por 100 gramos o 100 miligramos.",
 		width = 400,
 		font = settings.fontName,   
 		fontSize = 28,
@@ -213,27 +255,16 @@ function scene:create( event )
 	}
 	
 	panelText = display.newText(textData)
-	panelText.isVisible = false
-	panelText.alpha = 0
 	sceneGroup:insert(panelText)
 	
 	local buttonData = buttonList.play
 	buttonData.onRelease = gotoNextScreen
 	
 	okButton = widget.newButton(buttonData)
-	okButton.isVisible = false
-	okButton.alpha = 0
-	okButton:setEnabled(false)
-	okButton.x = display.contentCenterX
-	okButton.y = display.contentCenterY * 1.80
 	
 	sceneGroup:insert(okButton)
 	
 	createPuzzlePieces(sceneGroup)
-	--local background = display.newImage("images/backgrounds/label.png")
-	--background.x = display.contentCenterX
-	--background.y = display.contentCenterY
-	--sceneGroup:insert(background)
 end
 
 function scene:show( event )
@@ -243,18 +274,18 @@ function scene:show( event )
 
     if ( phase == "will" ) then
 		
-		bgShine.rotation = 0
+		initScreenElements()
 		
 	elseif ( phase == "did" ) then
 		
-		transition.to(puzzlePanel, {transition = easing.outBounce, x = display.contentCenterX * 1.50, time=1000})
-		transition.to(puzzleContainer, {transition = easing.outBounce, x = display.contentCenterX * 0.50, time=1000, onComplete = function()
+		transition.to(puzzlePanel, {delay = 300, transition = easing.outBounce, x = display.contentCenterX * 1.50, time=1000})
+		transition.to(puzzleContainer, {delay = 300, transition = easing.outBounce, x = display.contentCenterX * 0.50, time=1000, onComplete = function()
 			piecesGroup.isVisible = true;
 			piecesGroup.x = puzzleContainer.x
 			piecesGroup.y = puzzleContainer.y
 			transition.to(piecesGroup, {time = 500, alpha = 1})
 		end})
-		transition.to(smallPanelGroup, {transition = easing.outBounce, y = display.contentCenterY * 0.30, time=1000})
+		transition.to(smallPanelGroup, {delay = 300, transition = easing.outBounce, y = display.contentCenterY * 0.30, time=1000})
 			
 		timer.performWithDelay()
     end
