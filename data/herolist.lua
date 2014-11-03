@@ -1,55 +1,64 @@
 local herolist = {
 	[1] = {
 		name = "EAGLE",
-		skinName = "Heroboy3",
+		skinName = "Eagle",
 		iconPath = "images/heroes/eagle.png",
 	},
 	[2] = {
 		name = "ARTHURIUS",
-		skinName = "Heroboy4",
+		skinName = "Arthurius",
 		iconPath = "images/heroes/arthurius.png",
 	},
 	[3] = {
 		name = "DYNAMO",
-		skinName = "Heroboy5",
+		skinName = "Dynamo",
 		iconPath = "images/heroes/dynamo.png",
 	},
 	[4] = {
 		name = "JUSTICIA",
-		skinName = "Heroboy1",
+		skinName = "Justice",
 		iconPath = "images/heroes/justicia.png",
 	},
 	[5] = {
 		name = "MAC",
-		skinName = "Heroboy2",
+		skinName = "Mac",
 		iconPath = "images/heroes/mac.png",
 	},
 	[6] = {
 		name = "LUNA",
-		skinName = "Herogirl3",
+		skinName = "Luna",
 		iconPath = "images/heroes/luna.png",
 	},
 	[7] = {
 		name = "THEFFANIE",
-		skinName = "Herogirl4",
+		skinName = "Theffanie",
 		iconPath = "images/heroes/theffanie.png",
 	},
 	[8] = {
 		name = "QUARKY",
-		skinName = "Herogirl5",
+		skinName = "Quarky",
 		iconPath = "images/heroes/quarky.png",
 	},
 	[9] = {
 		name = "PAZ",
-		skinName = "Herogirl1",
+		skinName = "Paz",
 		iconPath = "images/heroes/paz.png",
 	},
 	[10] = {
 		name = "CAMILLA",
-		skinName = "Herogirl2",
+		skinName = "Camila",
 		iconPath = "images/heroes/camilla.png",
 	},
-	
+	[11] = {
+		name = "TOMIKO",
+		skinName = "Tomiko",
+		iconPath = "images/heroes/tomiko.png",
+	},
+	[12] = {
+		name = "NAO",
+		skinName = "Nao",
+		iconPath = "images/heroes/mac.png",
+	},
 }
 
 return herolist
