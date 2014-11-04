@@ -83,8 +83,8 @@ local ITEMS_MENU = {
 	},
 	["ships"] = {
 		[1] = {price = 0, image = "images/ships/shop_ship1.png"},
-		[2] = {price = 0, image = "images/ships/shop_ship2.png"},
-		[3] = {price = 0, image = "images/ships/shop_ship3.png"},
+		[2] = {price = 1500, image = "images/ships/shop_ship2.png"},
+		[3] = {price = 3000, image = "images/ships/shop_ship3.png"},
 	},
 }
 local SIZE_IMAGE_RECT = 190
