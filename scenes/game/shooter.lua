@@ -12,6 +12,8 @@ local worldsData = require("data.worldsdata")
 local foodlist = require("data.foodlist")
 local enemyFactory = require("entities.enemies")
 local extramath = require( "libs.helpers.extramath" )
+local loseScene = require( "scenes.game.lose" )
+local winScene = require( "scenes.game.win" )
 
 local scene = composer.newScene() 
 ----------------------------------------------- Variables
@@ -238,6 +240,10 @@ local function onKeyEvent( event )
 	return handled
 end 
 
+local function retryGame()
+
+end
+
 local function updateEnemies()
 	for indexEnemy = 1, #enemies do
 		local currentEnemy = enemies[indexEnemy]
@@ -363,6 +369,31 @@ local function removeEnemyTarget(enemy, target)
 	end
 end
 
+local function checkAmounts()
+	local isComplete = true
+	for key, value in pairs(collectedFood) do
+		if value < targetAmounts[key] then
+			isComplete = false
+		end
+	end
+	
+	if isComplete then
+		local function onBackReleased()
+			winScene.disableButtons()
+			composer.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
+		end
+		local function onRetryReleased()
+			winScene.disableButtons()
+			retryGame()
+		end
+		local function onPlayReleased()
+			winScene.disableButtons()
+			composer.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
+		end
+		winScene.show(heartIndicator.currentHearts, 500, onBackReleased, onRetryReleased, onPlayReleased)
+	end
+end
+
 local function collectBubble(earth)
 	if playerCharacter.isCarringItem then
 		foodBubbleGroup:insert(playerCharacter.item)
@@ -377,11 +408,24 @@ local function collectBubble(earth)
 		local foodType = playerCharacter.item.type
 		collectedFood[foodType] = collectedFood[foodType] + 1
 		foodTexts[foodType].text = collectedFood[foodType].."/"..targetAmounts[foodType]
+		
+		checkAmounts()
 	end
 end
 
 local function gameOver()
 	playerCharacter:destroy()
+	
+	local function onBackReleased()
+		loseScene.disableButtons()
+		composer.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
+	end
+	local function onRetryReleased()
+		loseScene.disableButtons()
+		retryGame()
+	end
+	
+	loseScene.show(onBackReleased, onRetryReleased)
 end
 
 local function addDamage(bullet)

@@ -7,6 +7,7 @@ end
 ----------------------------------------------- Data
 local buttonlist = {
 	back = { width = 128, height = 128, defaultFile = "images/buttons/back_01.png", overFile = "images/buttons/back_02.png", onPress = playSound},
+	retry = { width = 128, height = 128, defaultFile = "images/buttons/retry_1.png", overFile = "images/buttons/retry_2.png", onPress = playSound},
 	play = { width = 128, height = 128, defaultFile = "images/buttons/play_01.png", overFile = "images/buttons/play_02.png", onPress = playSound},
 	ok = { width = 128, height = 128, defaultFile = "images/buttons/bnt_ok.png", overFile = "images/buttons/bnt_ok.png", onPress = playSound},
 	settings = { width = 128, height = 128, defaultFile = "images/buttons/bnt_settings.png", overFile = "images/buttons/bnt_settings.png", onPress = playSound},
