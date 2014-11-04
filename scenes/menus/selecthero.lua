@@ -91,25 +91,25 @@ local SIZE_IMAGE_RECT = 190
 
 local SCALE_ITEMS = 0.6
 local SCALE_BUY_PRICE_BG = 0.5
-local SCALE_BUTTON_BUY = 0.5
+local SCALE_BUTTON_BUY = 0.4
 local SCALE_HERO_BASE = 0.8
 local SCALE_COINS_BG = 0.4
-local SCALE_NAME_BG = 1
+local SCALE_NAME_BG = 0.4
 
 local SIZE_FONT_PRICE = 43
 local SIZE_FONT_COINS = 55
 local SIZE_FONT_NAME = 50
 local SIZE_FONT_NAMEFIELD = 50
 
-local OFFSET_NAME_PANEL = {xRatio = 0.35, y = 64 + MARGIN_BUTTON}
-local OFFSET_COINS_PANEL = {xRatio = 0.7, y = 64 + MARGIN_BUTTON}
+local OFFSET_NAME_PANEL = {xRatio = 0.35, y = 25 + MARGIN_BUTTON}
+local OFFSET_COINS_PANEL = {xRatio = 0.7, y = 28 + MARGIN_BUTTON}
 local OFFSET_ITEM_PRICE = {x = 35, y = 80}
 local OFFSET_IMAGERECT = {x = 0, y = -34}
-local OFFSET_BUY_PRICE = {x = 0, y = 30}
-local OFFSET_BUTTON_PRICE = {x = 0, y = 130}
-local OFFSET_PRICE_LABEL_TEXT = {x = 30, y = 0}
-local OFFSET_COINS_TEXT = {x = 20, y = 4}
-local OFFSET_NAME_TEXT = {x = -30, y = 4}
+local OFFSET_BUY_PRICE = {x = 0, y = 40}
+local OFFSET_BUTTON_PRICE = {x = 20, y = 140}
+local OFFSET_PRICE_LABEL_TEXT = {x = 30, y = 10}
+local OFFSET_COINS_TEXT = {x = -20, y = -20}
+local OFFSET_NAME_TEXT = {x = 0, y = -15}
 
 local ITEMS_PER_PAGE = 6
 ----------------------------------------------- Functions
@@ -191,7 +191,7 @@ local function itemTouched(item)
 			buttonBuy:setFillColor(unpack(colors.darkGray))
 			selectedStroke.stroke = colors.red
 		else
-			buyPriceText:setFillColor(unpack(colors.black))
+			buyPriceText:setFillColor(unpack(colors.white))
 			buttonBuy:setFillColor(unpack(colors.white))
 			selectedStroke.stroke = colors.lime
 		end
@@ -329,7 +329,7 @@ local function createTextbox()
 	nameTextField.inputType = "default"
 	nameTextField.hasBackground = false
 	nameTextField:setReturnKey("done")
-	nameTextField:setTextColor(0)
+	nameTextField:setTextColor(1)
 	nameTextField.alpha = 1
 	nameTextField.isEditable = true
 	scene.view:insert(nameTextField)
@@ -638,12 +638,12 @@ function scene:create(event)
 		x = OFFSET_COINS_TEXT.x,
 		y = OFFSET_COINS_TEXT.y,
 		width = 180,
-		align = "left",
+		align = "center",
 		font = settings.fontName,
 		fontSize = SIZE_FONT_COINS,
 	}
 	coinsText = display.newText( priceTextOptions )
-	coinsText:setFillColor(0)
+	coinsText:setFillColor(1)
 	coinsPanel:insert(coinsText)
 	
 	nameBackground = display.newImage("images/selecthero/name.png")
@@ -663,7 +663,7 @@ function scene:create(event)
 	}
 	
 	namePlaceholder = display.newText(nameTextOptions)
-	namePlaceholder:setFillColor(0)
+	namePlaceholder:setFillColor(1)
 	sceneGroup:insert(namePlaceholder)
 	
 	heroBase = display.newImage("images/selecthero/base.png")
@@ -690,7 +690,7 @@ function scene:create(event)
 	}
 						
 	buyPriceText = display.newText(priceTextOptions)
-	buyPriceText:setFillColor(0)
+	buyPriceText:setFillColor(1)
 	priceLabel:insert(buyPriceText)
 	
 	buttonBuy = display.newImage("images/selecthero/buy.png")
