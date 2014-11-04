@@ -39,11 +39,11 @@ local mathRandom = math.random
 -- -------------------------------------------------------------------------------
 
 local questions = {
-	[1] = {text = "¿Respuesta 1?", answerid = 1}, 
-	[2] = {text = "¿Respuesta 2?", answerid = 2},
-	[3] = {text = "¿Respuesta 3?", answerid = 3},
-	[4] = {text = "¿Respuesta 4?", answerid = 4},
-	[5] = {text = "¿Respuesta 5?", answerid = 5},
+	[1] = {text = "¿Dónde se ven las proteínas del producto?", answerid = 5}, 
+	[2] = {text = "¿En que parte se indica el sodio del producto?", answerid = 4},
+	[3] = {text = "¿Dónde se indica el tamaño de la porción en el producto?", answerid = 1},
+	[4] = {text = "¿Dónde se indica la cantidad por porción del producto?", answerid = 2},
+	[5] = {text = "¿Dónde se indican las grasas totales en el producto?", answerid = 4},
 }
 
 local labelpositions = {
@@ -287,7 +287,7 @@ local function initScreenElements(group)
 	
 	currentQuestion = questions[randomQuestion]
 	titleText.text = currentQuestion.text
-	titleText.size = 28
+	titleText.fontSize = 28
 	titleText.x = questionPanel.x
 	titleText.y = questionPanel.y
 	
@@ -361,14 +361,14 @@ function scene:create( event )
 	questionPanelGroup:insert(questionPanel)
 	
 	local textData = {
-		text = "Una etiqueta nutricional es aquella información que nos indica el valor energético y contenido del alimento en cuanto a proteínas, hidratos de carbono, grasas, fibra alimentaria, sodio, vitaminas y minerales. Debe expresarse por 100 gramos o 100 miligramos.",
-		width = 400,
+		text = "",
+		width = 350,
 		font = settings.fontName,   
 		fontSize = 28,
 		align = "center"
 	}
 	
-	titleText =  display.newText("Arma la etiqueta nutricional", 0, 0, settings.fontName, 28)
+	titleText =  display.newText(textData)
 	questionPanelGroup:insert(titleText)
 	sceneGroup:insert(questionPanelGroup)
 	

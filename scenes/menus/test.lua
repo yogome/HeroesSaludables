@@ -46,7 +46,7 @@ local function goLevels()
 end
 
 local function goLabel()
-	composer.gotoScene("scenes.game.label")
+	composer.gotoScene("scenes.game.labelquiz")
 end
 
 local function goQuestion()
