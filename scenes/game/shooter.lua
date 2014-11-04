@@ -14,6 +14,7 @@ local enemyFactory = require("entities.enemies")
 local extramath = require( "libs.helpers.extramath" )
 local loseScene = require( "scenes.game.lose" )
 local winScene = require( "scenes.game.win" )
+local players = require( "models.players" )
 
 local scene = composer.newScene() 
 ----------------------------------------------- Variables
@@ -397,6 +398,9 @@ local function checkAmounts()
 				winScene.disableButtons()
 				composer.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
 			end
+			local currentPlayer = players.getCurrent()
+			currentPlayer.coins = currentPlayer.coins + 500
+			players.save(currentPlayer)
 			winScene.show(heartIndicator.currentHearts, 500, onBackReleased, onRetryReleased, onPlayReleased)
 		end
 	end
