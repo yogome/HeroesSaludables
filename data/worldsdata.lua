@@ -11,9 +11,9 @@ local worldsData = {
 			levelHeight = 2000,
 			ship = {position = {x = 500, y = -200}},
 			objectives = {
-				fruit = 1,
-				vegetable = 1,
-				protein = 1,
+				fruit = 4,
+				vegetable = 3,
+				protein = 3,
 			},
 			enemySpawnData = {
 				{
@@ -86,9 +86,9 @@ local worldsData = {
 			levelHeight = 2000,
 			ship = {position = {x = -1500, y = 800}},
 			objectives = {
-				fruit = 8,
-				vegetable = 10,
-				protein = 5
+				fruit = 6,
+				vegetable = 6,
+				protein = 6
 			},
 			enemySpawnData = {
 				{

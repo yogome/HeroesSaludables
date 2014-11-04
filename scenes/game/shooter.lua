@@ -42,7 +42,7 @@ local editorPreviewGroup, editorPreviewLine
 local spaceObjects, objectDespawnX, objectSpawnX, objectDespawnY, objectSpawnY
 local spawnZoneWidth, spawnZoneHeight, halfSpawnZoneWidth, halfSpawnZoneHeight
 -----------------------------------------------
-
+local isGameover
 local backgroundGroup
 local foodBubbleGroup
 local enemies
@@ -241,7 +241,7 @@ local function onKeyEvent( event )
 end 
 
 local function retryGame()
-
+	composer.gotoScene("scenes.game.shooter")
 end
 
 local function updateEnemies()
@@ -260,7 +260,7 @@ local function showDebugInformation()
 		
 		Press N,M to set draw mode
 		
-		Press L to dump level
+		Press L to dump level (NOT IMPLEMENTED)
 		
 		Press U to create asteroids
 		Press I to delete asteroids
@@ -314,15 +314,19 @@ local function spawnBubble(planet)
 end
 
 local function grabFruit(fruit)
-	physics.removeBody(fruit)
-	local contentX, contentY = fruit:localToContent(0,0)
-	local firstX, firstY = playerCharacter:contentToLocal(contentX, contentY)
+	if not fruit.isGrabbed then
+		fruit.isGrabbed = true
+		
+		physics.removeBody(fruit)
+		local contentX, contentY = fruit:localToContent(0,0)
+		local firstX, firstY = playerCharacter:contentToLocal(contentX, contentY)
 
-	fruit.x = firstX
-	fruit.y = firstY
-	playerCharacter:setAnimation("closing")
-	transition.to(fruit, {x = OFFSET_GRABFRUIT.x, y = OFFSET_GRABFRUIT.y, time = 500, transition = easing.inOutSine})
-	playerCharacter:insert(fruit)
+		fruit.x = firstX
+		fruit.y = firstY
+		playerCharacter:setAnimation("closing")
+		transition.to(fruit, {x = OFFSET_GRABFRUIT.x, y = OFFSET_GRABFRUIT.y, time = 500, transition = easing.inOutSine})
+		playerCharacter:insert(fruit)
+	end
 end
 
 local function checkPlayerPreCollision(player, object)
@@ -348,6 +352,7 @@ end
 
 local function hideBubble()
 	playerCharacter.item.isVisible = false
+	playerCharacter.item.isGrabbed = false
 	playerCharacter.isCarringItem = false
 	
 	isFoodSpawned[playerCharacter.item.type] = false
@@ -378,19 +383,22 @@ local function checkAmounts()
 	end
 	
 	if isComplete then
-		local function onBackReleased()
-			winScene.disableButtons()
-			composer.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
+		if not isGameover then
+			isGameover = true
+			local function onBackReleased()
+				winScene.disableButtons()
+				composer.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
+			end
+			local function onRetryReleased()
+				winScene.disableButtons()
+				retryGame()
+			end
+			local function onPlayReleased()
+				winScene.disableButtons()
+				composer.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
+			end
+			winScene.show(heartIndicator.currentHearts, 500, onBackReleased, onRetryReleased, onPlayReleased)
 		end
-		local function onRetryReleased()
-			winScene.disableButtons()
-			retryGame()
-		end
-		local function onPlayReleased()
-			winScene.disableButtons()
-			composer.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
-		end
-		winScene.show(heartIndicator.currentHearts, 500, onBackReleased, onRetryReleased, onPlayReleased)
 	end
 end
 
@@ -414,18 +422,21 @@ local function collectBubble(earth)
 end
 
 local function gameOver()
-	playerCharacter:destroy()
+	if not isGameover then
+		isGameover = true
+		playerCharacter:destroy()
 	
-	local function onBackReleased()
-		loseScene.disableButtons()
-		composer.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
+		local function onBackReleased()
+			loseScene.disableButtons()
+			composer.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
+		end
+		local function onRetryReleased()
+			loseScene.disableButtons()
+			retryGame()
+		end
+
+		loseScene.show(onBackReleased, onRetryReleased)
 	end
-	local function onRetryReleased()
-		loseScene.disableButtons()
-		retryGame()
-	end
-	
-	loseScene.show(onBackReleased, onRetryReleased)
 end
 
 local function addDamage(bullet)
@@ -889,12 +900,32 @@ local function createHUD(sceneView)
 	heartIndicator.y = display.screenOriginY + PADDING + heartIndicatorBG.height * 0.5 * SCALE_HEARTINDICATOR
 	hudGroup:insert(heartIndicator)
 	
+	local explainTextOptions = {
+		x = display.contentCenterX,
+		y = display.contentCenterY,
+		font = settings.fontName,
+		fontSize = 45,
+		width = 550,
+		text = "Entrega las porciones adecuadas para tener una alimentación balanceada.",
+		align = "center",
+	}
+
+	local explainText = display.newText(explainTextOptions)
+	explainText.alpha = 0
+	transition.to(explainText, {delay = 700, time = 600, alpha = 1, transition = easing.outQuad, onComplete = function()
+		transition.to(explainText, {delay = 2600, time = 600, alpha = 0, transition = easing.outQuad, onComplete = function()
+			display.remove(explainText)
+		end})
+	end})
+	hudGroup:insert(explainText)
+	
 	sceneView:insert(hudGroup)
 end
 
 local function initialize(event)
 	local params = event.params or {}
 	
+	isGameover = false
 	isFoodSpawned = {
 		["fruit"] = false,
 		["vegetable"] = false,

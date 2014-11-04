@@ -25,22 +25,22 @@ local DEFAULT_COINS = 12345
 local SIDE_MASTER = -1
 local SCALE_MASTER = 0.9
 local OFFSET_MASTER = {x = -250, y = -50}
-local SCALE_STARS = 0.38
+local SCALE_STARS = 0.45
 local OFFSETS_STARS ={
-	[1] = {x = 110, y = -29},
-	[2] = {x = 200, y = -62},
-	[3] = {x = 290, y = -29},
+	[1] = {x = -65, y = 80},
+	[2] = {x = 50, y = 80},
+	[3] = {x = 160, y = 80},
 }
-local OFFSET_COINS_TEXT = {x = 340, y = 110}
+local OFFSET_COINS_TEXT = {x = 100, y = -55}
 local SIZE_STATS_TEXT_FONT = 65
 local WIDTH_STATS_TEXT = 400
 local SCALE_WINDOW = 1.1
 local OFFSET_TITLE = {x = 100, y = -300}
-local SCALE_BUTTON_PLAY = 0.5
+local SCALE_BUTTON_PLAY = 1
 local OFFSETS_BUTTONS = {
-	BACK = {x =220 -140, y = 290},
-	RETRY = {x = 220, y = 290},
-	PLAY = {x =220 + 140, y = 290},
+	BACK = {x =0 -140, y = 260},
+	RETRY = {x = 0, y = 260},
+	PLAY = {x =0 + 140, y = 260},
 }
 local PATH_WINDOW = "images/win/window.png"
 local PATH_TITLES = {
@@ -164,7 +164,7 @@ local function startTransitions()
 				star.alpha = 1
 			end})
 			transition.to(star, {tag = TAG_WIN_TRANSITION, delay = delay + halfTime, time = halfTime, y = startY, transition = easing.outBounce})
-			transition.from(star, {tag = TAG_WIN_TRANSITION, delay = delay, time = transitionTime, x = masterSprite.x, xScale = 1, yScale = 1, rotation = -1000, transition = easing.outQuad, onComplete = function()
+			transition.from(star, {tag = TAG_WIN_TRANSITION, delay = delay, time = transitionTime, x = display.contentCenterX, xScale = 1, yScale = 1, rotation = -1000, transition = easing.outQuad, onComplete = function()
 				sound.play("star"..index)
 			end})
 		end
