@@ -61,8 +61,8 @@ local function levelIconTapped(event)
 		elseif randomTool == 3 then
 			scene = "scenes.game.questionquiz"
 		end
-		composer.gotoScene(scene, {effect = "fade", time = 500})
-		--composer.gotoScene("scenes.game.shooter", { effect = "zoomInOutFade", time = 600, params = {worldIndex = worldIndex, levelIndex = levelIndex},})
+		composer.gotoScene(scene, {effect = "fade", time = 500, params = {worldIndex = worldIndex, levelIndex = levelIndex}})
+		--composer.gotoScene("scenes.game.shooter", { effect = "zoomInOutFade", time = 600, ,})
 	else
 		sound.play("enemyRouletteTickOp02")
 	end

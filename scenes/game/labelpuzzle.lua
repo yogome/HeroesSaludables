@@ -16,7 +16,7 @@ local piecesGroup
 local panelText, titleText
 local okButton
 local bgShine
-
+local worldIndex, levelIndex
 local SIZE_BACKGROUND = 1024
 local NUMBER_PIECES = 9
 local mathSqrt = math.sqrt
@@ -168,7 +168,7 @@ local function gotoNextScreen()
 	transition.to(smallPanelGroup, {delay = 600, transition = easing.inBack, y = display.screenOriginY - smallPanelGroup.height, time=1000})
 	transition.to(okButton, {delay = 600, transition = easing.inBack, y = display.viewableContentHeight + okButton.width, time = 1000, onComplete = function()
 		--composer.gotoScene("scenes.game.labelquiz")
-		composer.showOverlay("scenes.overlays.tips", {params = {nextScene = "scenes.game.shooter"}})
+		composer.showOverlay("scenes.overlays.tips", {params = {nextScene = "scenes.game.shooter", worldIndex = worldIndex, levelIndex = levelIndex}})
 	end})
 
 end
@@ -270,6 +270,10 @@ function scene:show( event )
 
     local sceneGroup = self.view
     local phase = event.phase
+	
+	local params = event.params or {}
+	worldIndex = params.worldIndex
+	levelIndex = params.levelIndex
 
     if ( phase == "will" ) then
 		

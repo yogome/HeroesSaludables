@@ -26,7 +26,7 @@ local answerRect
 local marks
 local currentPlayer
 local playerShip, shipGroup
-
+local worldIndex, levelIndex
 
 local SIZE_BACKGROUND = 1024
 local NUMBER_PIECES = 9
@@ -252,7 +252,7 @@ local function gotoNextScreen()
 	transition.to(shipGroup, {delay = 1300, transition = easing.inQuad, x = display.viewableContentWidth + 500, time = 1500, onComplete = function()
 	--	transition.to(shipGroup, {delay = 1500, transition = easing.inQuad, x = display.contentCenterX, time = 1500, onComplete = function()
 		--composer.gotoScene("scenes.game.questionquiz", {effect = "fade", time = 400})
-		composer.showOverlay("scenes.overlays.tips", {params = {nextScene = "scenes.game.shooter"}})
+		composer.showOverlay("scenes.overlays.tips", {params = {nextScene = "scenes.game.shooter", worldIndex = worldIndex, levelIndex = levelIndex}})
 	end})
 	
 	local function yogotarJump()
@@ -402,6 +402,10 @@ function scene:show( event )
 
     local sceneGroup = self.view
     local phase = event.phase
+	
+	local params = event.params or {}
+	worldIndex = params.worldIndex
+	levelIndex = params.levelIndex
 
     if ( phase == "will" ) then
 		initScreenElements(sceneGroup)

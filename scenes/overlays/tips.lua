@@ -6,13 +6,13 @@ local scene = composer.newScene()
 local tipGroup
 local previousTip
 local nextScene
-
+local worldIndex, levelIndex
 local NUMBER_TIPS = 13
 -- -------------------------------------------------------------------------------
 
 local function closeOverlay()
 	transition.to(scene.view, {alpha = 0, time = 500, onComplete = function()
-		composer.gotoScene(nextScene, {effect = "fade", time = 300})
+		composer.gotoScene(nextScene, {effect = "fade", time = 300, params = {worldIndex = worldIndex, levelIndex = levelIndex}})
 	end})
 end
 
@@ -44,6 +44,9 @@ function scene:show( event )
     local sceneGroup = self.view
     local phase = event.phase
 	
+	local params = event.params or {}
+	worldIndex = params.worldIndex
+	levelIndex = params.levelIndex
 	nextScene = event.params.nextScene or "scenes.menus.home"
 	
     if ( phase == "will" ) then

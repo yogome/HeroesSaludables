@@ -1,5 +1,5 @@
 local settings = {
-	mode = "dev",
+	mode = "prod",
 	testMenu = true,
 	enableLog = true,
 	enableProtector = false,
@@ -12,8 +12,8 @@ local settings = {
 	gameName = "HeroesSaludables",
 	gameVersion = "1.0",
 	mixpanelTokens = {
-		prod = "144635bd0c64be62163ca142ea5658a9",
-		dev = "144635bd0c64be62163ca142ea5658a9",
+		prod = "NOTOKEN",
+		dev = "NOTOKEN",
 	},
 	mohoundKey = "NOKEY",
     mohoundSecret = "NOSECRET",
@@ -24,8 +24,8 @@ local settings = {
 		--hostname = "http://192.168.15.69:8888",
 		--hostname = "http://localhost:8888",
 		contentType = "application/json",
-		appID = "mvtM3YoxmjXbQnsAukUThu2JkUKtoYvCNtJXVtbX",
-		restKey = "AFtRuyhAVkkDsUGv82vApUGkhsMTJJeZjCxLdWwX",
+		appID = "NOID",
+		restKey = "NOKEY",
 	},
 	iOSAppId = 0000000,
 	bundle = "com.yogome.HeroesSaludables",
