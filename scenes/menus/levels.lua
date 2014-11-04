@@ -7,7 +7,9 @@ local players = require( "models.players" )
 local robot = require( "libs.helpers.robot" )
 local database = require( "libs.helpers.database" )
 local worldsdata = require( "data.worldsdata" )
-
+local music = require( "libs.helpers.music" )
+local extramath = require( "libs.helpers.extramath" )
+local settings = require( "settings" )
 local scene = composer.newScene() 
 ----------------------------------------------- Variables
 local buttonBack
@@ -16,9 +18,10 @@ local buttonsEnabled
 local currentPlayer
 local scrollView
 local scrollViewButtonGroup
-local cardList
+local levelsGroup
+local worldIndex
+local prevLastUnlockedLevel, lastUnlockedLevel
 ----------------------------------------------- Constants
-local SCALE_TITLE = 0.8
 local COLOR_BACKGROUND = {47/255,190/255,196/255}
 local WIDTH_BACKGROUND = 1024
 local HEIGHT_BACKGROUND = 768
@@ -26,23 +29,145 @@ local MARGIN = 20
 local OFFSET_COMPLETION_BACKGROUND = {x = 0, y = 257}
 local OFFSET_COMPLETION_TEXT = {x = 0, y = 255}
 local NUM_BACKGROUNDS = 2
-local PADDING_CARDS_SIDES = 400
-local SCALE_CARDS = 1.1
 local COLOR_CARD_DISABLED = {0.2}
+local COST_ENERGY_PLAY = 0
+local MAX_LEVEL_STARS = 3
+local OFFSET_LEVEL_STARS = {x = 0, y = 22}
+local OFFSET_BASE_NUMBER = {x = 0, y = 0}
+local OFFSET_LEVEL_LOCK = {x = 0, y = 0}
+local SCALE_LEVEL_LOCK = 0.25
+local COLOR_LOCKED_LEVEL = {0.5}
+local DATA_DECORATIONS = {x = 0, y = 24, scale = 0.8}
+local SCALE_PATH = {xScale = 1, yScale = 0.75}
+local SIZE_FONT_LEVEL = 30
 ----------------------------------------------- Functions
 local function onReleasedBack()
 	composer.gotoScene( "scenes.menus.worlds", { effect = "zoomInOutFade", time = 600, } )
 end
 
-local function cardTapped(event)
-	if buttonsEnabled then
-		if worldsdata[event.target.index].isAvailable then
-			buttonsEnabled = false
-			sound.play("pop")
-			composer.gotoScene( "scenes.menus.levels", { effect = "zoomInOutFade", time = 600, params = {worldIndex = event.target.index}} )
-		else
-			sound.play("wrongAnswer")
+local function levelIconTapped(event)
+	local levelIcon = event.target
+	if buttonsEnabled and not levelIcon.locked then
+		buttonsEnabled = false
+		scene.disableButtons()
+		local levelIcon = event.target
+		local levelIndex = levelIcon.index
+		composer.gotoScene("scenes.game.shooter", { effect = "zoomInOutFade", time = 600, params = {worldIndex = worldIndex, levelIndex = levelIndex},})
+	else
+		sound.play("enemyRouletteTickOp02")
+	end
+end
+
+local function removeLevels()
+	display.remove(levelsGroup)
+	levelsGroup = nil
+end
+
+local function createLevels()
+	local worldData = worldsdata[worldIndex]
+	lastUnlockedLevel = nil
+	prevLastUnlockedLevel = nil
+	
+	if worldData then
+		levelsGroup = display.newGroup()
+		local decorationGroup = display.newGroup()
+		levelsGroup:insert(decorationGroup)
+		local pathGroup = display.newGroup()
+		levelsGroup:insert(pathGroup)
+		
+		local filler = display.newRect(0,0,20,20)
+		filler.isVisible = false
+		filler.anchorX = 0
+		
+		local squareRoot = math.sqrt
+		local playerWorldData = currentPlayer.unlockedWorlds[worldIndex]
+
+		for index = 1, #worldData do
+			local levelData = worldData[index]
+			local level = display.newGroup()
+			level.x = levelData.x
+			level.y = scrollView.height * 0.5 + levelData.y
+			levelsGroup:insert(level)
+			
+			level.index = index
+			level.data = levelData
+			level:addEventListener("tap", levelIconTapped)
+			
+			local levelImage = display.newImage("images/levels/base0"..math.random(1,3)..".png")
+			level:insert(levelImage)
+			
+--			local levelNumber = display.newText(string.format("%02d", index),  OFFSET_BASE_NUMBER.x, OFFSET_BASE_NUMBER.y, settings.fontName, SIZE_FONT_LEVEL)
+--			level:insert(levelNumber)
+--			
+			if playerWorldData and playerWorldData.levels then
+				if playerWorldData.levels[index] and playerWorldData.levels[index].unlocked then
+					local starNumber = playerWorldData.levels[index].stars or 0
+					level.stars = starNumber
+					if "number" == type(starNumber) then
+						if starNumber < 0 then
+							starNumber = 0
+						elseif starNumber > MAX_LEVEL_STARS then
+							starNumber = MAX_LEVEL_STARS
+						end
+											
+						if starNumber > 0 then
+							local starsImage = display.newImage(string.format("images/levels/estrellas%02d.png", starNumber))
+							starsImage.x = OFFSET_LEVEL_STARS.x
+							starsImage.y = OFFSET_LEVEL_STARS.y
+							level:insert(starsImage)
+						end
+					end
+					prevLastUnlockedLevel = lastUnlockedLevel
+					lastUnlockedLevel = level
+				else
+					level.locked = true
+					
+					local lockImage = display.newImage("images/general/lock.png")
+					lockImage.x = OFFSET_LEVEL_LOCK.x
+					lockImage.y = OFFSET_LEVEL_LOCK.y
+					lockImage.xScale = SCALE_LEVEL_LOCK
+					lockImage.yScale = SCALE_LEVEL_LOCK
+					level:insert(lockImage)
+					
+					levelImage:setFillColor(unpack(COLOR_LOCKED_LEVEL))
+				end
+			end
+
+			filler.width = levelData.x
+			
+			if index > 0 and index < #worldData then
+				local p2 = worldData[index + 1]
+				local p1 = worldData[index]
+				
+				local distanceX = p2.x - p1.x
+				local distanceY = p2.y - p1.y
+				local distance = squareRoot((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y))
+				
+				local iterations = math.ceil(distance / 16)
+				local lastPathImage
+				for index = 1, iterations do
+					local pathImage = display.newImage("images/levels/camino.png")
+					pathImage.x = worldData.path.easingX(index, iterations, p1.x, distanceX)
+					pathImage.y = scrollView.height * 0.5 + worldData.path.easingY(index, iterations, p1.y, distanceY)
+					pathImage.fill.blendMode = {srcColor = "srcColor", srcAlpha = "srcAlpha", dstColor = "one", dstAlpha = "one"}
+					pathImage.xScale = SCALE_PATH.xScale
+					pathImage.yScale = SCALE_PATH.yScale
+					pathGroup:insert(pathImage)
+					
+					if lastPathImage then
+						lastPathImage.rotation = extramath.getFullAngle(pathImage.x - lastPathImage.x, pathImage.y - lastPathImage.y) + 90
+					end
+					lastPathImage = pathImage
+				end
+			end
 		end
+		
+		if worldData[1] then
+			filler.width = filler.width + worldData[1].x
+		end
+		levelsGroup:insert(filler)
+		
+		scrollView:insert(levelsGroup)
 	end
 end
 ----------------------------------------------- Class functions 
@@ -63,8 +188,6 @@ end
 
 function scene:create(event)
 	local sceneGroup = self.view
-	
-	cardList = {}
 	
 	local scrollViewOptions = {
 		x = display.contentCenterX,
@@ -111,10 +234,14 @@ end
 function scene:show( event )
 	local sceneGroup = self.view
     local phase = event.phase
+	
+	local params = event.params or {}
+	worldIndex = params.worldIndex or 1
 
     if ( phase == "will" ) then
 		language = database.config("language") or "en"
 		currentPlayer = players.getCurrent()
+		createLevels()
 		self.disableButtons()
 	elseif ( phase == "did" ) then
 		self.enableButtons()
@@ -128,7 +255,7 @@ function scene:hide( event )
     if ( phase == "will" ) then
 		self.disableButtons()
 	elseif ( phase == "did" ) then
-		
+		removeLevels()
 	end
 end
 
