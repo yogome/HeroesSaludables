@@ -55,12 +55,13 @@ local function createNewShip(newShip, shipData)
 	
 	--thrust:setSequence("thrust")
 	--thrust:play()
+	local currentPlayer = players.getCurrent()
+
 	
-	local shipBack = display.newImage("images/ships/ship1_b.png")
+	local shipBack = display.newImage("images/ships/ship"..currentPlayer.shipIndex.."_b.png")
 	shipBack:scale(SCALE_SHIP, SCALE_SHIP)
 	newShip:insert(shipBack)
 	
-	local currentPlayer = players.getCurrent()
 	local heroSkin = heroList[currentPlayer.heroIndex].skinName
 	local playerCharacter = animator.newCharacter(heroSkin, "PLACEHOLDER", "units/hero/skeleton.json", "units/hero/")
 	playerCharacter:setHat(string.format("hat_extra_%02d", (currentPlayer.hatIndex-1)))
@@ -72,7 +73,7 @@ local function createNewShip(newShip, shipData)
 	newShip.playerCharacter = playerCharacter
 	
 	local shipData = { width = 256, height = 256, numFrames = 16 }
-	local shipSheet = graphics.newImageSheet( "images/ships/ship1_a.png", shipData )
+	local shipSheet = graphics.newImageSheet( "images/ships/ship"..currentPlayer.shipIndex.."_a.png", shipData )
 
 	local shipSequenceData = {
 		{name = "idleOpen", sheet = shipSheet, start = 1, count = 4, 800},

@@ -33,8 +33,8 @@ function scene:create( event )
 	
 	buttonList.ok.onRelease = closeOverlay
 	local okButton = widget.newButton(buttonList.ok)
-	okButton.x = display.contentCenterX
-	okButton.y = display.contentCenterY * 1.80
+	okButton.x = display.screenOriginX + display.viewableContentWidth - 100
+	okButton.y = display.screenOriginY + display.viewableContentHeight - 100
 	
 	sceneGroup:insert(okButton)
 end
