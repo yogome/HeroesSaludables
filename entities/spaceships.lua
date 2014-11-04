@@ -65,6 +65,7 @@ local function createNewShip(newShip, shipData)
 	local heroSkin = heroList[currentPlayer.heroIndex].skinName
 	local playerCharacter = animator.newCharacter(heroSkin, "PLACEHOLDER", "units/hero/skeleton.json", "units/hero/")
 	playerCharacter:setHat(string.format("hat_extra_%02d", (currentPlayer.hatIndex-1)))
+	playerCharacter:setAnimation("IDLE")
 	playerCharacter.group:scale(SCALE_YOGOTAR, SCALE_YOGOTAR)
 	playerCharacter.group.x = OFFSET_YOGOTAR.x
 	playerCharacter.group.y = OFFSET_YOGOTAR.y
@@ -110,6 +111,9 @@ local function createNewShip(newShip, shipData)
 	function newShip:update()
 		local vX, vY = self:getLinearVelocity()
 		self.rotation = (vY * THRESHOLD_ROTATION_ANIMATION) * self.xScale
+		if self.playerCharacter then
+			self.playerCharacter.enterFrame()
+		end
 	end
 	
 	function newShip:analog(analogX, analogY)
