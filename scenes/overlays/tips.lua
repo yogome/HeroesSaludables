@@ -11,7 +11,9 @@ local NUMBER_TIPS = 13
 -- -------------------------------------------------------------------------------
 
 local function closeOverlay()
-	composer.gotoScene(nextScene)
+	transition.to(scene.view, {alpha = 0, time = 500, onComplete = function()
+		composer.gotoScene(nextScene, {effect = "fade", time = 300})
+	end})
 end
 
 function scene:create( event )

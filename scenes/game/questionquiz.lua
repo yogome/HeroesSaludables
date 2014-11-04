@@ -236,7 +236,8 @@ local function gotoNextScreen()
 	transition.to(okButton, {delay = 600, transition = easing.inBack, y = display.viewableContentHeight + okButton.width, time = 1000})
 	transition.to(shipGroup, {delay = 1300, transition = easing.inQuad, x = display.viewableContentWidth + 500, time = 1500, onComplete = function()
 	--	transition.to(shipGroup, {delay = 1500, transition = easing.inQuad, x = display.contentCenterX, time = 1500, onComplete = function()
-		composer.gotoScene("scenes.game.labelpuzzle", {effect = "fade", time = 400})
+		--composer.gotoScene("scenes.game.labelpuzzle", {effect = "fade", time = 400})
+		composer.showOverlay("scenes.overlays.tips", {params = {nextScene = "scenes.game.shooter"}})
 	end})
 	
 	local function yogotarJump()
@@ -267,7 +268,7 @@ local function initScreenElements(group)
 	questionPanelGroup.x = display.contentCenterX * 0.50
 	questionPanelGroup.y = display.screenOriginY - questionPanel.height
 	
-	local randomQuestion = 1--mathRandom(1, #questions)
+	local randomQuestion = mathRandom(1, #questions)
 	
 	currentQuestion = questions[randomQuestion]
 	titleText.text = currentQuestion.text

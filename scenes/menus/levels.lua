@@ -52,7 +52,17 @@ local function levelIconTapped(event)
 		scene.disableButtons()
 		local levelIcon = event.target
 		local levelIndex = levelIcon.index
-		composer.gotoScene("scenes.game.shooter", { effect = "zoomInOutFade", time = 600, params = {worldIndex = worldIndex, levelIndex = levelIndex},})
+		local randomTool = math.random(1,3)
+		local scene
+		if randomTool == 1 then
+			scene = "scenes.game.labelpuzzle"
+		elseif randomTool == 2 then
+			scene = "scenes.game.labelquiz"
+		elseif randomTool == 3 then
+			scene = "scenes.game.questionquiz"
+		end
+		composer.gotoScene(scene, {effect = "fade", time = 500})
+		--composer.gotoScene("scenes.game.shooter", { effect = "zoomInOutFade", time = 600, params = {worldIndex = worldIndex, levelIndex = levelIndex},})
 	else
 		sound.play("enemyRouletteTickOp02")
 	end
