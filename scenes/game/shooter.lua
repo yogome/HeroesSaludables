@@ -29,6 +29,13 @@ local foodTexts, targetAmounts
 local asteroidGroup, disposableAsteroidGroup
 local planets, earth
 local cameraEdit, editCircle
+local editorObjects
+local introTimer
+local currentEasingXIndex, currentEasingYIndex
+local currentEasingX, currentEasingY
+local lastTwoCoordinates
+local easingFunctions
+local editorPreviewGroup, editorPreviewLine
 ----------------------------------------------- Background stars data
 local spaceObjects, objectDespawnX, objectSpawnX, objectDespawnY, objectSpawnY
 local spawnZoneWidth, spawnZoneHeight, halfSpawnZoneWidth, halfSpawnZoneHeight
@@ -60,6 +67,89 @@ local OFFSET_GRABFRUIT = {x = -62, y = 17}
 local SCALE_EXPLOSION = 0.75
 local SPEED_CAMERA = 100
 ----------------------------------------------- Functions
+local function addPhysicsObject(object)
+	physicsObjectList[#physicsObjectList + 1] = object
+end 
+
+local function createAsteroidLine(point1, point2, easingX, easingY)
+	local p2 = {x = point1.x, y = point1.y}
+	local p1 = {x = point2.x, y = point2.y}
+
+	local distanceX = p2.x - p1.x
+	local distanceY = p2.y - p1.y
+	local distance = squareRoot((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y))
+
+	easingX = easingX or easing.linear
+	easingY = easingY or easing.linear
+
+	local chainBodyPoints = {}
+
+	local iterations = math.ceil(distance / 55)
+	local asteroidGraphics = {}
+	for index = 1, iterations do
+		local randomSideMultiplier = index % 2 * 2 -3
+		local randomScale = math.random(90,110) * 0.01
+		local asteroid = display.newImage("images/enviroment/asteroid"..math.random(1,3)..".png")
+		asteroid.x = easingX(index, iterations, p1.x, distanceX)
+		asteroid.y = easingY(index, iterations, p1.y, distanceY)
+		asteroid:scale(randomScale, randomScale)
+		asteroid.rotation = math.random(0,360)
+		
+		asteroidGraphics[index] = asteroid
+
+		disposableAsteroidGroup:insert(asteroid)
+
+		chainBodyPoints[#chainBodyPoints + 1] = asteroid.x
+		chainBodyPoints[#chainBodyPoints + 1] = asteroid.y
+
+		asteroid.x = asteroid.x + math.random(0,10) * randomSideMultiplier
+		asteroid.y = asteroid.y - math.random(0,10) * randomSideMultiplier
+	end
+
+	local asteroidLineBody = display.newRect( 0, 0, 5, 5 )
+	asteroidLineBody.name = "asteroid"
+	asteroidLineBody.asteroidGraphics = asteroidGraphics
+	asteroidLineBody.isVisible = false
+	physics.addBody( asteroidLineBody, "static", {
+		friction = 2,
+		bounce = 0.5,
+		chain = chainBodyPoints,
+		connectFirstAndLastChainVertex = false,
+	})
+	camera:add(asteroidLineBody)
+	addPhysicsObject(asteroidLineBody)
+	
+	return asteroidLineBody
+end
+
+local function createPreviewLine()
+	camera:remove(editorPreviewLine)
+	display.remove(editorPreviewLine)
+			
+	editorPreviewLine = display.newGroup()
+	local p2 = lastTwoCoordinates[1]
+	local p1 = lastTwoCoordinates[2]
+
+	local distanceX = p2.x - p1.x
+	local distanceY = p2.y - p1.y
+	local distance = squareRoot((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y))
+	
+	local easingX = easingFunctions[currentEasingXIndex].value
+	local easingY = easingFunctions[currentEasingYIndex].value
+	
+	local iterations = math.ceil(distance / 55)
+	local asteroidGraphics = {}
+	for index = 1, iterations do
+		local previewCircle = display.newCircle(0,0,5,5)
+		previewCircle.alpha = 0.3
+		previewCircle.x = easingX(index, iterations, p1.x, distanceX)
+		previewCircle.y = easingY(index, iterations, p1.y, distanceY)
+		editorPreviewLine:insert(previewCircle)
+	end
+	
+	camera:add(editorPreviewLine)
+end
+
 local function onKeyEvent( event )
 	local handled = false
 	local phase = event.phase
@@ -67,35 +157,63 @@ local function onKeyEvent( event )
 	
 	local isShiftDown = event.isShiftDown
 	local multiplier = isShiftDown and 0.1 or 1
-	print(nativeKeyCode)
 	if phase == "down" then
+		if 12 == nativeKeyCode then -- Q
+			camera:setFocus(playerCharacter)
+			editCircle.isVisible = false
+		end
 		if 14 == nativeKeyCode then -- E
 			editCircle.isVisible = true
 			camera:setFocus(editCircle)
 			debugText.isVisible = true
+			if introTimer then timer.cancel(introTimer) end
 		end
 		if 15 == nativeKeyCode then -- R
+			lastTwoCoordinates[1] = lastTwoCoordinates[2]
+			lastTwoCoordinates[2] = {x = editCircle.x, y = editCircle.y}
+			createPreviewLine()
+		end
+		if 16 == nativeKeyCode then -- ^
 			print("{"..editCircle.x..", "..editCircle.y.."},")
 		end
 		if 6 == nativeKeyCode then -- Z
 			currentEasingXIndex = currentEasingXIndex - 1
 			if currentEasingXIndex <= 0 then currentEasingXIndex = #easingFunctions end
 			currentEasingX = easingFunctions[currentEasingXIndex].name
+			createPreviewLine()
 		end
 		if 7 == nativeKeyCode then -- X
 			currentEasingXIndex = currentEasingXIndex + 1
 			if currentEasingXIndex > #easingFunctions then currentEasingXIndex = 1 end
 			currentEasingX = easingFunctions[currentEasingXIndex].name
+			createPreviewLine()
 		end
 		if 0 == nativeKeyCode then -- A
 			currentEasingYIndex = currentEasingYIndex - 1
 			if currentEasingYIndex <= 0 then currentEasingYIndex = #easingFunctions end
 			currentEasingY = easingFunctions[currentEasingYIndex].name
+			createPreviewLine()
 		end
 		if 1 == nativeKeyCode then -- S
 			currentEasingYIndex = currentEasingYIndex + 1
 			if currentEasingYIndex > #easingFunctions then currentEasingYIndex = 1 end
 			currentEasingY = easingFunctions[currentEasingYIndex].name
+			createPreviewLine()
+		end
+		if 32 == nativeKeyCode then -- U
+			local point1 = lastTwoCoordinates[1]
+			local point2 = lastTwoCoordinates[2]
+			local easingX = easingFunctions[currentEasingXIndex].value
+			local easingY = easingFunctions[currentEasingYIndex].value
+			editorObjects[#editorObjects + 1] = createAsteroidLine(point1, point2, easingX, easingY)
+		end
+		if 34 == nativeKeyCode then -- I
+			local lastAsteroids = editorObjects[#editorObjects]
+			lastAsteroids.removeFromWorld = true
+			for index = 1, #lastAsteroids.asteroidGraphics do
+				display.remove(lastAsteroids.asteroidGraphics[index])
+			end
+			editorObjects[#editorObjects] = nil
 		end
 		if 123 == nativeKeyCode then -- Left
 			editCircle.x = editCircle.x - SPEED_CAMERA * multiplier
@@ -108,6 +226,12 @@ local function onKeyEvent( event )
 		end
 		if nativeKeyCode == 126 then -- Up key
 			editCircle.y = editCircle.y - SPEED_CAMERA * multiplier
+		end
+		if 46 == nativeKeyCode then -- N
+			physics.setDrawMode("hybrid")
+		end
+		if 45 == nativeKeyCode then -- M
+			physics.setDrawMode("normal")
 		end
 	end
 	
@@ -125,7 +249,12 @@ local function showDebugInformation()
 	debugText.text = [[
 		Press Q for player mode
 		Press E for edit mode
-		Press R to dump coordinate
+		Press R to store coordinate
+		Press T to dump coordinate
+		
+		Press N,M to set draw mode
+		
+		Press L to dump level
 		
 		Press U to create asteroids
 		Press I to delete asteroids
@@ -137,6 +266,9 @@ local function showDebugInformation()
 		Press A for previous easingY
 		Press S for next easingY
 		Current easingY: ]]..currentEasingY..[[
+		
+		P1 = {]]..lastTwoCoordinates[1].x..[[, ]]..lastTwoCoordinates[1].y..[[}
+		P2 = {]]..lastTwoCoordinates[2].x..[[, ]]..lastTwoCoordinates[2].y..[[}
 	]]
 end
 
@@ -389,10 +521,6 @@ local function onReleasedBack()
 	composer.gotoScene( "scenes.menus.levels", {params = {worldIndex = worldIndex}, effect = "fade", time = 800, } )
 end 
 
-local function addPhysicsObject(object)
-	physicsObjectList[#physicsObjectList + 1] = object
-end
-
 local function testTouch(event)
 	if "began" == event.phase then
 		analogCircleBegan.x = event.x
@@ -595,48 +723,7 @@ local function loadAsteroids()
 	for indexAsteroidLine = 1, #asteroidData do
 		local currentAsteroidLine = asteroidData[indexAsteroidLine]
 			
-		local p2 = {x = currentAsteroidLine.lineStart.x, y = currentAsteroidLine.lineStart.y}
-		local p1 = {x = currentAsteroidLine.lineEnd.x, y = currentAsteroidLine.lineEnd.y}
-
-		local distanceX = p2.x - p1.x
-		local distanceY = p2.y - p1.y
-		local distance = squareRoot((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y))
-		
-		local asteroidEasingX = currentAsteroidLine.easingX or easing.linear
-		local asteroidEasingY = currentAsteroidLine.easingY or easing.linear
-		
-		local chainBodyPoints = {}
-
-		local iterations = math.ceil(distance / 55)
-		for index = 1, iterations do
-			local randomSideMultiplier = index % 2 * 2 -3
-			local randomScale = math.random(90,110) * 0.01
-			local asteroid = display.newImage("images/enviroment/asteroid"..math.random(1,3)..".png")
-			asteroid.x = asteroidEasingX(index, iterations, p1.x, distanceX)
-			asteroid.y = asteroidEasingY(index, iterations, p1.y, distanceY)
-			asteroid:scale(randomScale, randomScale)
-			asteroid.rotation = math.random(0,360)
-			
-			disposableAsteroidGroup:insert(asteroid)
-			
-			chainBodyPoints[#chainBodyPoints + 1] = asteroid.x
-			chainBodyPoints[#chainBodyPoints + 1] = asteroid.y
-			
-			asteroid.x = asteroid.x + math.random(0,10) * randomSideMultiplier
-			asteroid.y = asteroid.y - math.random(0,10) * randomSideMultiplier
-		end
-		
-		local asteroidLineBody = display.newRect( 0, 0, 5, 5 )
-		asteroidLineBody.name = "asteroid"
-		asteroidLineBody.isVisible = false
-		physics.addBody( asteroidLineBody, "static", {
-			friction = 2,
-			bounce = 0.5,
-			chain = chainBodyPoints,
-			connectFirstAndLastChainVertex = false,
-		})
-		camera:add(asteroidLineBody)
-		addPhysicsObject(asteroidLineBody)
+		createAsteroidLine(currentAsteroidLine.lineStart, currentAsteroidLine.lineEnd, currentAsteroidLine.easingX, currentAsteroidLine.easingY)
 	end
 end
 
@@ -791,9 +878,17 @@ local function initialize(event)
 	editCircle.isVisible = false
 	
 	easingFunctions = {}
-	for key, value in pairs(easing) do
-		easingFunctions[#easingFunctions + 1] = {name = key, value = value}
-	end
+--	for key, value in pairs(easing) do
+--		easingFunctions[#easingFunctions + 1] = {name = key, value = value}
+--	end
+	easingFunctions[1] = {name = "linear", value = easing.linear}
+	easingFunctions[2] = {name = "inSine", value = easing.inSine}
+	easingFunctions[3] = {name = "outSine", value = easing.outSine}
+	easingFunctions[4] = {name = "inOutSine", value = easing.inOutSine}
+	easingFunctions[5] = {name = "outInSine", value = easing.outInSine}
+	
+	editorObjects = {}
+	lastTwoCoordinates = {[1] = {x = 0, y = 0}, [2] = {x = 0, y = 0}}
 	
 	currentEasingXIndex = 1
 	currentEasingYIndex = 1
@@ -814,7 +909,7 @@ local function intro()
 	local function trackNextPlanet(planetIndex)
 		if planetIndex <= #planets then
 			camera:setFocus(planets[planetIndex])
-			timer.performWithDelay(1800, function()
+			introTimer = timer.performWithDelay(1800, function()
 				trackNextPlanet(planetIndex + 1)
 			end)
 		else
@@ -827,7 +922,7 @@ local function intro()
 		
 	camera.damping = 35
 	camera:setFocus(earth)
-	timer.performWithDelay(1500, function()
+	introTimer = timer.performWithDelay(1500, function()
 		trackNextPlanet(1)
 	end)
 	
@@ -904,6 +999,9 @@ function scene:create(event)
 	asteroidGroup = display.newGroup()
 	camera:add(asteroidGroup)
 	
+	editorPreviewGroup = display.newGroup()
+	camera:add(editorPreviewGroup)
+	
 	editCircle = display.newCircle(0,0,20,20)
 	editCircle.isVisible = false
 	asteroidGroup:insert(editCircle)
@@ -967,6 +1065,7 @@ function scene:hide( event )
     if ( phase == "will" ) then
 		self.disableButtons()
 	elseif ( phase == "did" ) then
+		if introTimer then timer.cancel(introTimer) end
 		Runtime:removeEventListener("enterFrame", updateGameLoop)
 		Runtime:removeEventListener( "key", onKeyEvent )
 		destroyGame()
