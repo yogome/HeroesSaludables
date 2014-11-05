@@ -75,8 +75,8 @@ function players.new()
 				watchedStart = false,
 				levels = {
 					[1] = {unlocked = true, stars = 0},
-					[2] = {unlocked = true, stars = 0},
-					[3] = {unlocked = true, stars = 0},
+					[2] = {unlocked = false, stars = 0},
+					[3] = {unlocked = false, stars = 0},
 				},
 			},
 		},

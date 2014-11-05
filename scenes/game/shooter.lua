@@ -375,6 +375,35 @@ local function removeEnemyTarget(enemy, target)
 	end
 end
 
+local function saveLevelData(playerData)
+	
+	
+	local nextLevel = levelIndex + 1
+	if nextLevel <= #playerData.unlockedWorlds[worldIndex].levels then
+		playerData.unlockedWorlds[worldIndex].levels[nextLevel].unlocked = true
+	end
+	
+	local unlockedLevelsCount = 0
+	for indexLevel = 1, #playerData.unlockedWorlds[worldIndex].levels do
+		local currentLevel = playerData.unlockedWorlds[worldIndex].levels[indexLevel]
+		if currentLevel.unlocked then
+			unlockedLevelsCount = unlockedLevelsCount + 1
+		end
+	end
+	
+	if unlockedLevelsCount >= #playerData.unlockedWorlds[worldIndex].levels then
+		local nextWorld = worldIndex + 1
+		if nextWorld <= #playerData.unlockedWorlds then
+			playerData.unlockedWorlds[nextWorld].unlocked = true
+		end
+	end
+	
+	if heartIndicator.currentHearts >= playerData.unlockedWorlds[worldIndex].levels[levelIndex].stars then
+		playerData.unlockedWorlds[worldIndex].levels[levelIndex].stars = heartIndicator.currentHearts
+	end
+	players.save(playerData)
+end
+
 local function checkAmounts()
 	local isComplete = true
 	for key, value in pairs(collectedFood) do
@@ -400,7 +429,7 @@ local function checkAmounts()
 			end
 			local currentPlayer = players.getCurrent()
 			currentPlayer.coins = currentPlayer.coins + 500
-			players.save(currentPlayer)
+			saveLevelData(currentPlayer)
 			winScene.show(heartIndicator.currentHearts, 500, onBackReleased, onRetryReleased, onPlayReleased)
 		end
 	end
