@@ -1,6 +1,8 @@
 local enemies = {
 	["canoner"] = {
-		asset = "images/enemies/canon.png",
+		asset = "images/enemies/canon_sprite.png",
+		spriteSheetWidth = 1024,
+		spriteSheetHeight = 512,
 		speed = 1,
 		viewRadius = 400,
 		onHasTarget = "shoot",
@@ -11,7 +13,9 @@ local enemies = {
 		},
 	},
 	["shooter"] = {
-		asset = "images/enemies/shooter.png",
+		asset = "images/enemies/shooter_sprite.png",
+		spriteSheetWidth = 1024,
+		spriteSheetHeight = 400,
 		speed = 1,
 		viewRadius = 300,
 		onHasTarget = "shoot",
@@ -22,7 +26,9 @@ local enemies = {
 		},
 	},
 	["follower"] = {
-		asset = "images/enemies/follower.png",
+		asset = "images/enemies/follower_sprite.png",
+		spriteSheetWidth = 1024,
+		spriteSheetHeight = 400,
 		speed = 1,
 		viewRadius = 300,
 		onHasTarget = "follow",

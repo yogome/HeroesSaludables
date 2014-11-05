@@ -13,6 +13,7 @@ local THRESHOLD_PATROLTIME = 8
 local TOLERANCE_PATROL = 10
 local THRESHOLD_FOLLOWSPEED = 0.01
 local THRESHOLD_ROTATION_ANIMATION = 2
+local SCALE_ENEMY = 0.7
 ---------------------------------------------- Caches
 local mathAbs = math.abs 
 local squareRoot = math.sqrt
@@ -195,8 +196,21 @@ function enemyFactory.newEnemy(enemySpawnData)
 		self.target = newTarget
 	end
 	
-	local enemyImage = display.newImage(currentEnemyData.asset)
-	enemyImage:scale(0.25, 0.25)
+	local enemyData = { width = currentEnemyData.spriteSheetWidth / 4, height = currentEnemyData.spriteSheetHeight / 2, numFrames = 8 }
+	local enemySprite = graphics.newImageSheet( currentEnemyData.asset, enemyData )
+
+	local enemySequenceData = {
+		{name = "enemyAnimation", sheet = enemySprite, start = 1, count = 8, 1200},
+	}
+	
+	local enemyImage = display.newSprite( enemySprite, enemySequenceData )
+	enemyImage:scale(SCALE_ENEMY, SCALE_ENEMY)
+	enemyImage:setSequence("idleOpen")
+	enemyImage:play()
+	
+	
+--	local enemyImage = display.newImage(currentEnemyData.asset)
+--	enemyImage:scale(0.25, 0.25)
 	enemy:insert(enemyImage)
 	
 	local enemyRange = createVisualRange(enemy.viewRadius)
