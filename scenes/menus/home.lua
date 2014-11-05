@@ -12,7 +12,7 @@ local mixpanel = require( "libs.helpers.mixpanel" )
 local scene = composer.newScene() 
 ----------------------------------------------- Variables
 local buttonPlay, buttonSettings
-local logoGroup, starfieldGroup, asteroidGroup
+local logoGroup, starfieldGroup, asteroidGroup, shineStarGroup
 local currentPlayer
 ----------------------------------------------- Constants 
 local SIZE_BACKGROUND = 1024
@@ -26,6 +26,7 @@ local doublePi = math.pi * 2
 local mathRandom = math.random
 local mathSin = math.sin
 local mathCos = math.cos
+local mathAbs = math.abs
 
 local contentWidth = display.contentWidth
 local contentHeight = display.contentHeight
@@ -99,9 +100,32 @@ local function updateStarField()
 	end
 end
 
-local function updateGameLoop()
+local function updateShineStars(time)
+	for indexStar = 1, #shineStarGroup.stars do
+		local currentShine = shineStarGroup.stars[indexStar]
+		local shineFactor = mathSin((time + (currentShine.shineOffset))  * 0.001)
+		
+		if currentShine.changedPosition then
+			currentShine.x = math.random(display.screenOriginX, display.contentWidth)
+			currentShine.y = math.random(display.screenOriginY, display.contentHeight)
+		end
+		
+		if shineFactor <= 0 then
+			shineFactor = 0
+			currentShine.changedPosition = true
+		elseif shineFactor > 0 then
+			currentShine.changedPosition = false
+			currentShine.alpha = shineFactor
+		end
+		
+	end
+	
+end
+
+local function updateGameLoop(event)
 	updateAsteroids()
 	updateStarField()
+	updateShineStars(event.time)
 end
 
 local function createBackground(group)
@@ -121,11 +145,23 @@ local function createLogo(group)
 	logoGroup.x = display.contentCenterX
 	logoGroup.y = display.contentCenterY * 0.75
 	
-	local logo = display.newImage("images/menus/logo.png")
+	local logo = display.newImage("images/general/logo.png")
 	logo:scale(0.80, 0.80)
 	logoGroup:insert(logo)
 	
 	group:insert(logoGroup)
+end
+
+local function initializeStarShine()
+	
+	for indexStar = 1, #shineStarGroup.stars do
+		local currentShine = shineStarGroup.stars[indexStar]
+		currentShine.x = math.random(display.screenOriginX, display.contentWidth)
+		currentShine.y = math.random(display.screenOriginY, display.contentHeight)
+		currentShine.alpha = math.random(1,10) * 0.1
+		currentShine.shineOffset = (currentShine.alpha + math.random(1, 10)) * 100000
+		currentShine.changedPosition = false
+	end
 end
 
 local function createStarfield(group)
@@ -160,7 +196,6 @@ local function initializeStarField()
 		currentStar.x = currentStar.x + vectorSizeX * math.random(0, math.abs(vectorSizeX)) * currentStar.speed
 		currentStar.y = currentStar.y + vectorSizeY * math.random(0, math.abs(vectorSizeY)) * currentStar.speed
 	end
-	
 end
 
 local function createAsteroids(group)
@@ -198,11 +233,24 @@ local function createPlayButton(group)
 	group:insert(buttonPlay)
 end
 
+local function createShineStars(group)
+	shineStarGroup = display.newGroup()
+	shineStarGroup.stars = {}
+	local totalStars = math.random(3, 6)
+	for indexStar = 1, totalStars do
+		local star = display.newImage("images/backgrounds/shinestar.png")
+		shineStarGroup:insert(star)
+		shineStarGroup.stars[indexStar] = star
+	end
+	group:insert(shineStarGroup)
+end
+
 function scene:create(event)
 	local sceneGroup = self.view
 	
 	createBackground(sceneGroup)
 	createAsteroids(sceneGroup)
+	createShineStars(sceneGroup)
 	createStarfield(sceneGroup)
 	createLogo(sceneGroup)
 	createPlayButton(sceneGroup)
@@ -218,6 +266,7 @@ function scene:show( event )
 
     if ( phase == "will" ) then
 		initializeStarField()
+		initializeStarShine()
 		Runtime:addEventListener("enterFrame", updateGameLoop)
 	elseif ( phase == "did" ) then
 		
