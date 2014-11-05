@@ -2,6 +2,7 @@
 local composer = require( "composer" )
 local widget = require( "widget" )
 local buttonlist = require( "data.buttonlist" )
+local physics = require("physics")
 local sound = require( "libs.helpers.sound" )
 local players = require( "models.players" )
 local robot = require( "libs.helpers.robot" )
@@ -11,6 +12,8 @@ local music = require( "libs.helpers.music" )
 local extramath = require( "libs.helpers.extramath" )
 local settings = require( "settings" )
 local scene = composer.newScene() 
+local spaceships = require( "entities.spaceships" )
+
 ----------------------------------------------- Variables
 local buttonBack
 local titleGroup, title, language
@@ -21,6 +24,7 @@ local scrollViewButtonGroup
 local levelsGroup
 local worldIndex
 local prevLastUnlockedLevel, lastUnlockedLevel
+local playerCharacter
 ----------------------------------------------- Constants
 local COLOR_BACKGROUND = {47/255,190/255,196/255}
 local WIDTH_BACKGROUND = 1024
@@ -40,9 +44,22 @@ local COLOR_LOCKED_LEVEL = {0.5}
 local DATA_DECORATIONS = {x = 0, y = 24, scale = 0.8}
 local SCALE_PATH = {xScale = 1, yScale = 0.75}
 local SIZE_FONT_LEVEL = 30
+local OFFSET_X_PLAYER = -20
+local OFFSET_Y_PLAYER = -100
+local FLY_TIME = 1200
+
+local mathSin = math.sin
 ----------------------------------------------- Functions
 local function onReleasedBack()
 	composer.gotoScene( "scenes.menus.worlds", { effect = "zoomInOutFade", time = 600, } )
+end
+
+local function updateCharacterShip(time)
+	playerCharacter.y = playerCharacter.y + (mathSin(time * 0.01) * 0.2)
+end
+
+local function updateGameLoop(event)
+	updateCharacterShip(event.time)
 end
 
 local function levelIconTapped(event)
@@ -71,6 +88,33 @@ end
 local function removeLevels()
 	display.remove(levelsGroup)
 	levelsGroup = nil
+end
+
+local function createSpaceShip()
+	playerCharacter = spaceships.new()
+	playerCharacter.isCarringItem = false
+	playerCharacter.name = "player"
+	
+	if prevLastUnlockedLevel then
+		playerCharacter.x = prevLastUnlockedLevel.x + OFFSET_X_PLAYER
+		playerCharacter.y = prevLastUnlockedLevel.y + OFFSET_Y_PLAYER
+		
+		scrollView:scrollToPosition({x = -playerCharacter.x})
+		transition.to(playerCharacter, {delay = 100, time = FLY_TIME,x = lastUnlockedLevel.x, onStart = function()
+			timer.performWithDelay(1100, function()
+				--sound.play("breakSound")
+			end)
+			
+		end})
+		transition.to(playerCharacter, {delay = 100, time = FLY_TIME, y = lastUnlockedLevel.y + OFFSET_Y_PLAYER, transition = easing.inOutCubic, onComplete = function()
+
+		end})
+	else
+		playerCharacter.x = lastUnlockedLevel.x + OFFSET_X_PLAYER
+		playerCharacter.y = lastUnlockedLevel.y + OFFSET_Y_PLAYER
+	end
+	
+	scrollView:insert(playerCharacter)
 end
 
 local function createLevels()
@@ -235,6 +279,7 @@ function scene:create(event)
 	buttonBack.x = display.screenOriginX + buttonBack.width * 0.5 + MARGIN
 	buttonBack.y = display.screenOriginY + buttonBack.height * 0.5 + MARGIN
 	sceneGroup:insert(buttonBack)
+	
 end
 
 function scene:destroy()
@@ -249,9 +294,13 @@ function scene:show( event )
 	worldIndex = params.worldIndex or 1
 
     if ( phase == "will" ) then
+		physics.start()
 		language = database.config("language") or "en"
 		currentPlayer = players.getCurrent()
 		createLevels()
+		spaceships.start()
+		createSpaceShip()
+		Runtime:addEventListener("enterFrame", updateGameLoop)
 		self.disableButtons()
 	elseif ( phase == "did" ) then
 		self.enableButtons()
@@ -264,6 +313,10 @@ function scene:hide( event )
 
     if ( phase == "will" ) then
 		self.disableButtons()
+		system.deactivate("multitouch")
+		sound.stopPitch()
+		spaceships.stop()
+		Runtime:removeEventListener("enterFrame", updateGameLoop)
 	elseif ( phase == "did" ) then
 		removeLevels()
 	end
