@@ -25,6 +25,7 @@ local levelsGroup
 local worldIndex
 local prevLastUnlockedLevel, lastUnlockedLevel
 local playerCharacter
+local coinText, starText
 ----------------------------------------------- Constants
 local COLOR_BACKGROUND = {47/255,190/255,196/255}
 local WIDTH_BACKGROUND = 1024
@@ -46,6 +47,8 @@ local SCALE_PATH = {xScale = 1, yScale = 0.75}
 local SIZE_FONT_LEVEL = 30
 local OFFSET_X_PLAYER = -20
 local OFFSET_Y_PLAYER = -100
+local OFFSET_X_COINS = -20
+local OFFSET_X_STARS = -30
 local FLY_TIME = 1200
 
 local mathSin = math.sin
@@ -224,6 +227,37 @@ local function createLevels()
 		scrollView:insert(levelsGroup)
 	end
 end
+
+local function createUI(group)
+	local starContainer = display.newImage("images/general/stars.png")
+	starContainer.x = display.contentWidth - 450
+	starContainer.y = display.screenOriginY + 50
+	group:insert(starContainer)
+	
+	local coinContainer = display.newImage("images/general/coins.png")
+	coinContainer.x = display.contentWidth - 200
+	coinContainer.y = display.screenOriginY + 50
+	group:insert(coinContainer)
+	
+	coinText = display.newText("C", coinContainer.x + OFFSET_X_COINS, coinContainer.y, settings.fontName, 30)
+	group:insert(coinText)
+	
+	starText = display.newText("S", starContainer.x + OFFSET_X_COINS, starContainer.y, settings.fontName, 30)
+	group:insert(starText)
+	
+end
+
+local function loadLevelData()
+	local totalStars = 0
+	for indexLevel = 1, #currentPlayer.unlockedWorlds[worldIndex].levels do
+		totalStars = totalStars + currentPlayer.unlockedWorlds[worldIndex].levels[indexLevel].stars
+	end
+	local totalCoins = currentPlayer.coins
+	
+	coinText.text = totalCoins
+	starText.text = totalStars
+end
+
 ----------------------------------------------- Class functions 
 function scene.enableButtons()
 	buttonBack:setEnabled(true)
@@ -280,6 +314,8 @@ function scene:create(event)
 	buttonBack.y = display.screenOriginY + buttonBack.height * 0.5 + MARGIN
 	sceneGroup:insert(buttonBack)
 	
+	createUI(sceneGroup)
+	
 end
 
 function scene:destroy()
@@ -298,6 +334,7 @@ function scene:show( event )
 		language = database.config("language") or "en"
 		currentPlayer = players.getCurrent()
 		createLevels()
+		loadLevelData()
 		spaceships.start()
 		createSpaceShip()
 		Runtime:addEventListener("enterFrame", updateGameLoop)
