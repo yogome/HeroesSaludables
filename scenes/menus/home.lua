@@ -105,16 +105,13 @@ local function updateShineStars(time)
 		local currentShine = shineStarGroup.stars[indexStar]
 		local shineFactor = mathSin((time + (currentShine.shineOffset))  * 0.001)
 		
-		if currentShine.changedPosition then
+		if shineFactor <= 0 and currentShine.changedPosition then
+			shineFactor = 0
+			currentShine.changedPosition = false
+		else
+			currentShine.changedPosition = true
 			currentShine.x = math.random(display.screenOriginX, display.contentWidth)
 			currentShine.y = math.random(display.screenOriginY, display.contentHeight)
-		end
-		
-		if shineFactor <= 0 then
-			shineFactor = 0
-			currentShine.changedPosition = true
-		elseif shineFactor > 0 then
-			currentShine.changedPosition = false
 			currentShine.alpha = shineFactor
 		end
 		
@@ -125,7 +122,7 @@ end
 local function updateGameLoop(event)
 	updateAsteroids()
 	updateStarField()
-	updateShineStars(event.time)
+	--updateShineStars(event.time)
 end
 
 local function createBackground(group)
@@ -245,6 +242,14 @@ local function createShineStars(group)
 	group:insert(shineStarGroup)
 end
 
+local function enableButtons()
+	buttonPlay:setEnabled(true)
+end
+
+local function disableButtons()
+	buttonPlay:setEnabled(false)
+end
+
 function scene:create(event)
 	local sceneGroup = self.view
 	
@@ -269,14 +274,16 @@ function scene:show( event )
 		initializeStarShine()
 		Runtime:addEventListener("enterFrame", updateGameLoop)
 	elseif ( phase == "did" ) then
-		
+		enableButtons()
 	end
 end
 
 function scene:hide( event )
 	local sceneGroup = self.view
     local phase = event.phase
-
+		
+		disableButtons()
+		
     if ( phase == "will" ) then
 		Runtime:removeEventListener("enterFrame", updateGameLoop)
 	elseif ( phase == "did" ) then

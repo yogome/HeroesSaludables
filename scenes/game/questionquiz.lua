@@ -430,6 +430,15 @@ function scene:create( event )
 	createMark(sceneGroup)
 end
 
+
+local function enableButtons()
+	okButton:setEnabled(true)
+end
+
+local function disableButtons()
+	okButton:setEnabled(false)
+end
+
 function scene:show( event )
 
     local sceneGroup = self.view
@@ -463,7 +472,6 @@ function scene:hide( event )
 		
 		
 	elseif ( phase == "did" ) then
-		
 		Runtime:removeEventListener("enterFrame", updateGameloop)
     end
 end

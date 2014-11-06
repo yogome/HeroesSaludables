@@ -350,12 +350,14 @@ end
 
 ----------------------------------------------- Module functions
 function scene.enableButtons()
+	buttonOK:setEnabled(true)
 	buttonPrevious:setEnabled(true)
 	buttonNext:setEnabled(true)
 	buttonsEnabled = true
 end
 
 function scene.disableButtons()
+	buttonOK:setEnabled(false)
 	buttonPrevious:setEnabled(false)
 	buttonNext:setEnabled(false)
 	buttonsEnabled = false
@@ -417,8 +419,9 @@ function scene:create(event)
 	buttonBack.y = display.screenOriginY + buttonBack.height * 0.5 + MARGIN_BUTTON
 	sceneGroup:insert(buttonBack)
 
-	buttonList.ok.onRelease = onReleasedOK
-	buttonOK = widget.newButton(buttonList.ok)
+	local buttonData = buttonList.ok
+	buttonData.onRelease = onReleasedOK
+	buttonOK = widget.newButton(buttonData)
 	buttonOK.x = display.screenOriginX + display.viewableContentWidth - buttonOK.width * 0.5 - MARGIN_BUTTON
 	buttonOK.y = display.screenOriginY + buttonOK.height * 0.5 + MARGIN_BUTTON
 	sceneGroup:insert(buttonOK)

@@ -10,7 +10,8 @@ local worldIndex, levelIndex
 local NUMBER_TIPS = 13
 -- -------------------------------------------------------------------------------
 
-local function closeOverlay()
+local function closeOverlay(event)
+	event.target:setEnabled(false)
 	transition.to(scene.view, {alpha = 0, time = 500, onComplete = function()
 		composer.gotoScene(nextScene, {effect = "fade", time = 300, params = {worldIndex = worldIndex, levelIndex = levelIndex}})
 	end})
