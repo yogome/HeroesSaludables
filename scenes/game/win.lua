@@ -138,7 +138,7 @@ local function initialize(event)
 	
 	scene.retrySetEnabled(true)
 	
-	sound.play("win1")
+	sound.play("win")
 end
 local function startTransitions()
 	local baseDelay = 0

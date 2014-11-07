@@ -58,7 +58,7 @@ local function onReleasedBack()
 end
 
 local function updateCharacterShip(time)
-	playerCharacter.y = playerCharacter.y + (mathSin(time * 0.01) * 0.2)
+	playerCharacter.y = playerCharacter.y + (mathSin(time * 0.01) * 0.4)
 end
 
 local function updateGameLoop(event)

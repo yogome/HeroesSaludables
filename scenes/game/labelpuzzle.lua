@@ -3,6 +3,7 @@ local composer = require( "composer" )
 local settings = require( "settings" )
 local widget = require("widget")
 local buttonList = require("data.buttonlist")
+local sound = require("libs.helpers.sound")
 
 local scene = composer.newScene()
 
@@ -20,7 +21,6 @@ local worldIndex, levelIndex
 local SIZE_BACKGROUND = 1024
 local NUMBER_PIECES = 9
 local mathSqrt = math.sqrt
-
 local labelpositions = {
 	[1] = {x = -103, y = -135},
 	[2] = {x = 55, y = -33},
@@ -52,6 +52,7 @@ end
 
 local function onCorrect()
 	
+	sound.play("correct")
 	titleText.text = "¡Felicidades!"
 	titleText.size = 48
 	
@@ -290,8 +291,9 @@ function scene:show( event )
 			transition.to(piecesGroup, {time = 500, alpha = 1})
 		end})
 		transition.to(smallPanelGroup, {delay = 300, transition = easing.outBounce, y = display.contentCenterY * 0.30, time=1000})
-			
-		timer.performWithDelay()
+		timer.performWithDelay(750, function()
+			sound.play("ironshield")
+		end)
     end
 end
 

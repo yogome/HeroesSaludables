@@ -10,6 +10,7 @@ local herolist = require( "data.herolist" )
 local settings = require( "settings" )
 local colors = require( "libs.helpers.colors" )
 local shipList = require("data.shiplist")
+local music = require("libs.helpers.music")
 
 local scene = composer.newScene() 
 ----------------------------------------------- Variables
@@ -223,6 +224,7 @@ local function buyTapped()
 				heroPanel:populateHeroPanel(selectedItem.tabName, selectedItem.pageNumber)
 				itemTouched(currentItems[selectedItem.panelIndex])
 				chooseTapped()
+				sound.play("jackpot")
 				-- Play buy sound
 			else
 				-- Play wrong sound
@@ -733,6 +735,7 @@ function scene:show( event )
 		namePlaceholder:toFront()
 		self.disableButtons()
 	elseif ( phase == "did" ) then
+		music.playTrack(2)
 		self.enableButtons()
 	end
 end

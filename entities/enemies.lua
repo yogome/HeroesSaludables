@@ -3,6 +3,7 @@ local extramath = require( "libs.helpers.extramath" )
 local physics = require( "physics" )
 local enemydata = require("data.enemydata")
 local extratable = require( "libs.helpers.extratable" )
+local sound = require( "libs.helpers.sound" )
 local enemyFactory = {}
 ---------------------------------------------- Variables
 
@@ -146,6 +147,7 @@ local function shootTarget(self)
 				self.onBulletCreate(bullet)
 			end
 			
+			sound.play("enemyshoot")
 			transition.to(bullet, {time = 500, alpha = 1, transition = easing.outQuad})
 		end
 	end

@@ -7,6 +7,7 @@ local animator = require("units.animator")
 local players = require("models.players")
 local heroList = require("data.herolist")
 local shipList = require("data.shiplist")
+local sound = require("libs.helpers.sound")
 
 local scene = composer.newScene()
 
@@ -60,6 +61,7 @@ end
 
 local function onCorrectAnswer()
 	
+	sound.play("correct")
 	titleText.text = "¡Respuesta Correcta!"
 	titleText.size = 42
 	
@@ -74,6 +76,8 @@ local function onCorrectAnswer()
 end
 
 local function onWrongAnswer()
+	
+	sound.play("wrong")
 	titleText.text = [[¡Respuesta Incorrecta!
 						La respuesta correcta es:]]
 	titleText.size = 34
@@ -227,6 +231,10 @@ local function gotoNextScreen()
 	
 	okButton:setEnabled(false)
 	shipGroup.isVisible = true
+	
+	timer.performWithDelay(1500, function()
+		sound.play("fly")
+	end)
 	
 	transition.to(bgShine, {alpha = 0, time = 500})
 	transition.to(panelText, {alpha = 0, time = 500})
@@ -458,7 +466,9 @@ function scene:show( event )
 		transition.to(playerCharacter.group, {x = display.contentCenterX * 0.50, time = 1500, onComplete = function()
 			playerCharacter:setAnimation("IDLE")
 		end})
-		timer.performWithDelay()
+		timer.performWithDelay(750, function()
+			sound.play("ironshield")
+		end)
     end
 	
 end

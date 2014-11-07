@@ -274,6 +274,7 @@ function scene:show( event )
 		initializeStarShine()
 		Runtime:addEventListener("enterFrame", updateGameLoop)
 	elseif ( phase == "did" ) then
+		music.playTrack(1)
 		enableButtons()
 	end
 end
