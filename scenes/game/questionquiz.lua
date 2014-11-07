@@ -11,11 +11,7 @@ local sound = require("libs.helpers.sound")
 
 local scene = composer.newScene()
 
--- -----------------------------------------------------------------------------------------------------------------
--- All code outside of the listener functions will only be executed ONCE unless "composer.removeScene()" is called.
--- -----------------------------------------------------------------------------------------------------------------
-
--- local forward references should go here
+--------------------------Variables
 local answerPanelGroup, questionPanelGroup, questionPanel
 local panelText, titleText
 local okButton
@@ -28,9 +24,10 @@ local currentPlayer
 local playerShip, shipGroup
 local worldIndex, levelIndex
 
+---------------------------Constants 
+
 local SIZE_BACKGROUND = 1024
 local NUMBER_PIECES = 9
-
 ----------------------------Cached Functions
 local mathSqrt = math.sqrt
 local mathSin = math.sin

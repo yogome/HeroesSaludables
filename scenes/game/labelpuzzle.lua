@@ -18,9 +18,10 @@ local panelText, titleText
 local okButton
 local bgShine
 local worldIndex, levelIndex
+
+-----------------Constants
 local SIZE_BACKGROUND = 1024
 local NUMBER_PIECES = 9
-local mathSqrt = math.sqrt
 local labelpositions = {
 	[1] = {x = -103, y = -135},
 	[2] = {x = 55, y = -33},
@@ -44,6 +45,9 @@ local correctPositions = {
 	[8] = {x = 14, y = 170},
 	[9] = {x = 14, y = 206},
 }
+
+----------------------Cached functions
+local mathSqrt = math.sqrt 
 -- -------------------------------------------------------------------------------
 
 local function updateGameLoop()
@@ -222,6 +226,7 @@ local function initScreenElements()
 	piecesGroup.alpha = 0
 	
 end
+
 ---------------------------------------------------------------------------------
 function scene:create( event )
 

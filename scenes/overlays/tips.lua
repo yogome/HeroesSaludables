@@ -2,11 +2,15 @@ local composer = require( "composer" )
 local buttonList = require("data.buttonlist")
 local widget = require("widget")
 
+
+----------------------------Variables
 local scene = composer.newScene()
 local tipGroup
 local previousTip
 local nextScene
 local worldIndex, levelIndex
+
+----------------------------Constants
 local NUMBER_TIPS = 13
 -- -------------------------------------------------------------------------------
 
@@ -17,6 +21,7 @@ local function closeOverlay(event)
 	end})
 end
 
+------------------------------Module functions
 function scene:create( event )
 
     local sceneGroup = self.view
