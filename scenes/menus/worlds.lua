@@ -1,5 +1,5 @@
 ----------------------------------------------- Worlds
-local composer = require( "composer" )
+local director = require( "libs.helpers.director" )
 local widget = require( "widget" )
 local buttonlist = require( "data.buttonlist" )
 local logger = require( "libs.helpers.logger" )
@@ -11,7 +11,7 @@ local database = require( "libs.helpers.database" )
 local settings = require("settings")
 local worldsdata = require( "data.worldsdata" )
 
-local scene = composer.newScene() 
+local scene = director.newScene() 
 ----------------------------------------------- Variables
 local buttonBack, menu
 local buttonNext, buttonPrevious
@@ -47,12 +47,12 @@ local function disableMenu()
 end
 
 local function onReleasedBack()
-	composer.gotoScene( "scenes.menus.home", { effect = "zoomInOutFade", time = 600, } )
+	director.gotoScene( "scenes.menus.home", { effect = "zoomInOutFade", time = 600, } )
 	--director.gotoScene( "scenes.menus.profiles", { effect = "zoomInOutFade", time = 600, } )
 end
 
 local function onReleasedMinigames()
-	composer.gotoScene("scenes.minigames.gallery", { effect = "zoomInOutFade", time = 600, })
+	director.gotoScene("scenes.minigames.gallery", { effect = "zoomInOutFade", time = 600, })
 end
 
 local function onReleasedNext()
@@ -85,7 +85,7 @@ local function onMenuTapped(event)
 	if not movingMenu then
 		if not event.target.locked then
 			sound.play("pop")
-			composer.gotoScene( "scenes.menus.levels", { effect = "zoomInOutFade", time = 600, params = {worldIndex = event.index}} )
+			director.gotoScene( "scenes.menus.levels", { effect = "zoomInOutFade", time = 600, params = {worldIndex = event.index}} )
 		else
 			sound.play("wrongAnswer")
 		end

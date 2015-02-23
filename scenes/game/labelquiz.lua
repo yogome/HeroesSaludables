@@ -1,5 +1,5 @@
 --------------------------------Label Minigame
-local composer = require( "composer" )
+local director = require( "libs.helpers.director" )
 local settings = require( "settings" )
 local widget = require("widget")
 local buttonList = require("data.buttonlist")
@@ -9,7 +9,7 @@ local heroList = require("data.herolist")
 local shipList = require("data.shiplist")
 local sound = require("libs.helpers.sound")
 
-local scene = composer.newScene()
+local scene = director.newScene()
 
 ----------------------------Variables
 local answerPanelGroup, questionPanelGroup, questionPanel
@@ -256,8 +256,8 @@ local function gotoNextScreen()
 	transition.to(okButton, {delay = 600, transition = easing.inBack, y = display.viewableContentHeight + okButton.width, time = 1000})
 	transition.to(shipGroup, {delay = 1300, transition = easing.inQuad, x = display.viewableContentWidth + 500, time = 1500, onComplete = function()
 	--	transition.to(shipGroup, {delay = 1500, transition = easing.inQuad, x = display.contentCenterX, time = 1500, onComplete = function()
-		--composer.gotoScene("scenes.game.questionquiz", {effect = "fade", time = 400})
-		composer.showOverlay("scenes.overlays.tips", {params = {nextScene = "scenes.game.shooter", worldIndex = worldIndex, levelIndex = levelIndex}})
+		--director.gotoScene("scenes.game.questionquiz", {effect = "fade", time = 400})
+		director.showOverlay("scenes.overlays.tips", {params = {nextScene = "scenes.game.shooter", worldIndex = worldIndex, levelIndex = levelIndex}})
 	end})
 	
 	local function yogotarJump()

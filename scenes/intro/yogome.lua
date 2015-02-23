@@ -1,8 +1,8 @@
 ----------------------------------------------- Yogome logo intro
-local composer = require( "composer" )
+local director = require( "libs.helpers.director" )
 local sound = require( "libs.helpers.sound" )
 
-local game = composer.newScene() 
+local game = director.newScene() 
 ----------------------------------------------- Variables
 local logoSprite
 local pitch
@@ -27,7 +27,7 @@ local function initialize()
 	
 	transition.to(logoSprite, {delay = 2800, time = 800, alpha = 0, transition = easing.inQuad, onComplete = function()
 		sound.stopPitch()
-		composer.gotoScene("scenes.menus.home", {effect = "fade", time = 600})
+		director.gotoScene("scenes.menus.home", {effect = "fade", time = 600})
 	end})
 end
 ----------------------------------------------- Module functions 

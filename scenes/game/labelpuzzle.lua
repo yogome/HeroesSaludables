@@ -1,14 +1,14 @@
 --------------------------------Label Minigame
-local composer = require( "composer" )
+local director = require( "libs.helpers.director" )
 local settings = require( "settings" )
 local widget = require("widget")
 local buttonList = require("data.buttonlist")
 local sound = require("libs.helpers.sound")
 
-local scene = composer.newScene()
+local scene = director.newScene()
 
 -- -----------------------------------------------------------------------------------------------------------------
--- All code outside of the listener functions will only be executed ONCE unless "composer.removeScene()" is called.
+-- All code outside of the listener functions will only be executed ONCE unless "director.removeScene()" is called.
 -- -----------------------------------------------------------------------------------------------------------------
 
 -- local forward references should go here
@@ -172,8 +172,8 @@ local function gotoNextScreen()
 	transition.to(puzzleContainer, {delay = 600, transition = easing.inBack, x = display.screenOriginX - puzzleContainer.width, time=1000})
 	transition.to(smallPanelGroup, {delay = 600, transition = easing.inBack, y = display.screenOriginY - smallPanelGroup.height, time=1000})
 	transition.to(okButton, {delay = 600, transition = easing.inBack, y = display.viewableContentHeight + okButton.width, time = 1000, onComplete = function()
-		--composer.gotoScene("scenes.game.labelquiz")
-		composer.showOverlay("scenes.overlays.tips", {params = {nextScene = "scenes.game.shooter", worldIndex = worldIndex, levelIndex = levelIndex}})
+		--director.gotoScene("scenes.game.labelquiz")
+		director.showOverlay("scenes.overlays.tips", {params = {nextScene = "scenes.game.shooter", worldIndex = worldIndex, levelIndex = levelIndex}})
 	end})
 
 end

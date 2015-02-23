@@ -1,5 +1,5 @@
------------------------------------------------- Main
-local composer = require( "composer" )
+require "CiderDebugger";------------------------------------------------ Main
+local director = require( "libs.helpers.director" )
 local logger = require( "libs.helpers.logger" )
 local database = require( "libs.helpers.database" )
 local protector = require( "libs.helpers.protector" )
@@ -32,14 +32,14 @@ local function onKeyEvent( event )
 	local keyName = event.keyName
 
 	if "back" == keyName and phase == "up" then
-		local sceneName = composer.getSceneName("overlay")
-		if not sceneName then sceneName = composer.getSceneName("current") end
-		local currentScene = composer.getScene(sceneName)
+		local sceneName = director.getSceneName("overlay")
+		if not sceneName then sceneName = director.getSceneName("current") end
+		local currentScene = director.getScene(sceneName)
 		if not currentScene then
 			logger.log("[Main] No current scene found!")
-			sceneName = composer.getSceneName("previous")
+			sceneName = director.getSceneName("previous")
 			if sceneName then
-				composer.gotoScene(sceneName)
+				director.gotoScene(sceneName)
 			end
 		else
 			if currentScene.backAction ~= nil and type(currentScene.backAction) == "function" then
@@ -142,7 +142,7 @@ end
 
 local function errorListener( event )
 	logger.error("[Main] There was an error: "..(event.errorMessage or "Unknown error")..": "..(event.stackTrace or "No trace"))
-	composer.gotoScene( "scenes.menus.home", { effect = "fade", time = 800} )
+	director.gotoScene( "scenes.menus.home", { effect = "fade", time = 800} )
     return true
 end
 
@@ -217,9 +217,9 @@ local function startGame()
 	
 	mixpanel.logEvent("applicationStarted", {timesRan = increaseTimesRan()})
 	if system.getInfo("environment") == "simulator" and settings.testMenu then
-		composer.gotoScene( "scenes.menus.test", { effect = "fade", time = 800} )
+		director.gotoScene( "scenes.menus.test", { effect = "fade", time = 800} )
 	else
-		composer.gotoScene( "scenes.intro.yogome" )
+		director.gotoScene( "scenes.intro.yogome" )
 	end
 end
 

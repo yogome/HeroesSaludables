@@ -1,5 +1,5 @@
 ------------------------------------------------ Test Menu
-local composer = require( "composer" )
+local director = require( "libs.helpers.director" )
 local widget = require( "widget" )
 local performance = require( "libs.helpers.performance" )
 local internet = require( "libs.helpers.internet" )
@@ -10,7 +10,7 @@ local players = require( "models.players" )
 local offlinequeue = require( "libs.helpers.offlinequeue")
 local sound = require("libs.helpers.sound")
 
-local scene = composer.newScene()
+local scene = director.newScene()
 ----------------------------------------------- Variables
 local counter
 local buttonsEnabled
@@ -30,36 +30,36 @@ local function clearQueue()
 end
 
 local function goGame()
-	composer.gotoScene("scenes.game.shooter")
+	director.gotoScene("scenes.game.shooter")
 end
 
 local function goLabelQuiz()
-	composer.gotoScene("scenes.game.labelpuzzle")
+	director.gotoScene("scenes.game.labelpuzzle")
 end
 
 local function goWorlds()
-	composer.gotoScene("scenes.menus.worlds")
+	director.gotoScene("scenes.menus.worlds")
 end
 
 local function goLevels()
-	composer.gotoScene("scenes.menus.levels")
+	director.gotoScene("scenes.menus.levels")
 end
 
 local function goLabel()
-	composer.gotoScene("scenes.game.labelquiz")
+	director.gotoScene("scenes.game.labelquiz")
 end
 
 local function goQuestion()
-	composer.gotoScene("scenes.game.questionquiz")
+	director.gotoScene("scenes.game.questionquiz")
 end
 
 
 local function goHero()
-	composer.gotoScene("scenes.menus.selecthero")
+	director.gotoScene("scenes.menus.selecthero")
 end
 
 local function goHome()
-	composer.gotoScene("scenes.menus.home")
+	director.gotoScene("scenes.menus.home")
 end
 
 local function giveCoins()
@@ -94,7 +94,7 @@ local function testInternet()
 end
 ----------------------------------------------- Class functions
 function scene.backAction()
-	composer.gotoScene("scenes.menus.home")
+	director.gotoScene("scenes.menus.home")
 	return true
 end 
 
@@ -199,7 +199,7 @@ function scene:create(event)
 		
 	showRectangle:addEventListener("tap", function()
 		if buttonsEnabled == true then
-			composer.gotoScene( "scenes.menus.test", { effect = "fade", time = 400} )
+			director.gotoScene( "scenes.menus.test", { effect = "fade", time = 400} )
 			return true
 		end
 	end)

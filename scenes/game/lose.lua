@@ -1,12 +1,12 @@
 ----------------------------------------------- Lose screen
 local path = ...
-local composer = require( "composer" )
+local director = require( "libs.helpers.director" )
 local widget = require( "widget" )
 local buttonlist = require( "data.buttonlist" )
 local database = require( "libs.helpers.database" )
 local sound = require( "libs.helpers.sound" )
 
-local scene = composer.newScene() 
+local scene = director.newScene() 
 ----------------------------------------------- Variables
 local back, retry, play
 local sceneGroup
@@ -167,7 +167,7 @@ function scene.show(...)
 			self.enableButtons()
 		end
 	else
-		composer.showOverlay( path, {isModal = true, effect = "fade", time = 400, params = {
+		director.showOverlay( path, {isModal = true, effect = "fade", time = 400, params = {
 			backFunction = parameters[1],
 			retryFunction = parameters[2],
 		}})

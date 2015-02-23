@@ -1,5 +1,5 @@
 ----------------------------------------------- Hero select (Boy or girl)
-local composer = require( "composer" )
+local director = require( "libs.helpers.director" )
 local widget = require("widget")
 local players = require( "models.players" )
 local sound = require( "libs.helpers.sound" )
@@ -12,7 +12,7 @@ local colors = require( "libs.helpers.colors" )
 local shipList = require("data.shiplist")
 local music = require("libs.helpers.music")
 
-local scene = composer.newScene() 
+local scene = director.newScene() 
 ----------------------------------------------- Variables
 local buttonOK, buttonBack 
 local hero, heroPanel, heroBase
@@ -115,11 +115,11 @@ local OFFSET_NAME_TEXT = {x = 0, y = -15}
 local ITEMS_PER_PAGE = 6
 ----------------------------------------------- Functions
 local function onReleasedBack()
-	composer.gotoScene("scenes.menus.home", {effect = "fade", time = 600})
+	director.gotoScene("scenes.menus.home", {effect = "fade", time = 600})
 end
 
 local function onReleasedOK()
-	composer.gotoScene("scenes.menus.worlds", {effect = "fade", time = 600})
+	director.gotoScene("scenes.menus.worlds", {effect = "fade", time = 600})
 end
 
 local function updateShipMovement(time)

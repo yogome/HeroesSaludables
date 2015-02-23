@@ -1,5 +1,5 @@
 ----------------------------------------------- Shooter space game
-local composer = require( "composer" )
+local director = require( "libs.helpers.director" )
 local widget = require( "widget" )
 local settings = require("settings")
 local buttonList = require( "data.buttonlist" )
@@ -16,7 +16,7 @@ local loseScene = require( "scenes.game.lose" )
 local winScene = require( "scenes.game.win" )
 local players = require( "models.players" )
 
-local scene = composer.newScene() 
+local scene = director.newScene() 
 ----------------------------------------------- Variables
 local buttonBack 
 local camera
@@ -242,7 +242,7 @@ local function onKeyEvent( event )
 end 
 
 local function retryGame()
-	composer.gotoScene("scenes.game.shooter")
+	director.gotoScene("scenes.game.shooter")
 end
 
 local function updateEnemies()
@@ -417,7 +417,7 @@ local function checkAmounts()
 			isGameover = true
 			local function onBackReleased()
 				winScene.disableButtons()
-				composer.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
+				director.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
 			end
 			local function onRetryReleased()
 				winScene.disableButtons()
@@ -425,7 +425,7 @@ local function checkAmounts()
 			end
 			local function onPlayReleased()
 				winScene.disableButtons()
-				composer.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
+				director.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
 			end
 			local currentPlayer = players.getCurrent()
 			currentPlayer.coins = currentPlayer.coins + 500
@@ -461,7 +461,7 @@ local function gameOver()
 	
 		local function onBackReleased()
 			loseScene.disableButtons()
-			composer.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
+			director.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
 		end
 		local function onRetryReleased()
 			loseScene.disableButtons()
@@ -606,7 +606,7 @@ local function createBackground(sceneGroup)
 end
 
 local function onReleasedBack()
-	composer.gotoScene( "scenes.menus.levels", {params = {worldIndex = worldIndex}, effect = "fade", time = 800, } )
+	director.gotoScene( "scenes.menus.levels", {params = {worldIndex = worldIndex}, effect = "fade", time = 800, } )
 end 
 
 local function testTouch(event)

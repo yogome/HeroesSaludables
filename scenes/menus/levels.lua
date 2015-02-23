@@ -1,5 +1,5 @@
 ----------------------------------------------- Worlds
-local composer = require( "composer" )
+local director = require( "libs.helpers.director" )
 local widget = require( "widget" )
 local buttonlist = require( "data.buttonlist" )
 local physics = require("physics")
@@ -11,7 +11,7 @@ local worldsdata = require( "data.worldsdata" )
 local music = require( "libs.helpers.music" )
 local extramath = require( "libs.helpers.extramath" )
 local settings = require( "settings" )
-local scene = composer.newScene() 
+local scene = director.newScene() 
 local spaceships = require( "entities.spaceships" )
 
 ----------------------------------------------- Variables
@@ -54,7 +54,7 @@ local FLY_TIME = 1200
 local mathSin = math.sin
 ----------------------------------------------- Functions
 local function onReleasedBack()
-	composer.gotoScene( "scenes.menus.worlds", { effect = "zoomInOutFade", time = 600, } )
+	director.gotoScene( "scenes.menus.worlds", { effect = "zoomInOutFade", time = 600, } )
 end
 
 local function updateCharacterShip(time)
@@ -81,8 +81,8 @@ local function levelIconTapped(event)
 		elseif randomTool == 3 then
 			scene = "scenes.game.questionquiz"
 		end
-		composer.gotoScene(scene, {effect = "fade", time = 500, params = {worldIndex = worldIndex, levelIndex = levelIndex}})
-		--composer.gotoScene("scenes.game.shooter", { effect = "zoomInOutFade", time = 600, ,})
+		director.gotoScene(scene, {effect = "fade", time = 500, params = {worldIndex = worldIndex, levelIndex = levelIndex}})
+		--director.gotoScene("scenes.game.shooter", { effect = "zoomInOutFade", time = 600, ,})
 	else
 		sound.play("enemyRouletteTickOp02")
 	end

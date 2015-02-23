@@ -1,5 +1,5 @@
 ----------------------------------------------- Home
-local composer = require( "composer" )
+local director = require( "libs.helpers.director" )
 local widget = require( "widget" )
 local buttonList = require( "data.buttonlist" )
 local database = require( "libs.helpers.database" )
@@ -9,7 +9,7 @@ local music = require( "libs.helpers.music" )
 local players = require( "models.players" )
 local mixpanel = require( "libs.helpers.mixpanel" )
 
-local scene = composer.newScene() 
+local scene = director.newScene() 
 ----------------------------------------------- Variables
 local buttonPlay, buttonSettings
 local logoGroup, starfieldGroup, asteroidGroup, shineStarGroup
@@ -214,7 +214,7 @@ end
 
 
 local function startGame()
-	composer.gotoScene("scenes.menus.selecthero")
+	director.gotoScene("scenes.menus.selecthero")
 end
 
 local function createPlayButton(group)

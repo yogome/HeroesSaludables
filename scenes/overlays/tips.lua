@@ -1,10 +1,10 @@
-local composer = require( "composer" )
+local director = require( "libs.helpers.director" )
 local buttonList = require("data.buttonlist")
 local widget = require("widget")
 
 
 ----------------------------Variables
-local scene = composer.newScene()
+local scene = director.newScene()
 local tipGroup
 local previousTip
 local nextScene
@@ -17,7 +17,7 @@ local NUMBER_TIPS = 13
 local function closeOverlay(event)
 	event.target:setEnabled(false)
 	transition.to(scene.view, {alpha = 0, time = 500, onComplete = function()
-		composer.gotoScene(nextScene, {effect = "fade", time = 300, params = {worldIndex = worldIndex, levelIndex = levelIndex}})
+		director.gotoScene(nextScene, {effect = "fade", time = 300, params = {worldIndex = worldIndex, levelIndex = levelIndex}})
 	end})
 end
 

@@ -1,13 +1,13 @@
 ----------------------------------------------- Win screen
 local path = ... 
-local composer = require( "composer" )
+local director = require( "libs.helpers.director" )
 local widget = require( "widget" )
 local buttonlist = require( "data.buttonlist" )
 local settings = require( "settings" )
 local database = require( "libs.helpers.database" )
 local sound = require( "libs.helpers.sound" )
 
-local scene = composer.newScene() 
+local scene = director.newScene() 
 ----------------------------------------------- Variables
 local back, retry, play
 local sceneGroup
@@ -278,7 +278,7 @@ function scene.show(...)
 			self.enableButtons()
 		end
 	else
-		composer.showOverlay( path, {isModal = true, effect = "fade", time = 800, params = {
+		director.showOverlay( path, {isModal = true, effect = "fade", time = 800, params = {
 			starAmount = parameters[1] or DEFAULT_STARS,
 			coinsAmount = parameters[2] or DEFAULT_COINS,
 			backFunction = parameters[3],
