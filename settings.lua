@@ -1,6 +1,6 @@
 local settings = {
-	mode = "prod",
-	testMenu = false,
+	mode = "dev",
+	testMenu = true,
 	enableLog = true,
 	enableProtector = false,
 	databaseChecksum = false,
