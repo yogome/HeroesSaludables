@@ -11,7 +11,7 @@ local sound = require("libs.helpers.sound")
 local game = director.newScene() 
 ----------------------------------------------- Variables
 local techPlane,ageSlider, firstPlane, weightSlider, heightSlider, kidWeight, kidHeight
-local ageText, textBox, textCompleted, nextButton,yogoKid, yogoGirl, secondPlane
+local ageText, textBox, textCompleted, nextButton,yogoKid, yogoGirl, secondPlane, okButton
 ------------------------------------------------- Constants
 local centerX = display.contentCenterX
 local centerY = display.contentCenterY
@@ -166,6 +166,7 @@ end
 local function createScene(sceneGrp)
 	
 	firstPlane = display.newGroup()
+	secondPlane = display.newGroup()
 	
 	local background = display.newImage("images/infoscreen/Background.png")
 	background.x = centerX
@@ -219,15 +220,6 @@ local function createScene(sceneGrp)
 	nextButton.alpha = 0
 	nextButton.tag = "next"
 	firstPlane:insert(nextButton)
-	
-	buttonList.back.onRelease = pressButton
-	local backButton = widget.newButton(buttonList.back)
-	backButton.x = centerX - 350
-	backButton.y = centerY - 250
-	backButton.xScale = 0.8
-	backButton.yScale = 0.8
-	backButton.tag = "back"
-	firstPlane:insert(backButton)
 	
 	local yogotarPlane = display.newImage("images/infoscreen/yogotar.png")
 	yogotarPlane.x = centerX - 140
@@ -348,6 +340,41 @@ local function createScene(sceneGrp)
 	firstPlane:insert(kidHeight)
 	
 	sceneGrp:insert(firstPlane)
+	firstPlane.alpha = 0
+	
+	local techPlane = display.newImage("images/infoscreen/ventana.png")
+	techPlane.x = centerX
+	techPlane.y = centerY
+	techPlane.xScale = 0.9
+	techPlane.yScale = 0.9
+	secondPlane:insert(techPlane)
+	
+	buttonList.back.onRelease = pressButton
+	local backButton = widget.newButton(buttonList.back)
+	backButton.x = centerX - 350
+	backButton.y = centerY - 250
+	backButton.xScale = 0.8
+	backButton.yScale = 0.8
+	backButton.tag = "back"
+	secondPlane:insert(backButton)
+	
+	buttonList.ok.onRelease = pressButton
+	okButton = widget.newButton(buttonList.ok)
+	okButton.x = centerX + 350
+	okButton.y = ageSlider.y - 10
+	okButton.tag = "ok"
+	secondPlane:insert(okButton)
+	
+	local activityBox = display.newImage("images/infoscreen/actividad.png")
+	activityBox.x = centerX
+	activityBox.y = centerY - 180
+	activityBox.xScale = 1.2
+	activityBox.yScale = 1.1
+	secondPlane:insert(activityBox)
+	
+	local activityText = display.newText("Actividad que practicas", centerX, activityBox.y , settings.fontName, 26)
+	activityText:setFillColor(0.2,1,0.2)
+	secondPlane:insert(activityText)
 end
 
 function game:create(event)
