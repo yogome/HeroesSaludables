@@ -9,6 +9,7 @@ local settings = {
 	fontName = "VAGRounded",
 	keySound = "pop",
 	maxProfiles = 8,
+	statusBar = display.HiddenStatusBar,
 	gameName = "HeroesSaludables",
 	gameVersion = "0.9",
 	mixpanelTokens = {

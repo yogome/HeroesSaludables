@@ -5,6 +5,9 @@ local players = require( "models.players" )
 local function goGame()
 	director.gotoScene("scenes.game.shooter")
 end
+local function goInfo()
+	director.gotoScene("scenes.game.infoscreen")
+end
 
 local function goLabelQuiz()
 	director.gotoScene("scenes.game.labelpuzzle")
@@ -33,6 +36,10 @@ end
 
 local function goHome()
 	director.gotoScene("scenes.menus.home")
+end
+local function goEditor()
+	require("libs.helpers.editor")
+	director.gotoScene("editor")
 end
 
 local function giveCoins()
@@ -64,6 +71,7 @@ local testActions = {
 	{"Go Levels", goLevels, {0.5,0.5,0.5}},
 
 	{"Go Home", goHome, {0.5,0.5,0.5}},
+	{"Go Info", goInfo, {0.5,0.5,0.5},2},
 	{"Go Hero", goHero, {0.5,0.5,0.5}},
 	{"Go Game", goGame, {0.5,0.5,0.5}},
 	{"Go Label", goLabel, {0.5,0.5,0.5}},
@@ -74,6 +82,7 @@ local testActions = {
 	{"Give Coins", giveCoins,{0.2,0.8,0.2}},
 	{"Toggle FPS", toggleFPS,{0.3,0.3,0.8}},
 	{"Reset player", resetPlayer,{0.8,0.2,0.2}},
+	{"Go Editor", goEditor, {0.5,0.5,0.5}, 2},
 }
 
 return testActions
