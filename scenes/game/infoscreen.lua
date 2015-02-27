@@ -10,8 +10,13 @@ local sound = require("libs.helpers.sound")
 
 local game = director.newScene() 
 ----------------------------------------------- Variables
-local techPlane,ageSlider, firstPlane, weightSlider, heightSlider, kidWeight, kidHeight
-local ageText, textBox, textCompleted, nextButton,yogoKid, yogoGirl, secondPlane, okButton
+local techPlane,ageSlider, weightSlider, firstPlane, heightSlider, kidWeight, kidHeight
+local ageText, textBox, textCompleted, nextButton,yogoKid, yogoGirl, secondPlane, okButton, backButton
+local kidAge, kdWeight, kdHeight, kidName, kidImc
+local activityNames = {"Caminar","Correr","Patinar","Futbol","Beisbol","Nadar","Bicicleta","Videojuegos","Basketbal","Otros"}
+local activityBtnNames = {"caminar","correr","patinar","futbol","baseball","nadar","bici","videojuegos","basquet","otros"}
+local activityBooleans = {false,false,false,false,false,false,false,false,false,false}
+local pressedButtons, unpressedButtons
 ------------------------------------------------- Constants
 local centerX = display.contentCenterX
 local centerY = display.contentCenterY
@@ -23,9 +28,39 @@ local screenHeight = display.viewableContentHeight - screenTop * 2
 local screenBottom = screenTop + screenHeight 
 local mRandom = math.random 
 ------------------------------------------------- Functions
---
+ 
+local function round(what, precision)
+   return math.floor(what*math.pow(10,precision)+0.5) / math.pow(10,precision)
+end
+
+local function getImc(height, weight) 
+	local imc = weight / height
+	return round(imc,2)
+end
+
 local function pressButton(event)
 	local tag = event.target.tag
+	if tag == "next" then
+		nextButton:setEnabled(false)
+		transition.to(firstPlane,{x = screenWidth + screenWidth, time = 500,rotation = 90 })
+		transition.to(secondPlane,{delay = 400, x = screenLeft, time = 500,rotation = 0 })
+		kidName = textCompleted
+		kdWeight = weightSlider.value
+		kdHeight = heightSlider.value
+		kidAge = ageSlider.value
+		kidImc = getImc(kdHeight, kdWeight)
+		print(kidImc .. "  IMC")
+		okButton:setEnabled(true)
+	elseif tag == "back" then
+		backButton:setEnabled(false)
+		transition.to(secondPlane,{x = screenWidth + screenWidth, time = 500,rotation = 90 })
+		transition.to(firstPlane,{delay = 400, x = screenLeft, time = 500,rotation = 0 })
+		nextButton:setEnabled(true)
+	elseif tag == "ok" then
+		okButton:setEnabled(false)
+		require("libs.helpers.editor")
+		director.gotoScene("editor")
+	end
 end
 local function savePlayerInfo(event)
 	textCompleted = event.target.text.text
@@ -35,9 +70,7 @@ local function savePlayerInfo(event)
 		transition.to(nextButton,{alpha = 0,time = 300})
 	end
 end
-local function round(what, precision)
-   return math.floor(what*math.pow(10,precision)+0.5) / math.pow(10,precision)
-end
+
 local function createSlider(options)
 	local slider = display.newGroup()
 	
@@ -110,7 +143,6 @@ local function createSlider(options)
 						slider.value = round(x,2)
 						kidHeight.text = slider.value .. " mts"
 					end
-					
 				end
 			elseif event.phase == "ended" or event.phase == "cancelled" then
 				transition.cancel(knob)
@@ -161,12 +193,30 @@ local function tapYogotar(event)
 	end
 end
 local function animateScene()
+	secondPlane.x = screenWidth + screenWidth
+	secondPlane.rotation = 90
 	transition.from(firstPlane,{delay = 300, x = screenWidth + screenWidth, time = 500,rotation = 90 })
+end
+local function pressedActivity(event)
+	sound.play("pop")
+	local index = event.target.index
+	local typ = event.target.type
+	if(typ == "pressed") then
+		pressedButtons[index].alpha = 0
+		unpressedButtons[index].alpha = 1
+		activityBooleans[index] = false
+	else
+		pressedButtons[index].alpha = 1
+		unpressedButtons[index].alpha = 0
+		activityBooleans[index] = true
+	end
 end
 local function createScene(sceneGrp)
 	
 	firstPlane = display.newGroup()
 	secondPlane = display.newGroup()
+	pressedButtons = display.newGroup()
+	unpressedButtons = display.newGroup()
 	
 	local background = display.newImage("images/infoscreen/Background.png")
 	background.x = centerX
@@ -260,6 +310,7 @@ local function createScene(sceneGrp)
 		maxChars = 15,
 		onChange = savePlayerInfo,
     }
+	
     textBox = textbox.new(texboxOptions)
     textBox.alpha = 1
     textBox.x = centerX
@@ -297,12 +348,11 @@ local function createScene(sceneGrp)
 			{x = 0.9, value = 5, color = colors.white},
 		},
 	}
+	
 	weightSlider = createSlider(ageSliderOptions)
 	weightSlider.x = centerX + 180
 	weightSlider.y = centerY - 30
 	firstPlane:insert(weightSlider)
-	
-	
 	
 	ageSliderOptions = {
 		background = "images/infoscreen/barrapeso.png",
@@ -318,6 +368,7 @@ local function createScene(sceneGrp)
 			{x = 0.9, value = 5, color = colors.white},
 		},
 	}
+	
 	heightSlider = createSlider(ageSliderOptions)
 	heightSlider.x = centerX + 160
 	heightSlider.y = centerY + 120
@@ -340,7 +391,7 @@ local function createScene(sceneGrp)
 	firstPlane:insert(kidHeight)
 	
 	sceneGrp:insert(firstPlane)
-	firstPlane.alpha = 0
+--	firstPlane.alpha = 0
 	
 	local techPlane = display.newImage("images/infoscreen/ventana.png")
 	techPlane.x = centerX
@@ -350,7 +401,7 @@ local function createScene(sceneGrp)
 	secondPlane:insert(techPlane)
 	
 	buttonList.back.onRelease = pressButton
-	local backButton = widget.newButton(buttonList.back)
+	backButton = widget.newButton(buttonList.back)
 	backButton.x = centerX - 350
 	backButton.y = centerY - 250
 	backButton.xScale = 0.8
@@ -375,6 +426,51 @@ local function createScene(sceneGrp)
 	local activityText = display.newText("Actividad que practicas", centerX, activityBox.y , settings.fontName, 26)
 	activityText:setFillColor(0.2,1,0.2)
 	secondPlane:insert(activityText)
+	
+	local pivotX = centerX - 280
+	local pivotY = centerY - 100
+	local pivotImageY = centerY - 22
+	local activityBox
+	local activityTxt
+	local btnImage
+	for i=1, #activityNames do
+		activityBox = display.newImage("images/infoscreen/actividad.png")
+		activityBox.xScale = 0.45
+		activityBox.yScale = 0.6
+		activityBox.x = pivotX
+		activityBox.y = pivotY
+		activityTxt = display.newText(activityNames[i], pivotX, pivotY, settings.fontName, 18)
+		activityTxt:setFillColor(0.2,1,0.2)
+		secondPlane:insert(activityBox)
+		secondPlane:insert(activityTxt)
+		for u=1, 2 do
+			btnImage = display.newImage("images/infoscreen/activities/" .. activityBtnNames[i] .. "0" .. u .. ".png")
+			btnImage.x = pivotX
+			btnImage.y = pivotImageY
+			btnImage.xScale = 0.7
+			btnImage.yScale = 0.7
+			btnImage.index = i
+			btnImage:addEventListener("tap",pressedActivity)
+			if u == 1 then
+				btnImage.type = "pressed"
+				pressedButtons:insert(btnImage)
+			else
+				btnImage.type = "unpressed"
+				btnImage.x = pivotX
+				btnImage.alpha = 0
+				unpressedButtons:insert(btnImage)
+			end
+		end
+		pivotX =  pivotX + 135
+		if i == 5 then
+			pivotX = centerX - 300
+			pivotY = pivotY + 150
+			pivotImageY = pivotImageY + 150
+		end
+	end
+	secondPlane:insert(pressedButtons)
+	secondPlane:insert(unpressedButtons)
+	sceneGrp:insert(secondPlane)
 end
 
 function game:create(event)
@@ -390,7 +486,9 @@ function game:show( event )
 	local phase = event.phase
 		
 	if ( phase == "will" ) then
-	    
+	    nextButton:setEnabled(true)
+		backButton:setEnabled(true)
+		okButton:setEnabled(true)
 	elseif ( phase == "did" ) then
 		animateScene()
 	end
