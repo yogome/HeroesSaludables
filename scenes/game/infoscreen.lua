@@ -10,12 +10,32 @@ local sound = require("libs.helpers.sound")
 
 local game = director.newScene() 
 ----------------------------------------------- Variables
-local techPlane,ageSlider, weightSlider, firstPlane, heightSlider, kidWeight, kidHeight
+local techPlane,ageSlider, weightSlider, firstPlane, heightSlider, kidWeight, kidHeight, hourSlider
 local ageText, textBox, textCompleted, nextButton,yogoKid, yogoGirl, secondPlane, okButton, backButton
-local kidAge, kdWeight, kdHeight, kidName, kidImc
+local kidAge, kdWeight, kdHeight, kidName, kidImc, kidStatus, isBoy
 local activityNames = {"Caminar","Correr","Patinar","Futbol","Beisbol","Nadar","Bicicleta","Videojuegos","Basketbal","Otros"}
 local activityBtnNames = {"caminar","correr","patinar","futbol","baseball","nadar","bici","videojuegos","basquet","otros"}
 local activityBooleans = {false,false,false,false,false,false,false,false,false,false}
+local tableObesityGirls = {
+	[1] =  {min = 12.9, max = 18.1},
+	[2] =  {min = 12.9, max = 18.4},
+	[3] =  {min = 13, max = 18.8},
+	[4] =  {min = 13.2, max = 19.4},
+	[5] =  {min = 13.5, max = 20.2},
+	[6] =  {min = 13.8, max = 21.1},
+	[7] =  {min = 14.3, max = 22.2},
+	[8] =  {min = 14.8, max = 23.3},
+}
+local tableObesityBoys = {
+	[1] =  {min = 13.2, max = 17.7},
+	[2] =  {min = 13.3, max = 17.9},
+	[3] =  {min = 13.4, max = 18.3},
+	[4] =  {min = 13.6, max = 18.8},
+	[5] =  {min = 13.8, max = 19.5},
+	[6] =  {min = 14, max = 20.2},
+	[7] =  {min = 14.4, max = 21.1},
+	[8] =  {min = 14.8, max = 22.1},
+}
 local pressedButtons, unpressedButtons
 ------------------------------------------------- Constants
 local centerX = display.contentCenterX
@@ -35,9 +55,27 @@ end
 
 local function getImc(height, weight) 
 	local imc = weight / height
+	local tableToUse
 	return round(imc,2)
 end
-
+local function getKidStatus(age,imc)
+	local index = age - 4
+	if index < 1 or index > 12 then
+		return "Indefinido"
+	end
+	if isBoy then
+		tableToUse = tableObesityBoys
+	else
+		tableToUse = tableObesityGirls
+	end
+	if(imc<tableToUse[index].min) then
+		return "Delgado"
+	elseif imc >= tableToUse[index].min and imc <= tableToUse[index].max then
+		return "Normal"
+	elseif imc > tableToUse[index].max then
+		return "Obeso"
+	end
+end
 local function pressButton(event)
 	local tag = event.target.tag
 	if tag == "next" then
@@ -49,7 +87,8 @@ local function pressButton(event)
 		kdHeight = heightSlider.value
 		kidAge = ageSlider.value
 		kidImc = getImc(kdHeight, kdWeight)
-		print(kidImc .. "  IMC")
+		kidStatus = getKidStatus(kidAge,kidImc)
+		print(kidName.. " nombre ," .. kidImc .. "  IMC ," .. kidStatus .. " estado del niño")
 		okButton:setEnabled(true)
 	elseif tag == "back" then
 		backButton:setEnabled(false)
@@ -147,6 +186,7 @@ local function createSlider(options)
 			elseif event.phase == "ended" or event.phase == "cancelled" then
 				transition.cancel(knob)
 --				print(slider.value)
+				print((knob.x + halfWidth) / width)
 				local knobColor = positions[slider.currentIndex].color
 				director.to(scenePath, knob, {time = 200, r = knobColor[1], g = knobColor[2], b = knobColor[3]})
 				if not options.floatingSlider then
@@ -187,9 +227,11 @@ local function tapYogotar(event)
 	if(tag == "boy") then
 		transition.to(yogoKid,{xScale = 0.6, yScale = 0.6, time = 300})
 		transition.to(yogoGirl,{xScale = 0.5, yScale = 0.5, time = 300})
+		isBoy = true
 	elseif tag == "girl" then
 		transition.to(yogoKid,{xScale = 0.5, yScale = 0.5, time = 300})
 		transition.to(yogoGirl,{xScale = 0.6, yScale = 0.6, time = 300})
+		isBoy = false
 	end
 end
 local function animateScene()
@@ -468,6 +510,33 @@ local function createScene(sceneGrp)
 			pivotImageY = pivotImageY + 150
 		end
 	end
+	
+	local ageSliderOptions = {
+		background = "images/infoscreen/horas.png",
+		knob = "images/infoscreen/marcador.png",
+		floatingSlider = false,
+		isWeight = false,
+		isHeight = false,
+		positionIndex = 1,
+		knobScale = 0.3,
+		positions = {
+			{x = 0.48679336934527	, value = "none", color = colors.red},
+			{x = 0.55984405606811	, value = 0.5, color = colors.white},
+			{x = 0.63569200898704	, value = 1, color = colors.white},
+			{x = 0.69179337112992	, value = 2, color = colors.white},
+			{x = 0.75417153877124	, value = 3, color = colors.white},
+			{x = 0.81460038867378	, value = 4, color = colors.white},
+			{x = 0.87665693197566	, value = 5, color = colors.white},
+			{x = 0.93604223537631	, value = "+", color = colors.white},
+		},
+	}
+	hourSlider = createSlider(ageSliderOptions)
+	hourSlider.x = centerX
+	hourSlider.y = centerY + 220
+	hourSlider.xScale = 0.8
+	hourSlider.yScale = 0.8
+	secondPlane:insert(hourSlider)
+	
 	secondPlane:insert(pressedButtons)
 	secondPlane:insert(unpressedButtons)
 	sceneGrp:insert(secondPlane)
