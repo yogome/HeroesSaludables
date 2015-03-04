@@ -10,12 +10,14 @@ local sound = require("libs.helpers.sound")
 
 local game = director.newScene() 
 ----------------------------------------------- Variables
-local techPlane,ageSlider, weightSlider, firstPlane, heightSlider, kidWeight, kidHeight, hourSlider
-local ageText, textBox, textCompleted, nextButton,yogoKid, yogoGirl, secondPlane, okButton, backButton
-local kidAge, kdWeight, kdHeight, kidName, kidImc, kidStatus, isBoy
-local activityNames = {"Caminar","Correr","Patinar","Futbol","Beisbol","Nadar","Bicicleta","Videojuegos","Basketbal","Otros"}
-local activityBtnNames = {"caminar","correr","patinar","futbol","baseball","nadar","bici","videojuegos","basquet","otros"}
+local ageSlider, weightSlider, firstPlane, heightSlider, kidWeight, kidHeight, hourSlider, thirdPlane, thirdOkBtn, thirdBackBtn,finalYogoKid, finalYogoGirl, finalText
+local ageText, textBox, textCompleted, nextButton,yogoKid, yogoGirl, secondPlane, okButton, backButton, hourText,kidCalories
+local kidAge, kdWeight, kdHeight, kidName, kidImc, kidStatus, isBoy, checkFirstScreen, checkSecondScreen, checkFirst, checkSecond, oneCategory, selectGenre
+local activityNames = {"Caminar","Correr","Basketbal","Futbol","Beisbol","Nadar","Bicicleta","Gimnasia","Otros","Nada"}
+local activityBtnNames = {"caminar","correr","basquet","futbol","baseball","nadar","bici","gimnasia","otros","nada"}
 local activityBooleans = {false,false,false,false,false,false,false,false,false,false}
+local tableCalBoys = {1810,1900,1990,2070,2140,2240,2310,2440}
+local tableCalGirls = {1540,1630,1700,1770,1830,1910,1980,2050}
 local tableObesityGirls = {
 	[1] =  {min = 12.9, max = 18.1},
 	[2] =  {min = 12.9, max = 18.4},
@@ -55,11 +57,11 @@ end
 
 local function getImc(height, weight) 
 	local imc = weight / height
-	local tableToUse
 	return round(imc,2)
 end
 local function getKidStatus(age,imc)
 	local index = age - 4
+	local tableToUse
 	if index < 1 or index > 12 then
 		return "Indefinido"
 	end
@@ -76,9 +78,45 @@ local function getKidStatus(age,imc)
 		return "Obeso"
 	end
 end
+local function getCalories(age)
+	local index = age - 4
+	local tableToUsed
+	if kidStatus == "Obeso" then
+		if isBoy then
+			tableToUsed = tableCalBoys
+		else
+			tableToUsed = tableCalGirls
+		end
+		return tableToUsed[index]
+	else
+		local weekHours = 1.2
+		if hourSlider.value >= 3 then
+			weekHours = 1.55
+			if isBoy then
+				weekHours = 1.56
+			end
+		end
+		if kidAge < 10 then
+			if isBoy then
+				return ((22.7 * kidWeight)+ 495) * weekHours
+			else
+				return ((22.7 * kidWeight)+ 495) * weekHours
+			end
+		else
+			if isBoy then
+				return ((17.5 * kidWeight)+ 651) * weekHours
+			else
+				return ((12.2 * kidWeight)+ 746) * weekHours
+			end	
+		end		
+	end
+end
 local function pressButton(event)
 	local tag = event.target.tag
+	local genre = "niño"
 	if tag == "next" then
+		checkFirst = false
+		checkSecond = true
 		nextButton:setEnabled(false)
 		transition.to(firstPlane,{x = screenWidth + screenWidth, time = 500,rotation = 90 })
 		transition.to(secondPlane,{delay = 400, x = screenLeft, time = 500,rotation = 0 })
@@ -88,26 +126,50 @@ local function pressButton(event)
 		kidAge = ageSlider.value
 		kidImc = getImc(kdHeight, kdWeight)
 		kidStatus = getKidStatus(kidAge,kidImc)
-		print(kidName.. " nombre ," .. kidImc .. "  IMC ," .. kidStatus .. " estado del niño")
 		okButton:setEnabled(true)
 	elseif tag == "back" then
+		checkFirst = true
+		checkSecond = false
 		backButton:setEnabled(false)
 		transition.to(secondPlane,{x = screenWidth + screenWidth, time = 500,rotation = 90 })
 		transition.to(firstPlane,{delay = 400, x = screenLeft, time = 500,rotation = 0 })
 		nextButton:setEnabled(true)
 	elseif tag == "ok" then
-		okButton:setEnabled(false)
-		require("libs.helpers.editor")
-		director.gotoScene("editor")
+--		okButton:setEnabled(false)
+--		for i=1, #activityBtnNames do
+--			local practice
+--			if not activityBooleans[i] then
+--				practice = "no"
+--			else
+--				practice = "si"
+--			end
+--			print( activityBtnNames[i] .. " " .. practice)
+--		end
+		print ( hourSlider.value .. "horas")
+		kidCalories = getCalories(kidAge)
+		if isBoy then
+			genre = "niño"
+		else
+			genre = "niña"
+		end
+		print("Nombre= " .. kidName .. ", Género= " .. genre .. ", Edad= " .. kidAge ..  ",IMC= " .. kidImc .. ", Estado del niño= " .. kidStatus .. ", Calorías a consumir= " .. kidCalories .. " .")
+		transition.to(secondPlane,{x = screenWidth + screenWidth, time = 500,rotation = 90 })
+		transition.to(thirdPlane,{delay = 400, x = screenLeft, time = 500,rotation = 0 })
+		finalText.text = kidCalories .. " cal"
+		if isBoy then
+			finalYogoKid.alpha = 1
+			finalYogoGirl.alpha = 0
+		else
+			finalYogoKid.alpha = 0
+			finalYogoGirl.alpha = 1
+		end
+	elseif tag == "backThird" then
+		transition.to(thirdPlane,{x = screenWidth + screenWidth, time = 500,rotation = 90 })
+		transition.to(secondPlane,{delay = 400, x = screenLeft, time = 500,rotation = 0 })
 	end
 end
 local function savePlayerInfo(event)
 	textCompleted = event.target.text.text
-	if textCompleted ~= "" then
-		transition.to(nextButton,{alpha = 1,time = 300})
-	else
-		transition.to(nextButton,{alpha = 0,time = 300})
-	end
 end
 
 local function createSlider(options)
@@ -186,7 +248,7 @@ local function createSlider(options)
 			elseif event.phase == "ended" or event.phase == "cancelled" then
 				transition.cancel(knob)
 --				print(slider.value)
-				print((knob.x + halfWidth) / width)
+--				print((knob.x + halfWidth) / width)
 				local knobColor = positions[slider.currentIndex].color
 				director.to(scenePath, knob, {time = 200, r = knobColor[1], g = knobColor[2], b = knobColor[3]})
 				if not options.floatingSlider then
@@ -224,6 +286,7 @@ end
 local function tapYogotar(event)
 	local tag = event.target.tag
 	sound.play("pop")
+	selectGenre = true
 	if(tag == "boy") then
 		transition.to(yogoKid,{xScale = 0.6, yScale = 0.6, time = 300})
 		transition.to(yogoGirl,{xScale = 0.5, yScale = 0.5, time = 300})
@@ -235,28 +298,69 @@ local function tapYogotar(event)
 	end
 end
 local function animateScene()
+	
+	firstPlane.x = screenLeft
+	firstPlane.rotation = 0
+	
 	secondPlane.x = screenWidth + screenWidth
 	secondPlane.rotation = 90
+	
+	thirdPlane.x = screenWidth + screenWidth
+	thirdPlane.rotation = 90
 	transition.from(firstPlane,{delay = 300, x = screenWidth + screenWidth, time = 500,rotation = 90 })
+	
 end
 local function pressedActivity(event)
 	sound.play("pop")
 	local index = event.target.index
+	if activityBooleans[10] and index ~= 10 then
+		return
+	end
 	local typ = event.target.type
 	if(typ == "pressed") then
 		pressedButtons[index].alpha = 0
 		unpressedButtons[index].alpha = 1
-		activityBooleans[index] = false
+		activityBooleans[index] = true
+		if(index == 10) then
+			transition.to(okButton,{ alpha = 1, time=300})
+			transition.to(hourSlider,{alpha = 0, time = 300})
+			transition.to(hourText,{alpha = 0, time = 300})
+			for i = 1, (#activityBooleans - 1) do
+				pressedButtons[i].alpha = 1
+				unpressedButtons[i].alpha = 0
+				activityBooleans[i] = false
+			end
+			hourSlider:initialize()
+		end
 	else
 		pressedButtons[index].alpha = 1
 		unpressedButtons[index].alpha = 0
-		activityBooleans[index] = true
+		activityBooleans[index] = false
+		if(index == 10) then
+			if(hourSlider.value == "none" or not oneCategory) then
+				transition.to(hourSlider,{alpha = 1, time = 300})
+				transition.to(hourText,{alpha = 1, time = 300})
+				transition.to(okButton,{ alpha = 0, time=300})
+			end
+		end
+	end
+	local count = 0
+	for i=0, (#activityBooleans - 1) do
+		if activityBooleans[i] then
+			count = count + 1
+		end
+	end
+	if count < 1 then
+		oneCategory = false
+	else
+		oneCategory = true
 	end
 end
 local function createScene(sceneGrp)
 	
 	firstPlane = display.newGroup()
 	secondPlane = display.newGroup()
+	thirdPlane = display.newGroup()
 	pressedButtons = display.newGroup()
 	unpressedButtons = display.newGroup()
 	
@@ -267,7 +371,7 @@ local function createScene(sceneGrp)
 	background.height = screenHeight
 	sceneGrp:insert(background)
 	
-	techPlane = display.newImage("images/infoscreen/ventana.png")
+	local techPlane = display.newImage("images/infoscreen/ventana.png")
 	techPlane.x = centerX
 	techPlane.y = centerY
 	techPlane.xScale = 0.9
@@ -435,7 +539,7 @@ local function createScene(sceneGrp)
 	sceneGrp:insert(firstPlane)
 --	firstPlane.alpha = 0
 	
-	local techPlane = display.newImage("images/infoscreen/ventana.png")
+	techPlane = display.newImage("images/infoscreen/ventana.png")
 	techPlane.x = centerX
 	techPlane.y = centerY
 	techPlane.xScale = 0.9
@@ -453,8 +557,10 @@ local function createScene(sceneGrp)
 	
 	buttonList.ok.onRelease = pressButton
 	okButton = widget.newButton(buttonList.ok)
-	okButton.x = centerX + 350
+	okButton.x = centerX + 362
 	okButton.y = ageSlider.y - 10
+	okButton.xScale = 0.9
+	okButton.yScale = 0.9
 	okButton.tag = "ok"
 	secondPlane:insert(okButton)
 	
@@ -506,7 +612,7 @@ local function createScene(sceneGrp)
 		pivotX =  pivotX + 135
 		if i == 5 then
 			pivotX = centerX - 300
-			pivotY = pivotY + 150
+			pivotY = pivotY + 155
 			pivotImageY = pivotImageY + 150
 		end
 	end
@@ -537,9 +643,81 @@ local function createScene(sceneGrp)
 	hourSlider.yScale = 0.8
 	secondPlane:insert(hourSlider)
 	
+	hourText = display.newText("Horas a la Semana",centerX - 110, ageSlider.y + 20,"VAGRounded", 19 )
+	hourText:setFillColor(0.2,1,0.2)
+	secondPlane:insert(hourText)
+	
 	secondPlane:insert(pressedButtons)
 	secondPlane:insert(unpressedButtons)
 	sceneGrp:insert(secondPlane)
+	
+	techPlane = display.newImage("images/infoscreen/ventana.png")
+	techPlane.x = centerX
+	techPlane.y = centerY
+	techPlane.xScale = 0.9
+	techPlane.yScale = 0.9
+	thirdPlane:insert(techPlane)
+	
+	buttonList.back.onRelease = pressButton
+	backButton = widget.newButton(buttonList.back)
+	backButton.x = centerX - 350
+	backButton.y = centerY - 250
+	backButton.xScale = 0.8
+	backButton.yScale = 0.8
+	backButton.tag = "backThird"
+	thirdPlane:insert(backButton)
+	
+	buttonList.ok.onRelease = pressButton
+	okButton = widget.newButton(buttonList.ok)
+	okButton.x = centerX + 362
+	okButton.y = ageSlider.y - 10
+	okButton.xScale = 0.9
+	okButton.yScale = 0.9
+	okButton.tag = "okFinal"
+	thirdPlane:insert(okButton)
+	
+	yogotarPlane = display.newImage("images/infoscreen/yogotar.png")
+	yogotarPlane.x = centerX - 170
+	yogotarPlane.y = centerY
+	yogotarPlane.xScale = 0.55
+	yogotarPlane.yScale = 0.8
+	yogotarPlane.rotation = -25
+	thirdPlane:insert(yogotarPlane)
+	
+	finalYogoKid = display.newImage("images/infoscreen/nino.png")
+	finalYogoKid.x = yogotarPlane.x - 20
+	finalYogoKid.y = centerY
+	finalYogoKid.xScale = 0.6
+	finalYogoKid.yScale = 0.6
+	thirdPlane:insert(finalYogoKid)
+	
+	finalYogoGirl = display.newImage("images/infoscreen/nina.png")
+	finalYogoGirl.x = yogotarPlane.x - 20
+	finalYogoGirl.y = centerY
+	finalYogoGirl.xScale = 0.6
+	finalYogoGirl.yScale = 0.6
+	thirdPlane:insert(finalYogoGirl)
+	
+	local textFinal = display.newText("Tu consumo diario de ",centerX + 150, centerY - 70,"VAGRounded", 32 )
+	textFinal:setFillColor(0.2,1,0.2)
+	thirdPlane:insert(textFinal)
+	textFinal = display.newText("kilocalorias es de",centerX + 150, centerY - 30,"VAGRounded", 32 )
+	textFinal:setFillColor(0.2,1,0.2)
+	thirdPlane:insert(textFinal)
+	
+	local textBack = display.newImage("images/infoscreen/actividad.png")
+	textBack.x = centerX + 150
+	textBack.y = centerY + 40
+	thirdPlane:insert(textBack)
+	
+	finalText = display.newText("560",centerX + 150, centerY + 40,"VAGRounded", 28 )
+	finalText:setFillColor(0.2,1,0.2)
+	thirdPlane:insert(finalText)
+	
+--	firstPlane.alpha = 0
+	
+	sceneGrp:insert(thirdPlane)
+	
 end
 
 function game:create(event)
@@ -549,12 +727,49 @@ end
 
 function game:destroy()
 end
-
+local function update()
+--	print ( weightSlider.value .. " weight ".. heightSlider.value .. " height " .. ageSlider.value .. " age " )
+	if checkFirst then
+		if checkFirstScreen then
+			if(selectGenre and textCompleted ~= "" and weightSlider.value~= "none" and weightSlider.value ~= 0 and heightSlider.value ~= 0 and ageSlider.value ~= "none" and heightSlider.value ~= "none") then
+				transition.to(nextButton,{alpha = 1, time = 300})
+				checkFirstScreen = false
+			end
+		else
+			if(textCompleted == "" or weightSlider.value== 0 or ageSlider.value == "none" or heightSlider.value == 0) then
+				transition.to(nextButton,{alpha = 0, time = 300})
+				checkFirstScreen = true
+			end
+		end
+	end
+	if checkSecond then
+		if checkSecondScreen then
+			if(hourSlider.value ~= "none" and oneCategory) then
+				transition.to(okButton,{alpha = 1, time = 300})
+				checkSecondScreen = false
+			end
+		else
+			if(hourSlider.value == "none" or not oneCategory)then
+				if not activityBooleans[10] then
+					transition.to(okButton,{alpha = 0, time = 300})
+					checkSecondScreen = true
+				end
+			end
+		end
+	end
+end
 function game:show( event )
 	local sceneGroup = self.view
 	local phase = event.phase
 		
 	if ( phase == "will" ) then
+		oneCategory = false
+		checkSecond = false
+		checkFirst = true
+		checkFirstScreen = true
+		selectGenre = false
+		textCompleted = ""
+		Runtime:addEventListener("enterFrame", update)
 	    nextButton:setEnabled(true)
 		backButton:setEnabled(true)
 		okButton:setEnabled(true)
@@ -569,7 +784,7 @@ function game:hide( event )
 	if ( phase == "will" ) then
 	    
 	elseif ( phase == "did" ) then
-		
+		Runtime:removeEventListener("enterFrame",update)
 	end
 end
 ----------------------------------------------- Execution
