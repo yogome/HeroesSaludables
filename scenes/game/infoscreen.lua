@@ -10,12 +10,12 @@ local sound = require("libs.helpers.sound")
 
 local game = director.newScene() 
 ----------------------------------------------- Variables
-local ageSlider, weightSlider, firstPlane, heightSlider, kidWeight, kidHeight, hourSlider, thirdPlane, thirdOkBtn, thirdBackBtn,finalYogoKid, finalYogoGirl, finalText
+local ageSlider, weightSlider, firstPlane, heightSlider, kidWeightText, kidHeightText, hourSlider, thirdPlane, thirdOkBtn, thirdBackBtn,finalYogoKid, finalYogoGirl, finalText
 local ageText, textBox, textCompleted, nextButton,yogoKid, yogoGirl, secondPlane, okButton, backButton, hourText,kidCalories
 local kidAge, kdWeight, kdHeight, kidName, kidImc, kidStatus, isBoy, checkFirstScreen, checkSecondScreen, checkFirst, checkSecond, oneCategory, selectGenre
 local activityNames = {"Caminar","Correr","Basketbal","Futbol","Beisbol","Nadar","Bicicleta","Gimnasia","Otros","Nada"}
 local activityBtnNames = {"caminar","correr","basquet","futbol","baseball","nadar","bici","gimnasia","otros","nada"}
-local activityBooleans = {false,false,false,false,false,false,false,false,false,false}
+local activityBooleans = {false,false,false,false,false,false, false,false,false,false}
 local tableCalBoys = {1810,1900,1990,2070,2140,2240,2310,2440}
 local tableCalGirls = {1540,1630,1700,1770,1830,1910,1980,2050}
 local tableObesityGirls = {
@@ -98,15 +98,15 @@ local function getCalories(age)
 		end
 		if kidAge < 10 then
 			if isBoy then
-				return ((22.7 * kidWeight)+ 495) * weekHours
+				return ((22.7 * kdWeight)+ 495) * weekHours
 			else
-				return ((22.7 * kidWeight)+ 495) * weekHours
+				return ((22.7 * kdWeight)+ 495) * weekHours
 			end
 		else
 			if isBoy then
-				return ((17.5 * kidWeight)+ 651) * weekHours
+				return ((17.5 * kdWeight)+ 651) * weekHours
 			else
-				return ((12.2 * kidWeight)+ 746) * weekHours
+				return ((12.2 * kdWeight)+ 746) * weekHours
 			end	
 		end		
 	end
@@ -127,6 +127,7 @@ local function pressButton(event)
 		kidImc = getImc(kdHeight, kdWeight)
 		kidStatus = getKidStatus(kidAge,kidImc)
 		okButton:setEnabled(true)
+		backButton:setEnabled(true)
 	elseif tag == "back" then
 		checkFirst = true
 		checkSecond = false
@@ -152,7 +153,8 @@ local function pressButton(event)
 		else
 			genre = "niña"
 		end
-		print("Nombre= " .. kidName .. ", Género= " .. genre .. ", Edad= " .. kidAge ..  ",IMC= " .. kidImc .. ", Estado del niño= " .. kidStatus .. ", Calorías a consumir= " .. kidCalories .. " .")
+		checkSecond = false
+		print("Nombre= " .. kidName .. ", Género= " .. genre .. ", Peso=" .. kdWeight ..  ", Edad= " .. kidAge ..  ",IMC= " .. kidImc .. ", Estado del niño= " .. kidStatus .. ", Calorías a consumir= " .. kidCalories .. " .")
 		transition.to(secondPlane,{x = screenWidth + screenWidth, time = 500,rotation = 90 })
 		transition.to(thirdPlane,{delay = 400, x = screenLeft, time = 500,rotation = 0 })
 		finalText.text = kidCalories .. " cal"
@@ -164,6 +166,8 @@ local function pressButton(event)
 			finalYogoGirl.alpha = 1
 		end
 	elseif tag == "backThird" then
+		backButton:setEnabled(true)
+		checkSecond = true
 		transition.to(thirdPlane,{x = screenWidth + screenWidth, time = 500,rotation = 90 })
 		transition.to(secondPlane,{delay = 400, x = screenLeft, time = 500,rotation = 0 })
 	end
@@ -238,11 +242,11 @@ local function createSlider(options)
 					if options.isWeight then
 						local x = ((knob.x + halfWidth / width) + 102.5) * 0.4
 						slider.value = round(x,0)
-						kidWeight.text = slider.value .. " kg"
+						kidWeightText.text = slider.value .. " kg"
 					elseif options.isHeight then
 						local x = (((knob.x + halfWidth / width) + 102.5) * 0.04) * .24
 						slider.value = round(x,2)
-						kidHeight.text = slider.value .. " mts"
+						kidHeightText.text = slider.value .. " mts"
 					end
 				end
 			elseif event.phase == "ended" or event.phase == "cancelled" then
@@ -524,17 +528,17 @@ local function createScene(sceneGrp)
 	weightText:setFillColor(0.2,1,0.2)
 	firstPlane:insert(weightText)
 	
-	kidWeight = display.newText("   kg", centerX + 260, centerY - 102, settings.fontName, 26)
-	kidWeight:setFillColor(0.2,1,0.2)
-	firstPlane:insert(kidWeight)
+	kidWeightText = display.newText("   kg", centerX + 260, centerY - 102, settings.fontName, 26)
+	kidWeightText:setFillColor(0.2,1,0.2)
+	firstPlane:insert(kidWeightText)
 	
 	local heightText = display.newText("Altura", centerX + 130, centerY + 49, settings.fontName, 26)
 	heightText:setFillColor(0.2,1,0.2)
 	firstPlane:insert(heightText) 
 	
-	kidHeight = display.newText("   mts", centerX + 235, centerY + 49 , settings.fontName, 22)
-	kidHeight:setFillColor(0.2,1,0.2)
-	firstPlane:insert(kidHeight)
+	kidHeightText = display.newText("   mts", centerX + 235, centerY + 49 , settings.fontName, 22)
+	kidHeightText:setFillColor(0.2,1,0.2)
+	firstPlane:insert(kidHeightText)
 	
 	sceneGrp:insert(firstPlane)
 --	firstPlane.alpha = 0
@@ -659,22 +663,22 @@ local function createScene(sceneGrp)
 	thirdPlane:insert(techPlane)
 	
 	buttonList.back.onRelease = pressButton
-	backButton = widget.newButton(buttonList.back)
-	backButton.x = centerX - 350
-	backButton.y = centerY - 250
-	backButton.xScale = 0.8
-	backButton.yScale = 0.8
-	backButton.tag = "backThird"
-	thirdPlane:insert(backButton)
+	thirdBackBtn = widget.newButton(buttonList.back)
+	thirdBackBtn.x = centerX - 350
+	thirdBackBtn.y = centerY - 250
+	thirdBackBtn.xScale = 0.8
+	thirdBackBtn.yScale = 0.8
+	thirdBackBtn.tag = "backThird"
+	thirdPlane:insert(thirdBackBtn)
 	
 	buttonList.ok.onRelease = pressButton
-	okButton = widget.newButton(buttonList.ok)
-	okButton.x = centerX + 362
-	okButton.y = ageSlider.y - 10
-	okButton.xScale = 0.9
-	okButton.yScale = 0.9
-	okButton.tag = "okFinal"
-	thirdPlane:insert(okButton)
+	thirdOkBtn = widget.newButton(buttonList.ok)
+	thirdOkBtn.x = centerX + 362
+	thirdOkBtn.y = ageSlider.y - 10
+	thirdOkBtn.xScale = 0.9
+	thirdOkBtn.yScale = 0.9
+	thirdOkBtn.tag = "okFinal"
+	thirdPlane:insert(thirdOkBtn)
 	
 	yogotarPlane = display.newImage("images/infoscreen/yogotar.png")
 	yogotarPlane.x = centerX - 170
