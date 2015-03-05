@@ -28,7 +28,15 @@ local worldIndex, levelIndex
 ----------------------------Constansts
 local SIZE_BACKGROUND = 1024
 local NUMBER_PIECES = 9
-
+local centerX = display.contentCenterX
+local centerY = display.contentCenterY
+local screenLeft = display.screenOriginX
+local screenWidth = display.viewableContentWidth - screenLeft * 2
+local screenRight = screenLeft + screenWidth
+local screenTop = display.screenOriginY
+local screenHeight = display.viewableContentHeight - screenTop * 2
+local screenBottom = screenTop + screenHeight 
+local mRandom = math.random 
 ----------------------------Cached Functions
 local mathSqrt = math.sqrt
 local mathSin = math.sin
@@ -217,12 +225,11 @@ local function createPlayerShip(group)
 end
 
 local function createBackground(group)
-	local dynamicScale = display.viewableContentWidth / SIZE_BACKGROUND
-    local background = display.newImage("images/backgrounds/label.png")
-	background.x = display.contentCenterX
-	background.y = display.contentCenterY
-    background.xScale = dynamicScale
-    background.yScale = dynamicScale
+    local background = display.newImage("images/label/labelBackground.png")
+	background.x = centerX
+	background.y = centerY
+    background.xScale = screenWidth
+    background.yScale = screenHeight
     group:insert(background)
 end
 
@@ -363,6 +370,7 @@ function scene:create( event )
 	
 	questionPanelGroup = display.newGroup()
 	questionPanel = display.newImage("images/label/bigpanel.png")
+	questionPanel.alpha = 0
 	questionPanelGroup:insert(questionPanel)
 	
 	local textData = {

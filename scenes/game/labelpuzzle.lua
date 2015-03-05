@@ -12,7 +12,7 @@ local scene = director.newScene()
 -- -----------------------------------------------------------------------------------------------------------------
 
 -- local forward references should go here
-local puzzlePanel, puzzleContainer, smallPanelGroup, largePanelGroup, smallPanel
+local puzzlePanel, puzzleContainer, largePanelGroup, smallPanel, secondsTimer, isCounting
 local piecesGroup
 local panelText, titleText
 local okButton
@@ -20,30 +20,40 @@ local bgShine
 local worldIndex, levelIndex
 
 -----------------Constants
+local centerX = display.contentCenterX
+local centerY = display.contentCenterY
+local screenLeft = display.screenOriginX
+local screenWidth = display.viewableContentWidth - screenLeft * 2
+local screenRight = screenLeft + screenWidth
+local screenTop = display.screenOriginY
+local screenHeight = display.viewableContentHeight - screenTop * 2
+local screenBottom = screenTop + screenHeight 
+local mRandom = math.random  
+
 local SIZE_BACKGROUND = 1024
 local NUMBER_PIECES = 9
 local labelpositions = {
-	[1] = {x = -103, y = -135},
-	[2] = {x = 55, y = -33},
-	[3] = {x = -95, y = 11},
-	[4] = {x = -102, y = 138},
-	[5] = {x = 115, y = -135},
-	[6] = {x = 138, y = 138},
-	[7] = {x = 26, y = 135},
-	[8] = {x = 47, y = 54},
-	[9] = {x = -95, y = -76},
+	[1] = {x = -220, y = -230},
+	[2] = {x = 120, y = -220},
+	[3] = {x = -220, y = -140},
+	[4] = {x = 120, y = -140},
+	[5] = {x = -220, y = -70},
+	[6] = {x = 120, y = -100},
+	[7] = {x = -220, y = -20},
+	[8] = {x = 120, y = -30},
+	[9] = {x = -220, y = 80},
 }
 
 local correctPositions = {
-	[1] = {x = 14, y = -173},
-	[2] = {x = 14, y = -104},
-	[3] = {x = 14, y = -66},
-	[4] = {x = -34, y = 5},
-	[5] = {x = -34, y = 104},
-	[6] = {x = 125, y = 5},
-	[7] = {x = 125, y = 104},
-	[8] = {x = 14, y = 170},
-	[9] = {x = 14, y = 206},
+	[1] = {x = -1, y = -208},
+	[2] = {x = -1, y = -156},
+	[3] = {x = -1, y = -114},
+	[4] = {x = -1, y = -76},
+	[5] = {x = -1, y = -39},
+	[6] = {x = -1, y = -0},
+	[7] = {x = 0.8, y = 22},
+	[8] = {x = -1, y = 62},
+	[9] = {x = -1, y = 167},
 }
 
 ----------------------Cached functions
@@ -65,6 +75,8 @@ local function onCorrect()
 	
 	transition.to(okButton, {alpha = 1, onComplete = function()
 		okButton:setEnabled(true)
+		isCounting = false
+		print ( "Tardó " .. secondsTimer .. " segundos en terminar")
 	end})
 	
 	transition.to(panelText, {alpha = 1})
@@ -118,7 +130,7 @@ local function onTouchPiece(event)
 				local correctX, correctY = puzzlePanel:localToContent(correctPositions[label.id].x, correctPositions[label.id].y)
 				local X, Y = puzzleContainer:contentToLocal(correctX, correctY)
 				
-				transition.to(label, {x = X, y = Y, time=100, xScale = 1.3, yScale = 1.3})
+				transition.to(label, {x = X, y = Y, time=100, xScale = 1.1, yScale = 1.1})
 				
 				local correctPieces = 0
 				for indexPiece = 1, #piecesGroup.pieces do
@@ -140,12 +152,12 @@ local function onTouchPiece(event)
 end
 
 local function createBackground(group)
-	local dynamicScale = display.viewableContentWidth / SIZE_BACKGROUND
-    local background = display.newImage("images/backgrounds/label.png")
-	background.x = display.contentCenterX
-	background.y = display.contentCenterY
-    background.xScale = dynamicScale
-    background.yScale = dynamicScale
+	
+    local background = display.newImage("images/label/labelBackground.png")
+	background.x = centerX
+	background.y = centerY
+    background.width = screenWidth
+    background.height = screenHeight
     group:insert(background)
 end
 
@@ -170,7 +182,7 @@ local function gotoNextScreen()
 	transition.to(panelText, {alpha = 0, time = 500})
 	transition.to(puzzlePanel, {delay = 600, transition = easing.inBack, x = display.viewableContentWidth + puzzlePanel.width, time=1000})
 	transition.to(puzzleContainer, {delay = 600, transition = easing.inBack, x = display.screenOriginX - puzzleContainer.width, time=1000})
-	transition.to(smallPanelGroup, {delay = 600, transition = easing.inBack, y = display.screenOriginY - smallPanelGroup.height, time=1000})
+	transition.to(titleText, {delay = 600, transition = easing.inBack, y = screenTop - 100, time=1000})
 	transition.to(okButton, {delay = 600, transition = easing.inBack, y = display.viewableContentHeight + okButton.width, time = 1000, onComplete = function()
 		--director.gotoScene("scenes.game.labelquiz")
 		director.showOverlay("scenes.overlays.tips", {params = {nextScene = "scenes.game.shooter", worldIndex = worldIndex, levelIndex = levelIndex}})
@@ -180,36 +192,35 @@ end
 
 local function initScreenElements()
 	
-	puzzlePanel.x = display.viewableContentWidth + puzzlePanel.width
-	puzzlePanel.y = display.contentCenterY * 1.15
+	puzzlePanel.x = screenLeft - 300
+	puzzlePanel.y = centerY 
+	puzzlePanel.xScale = 1.1
+	puzzlePanel.yScale = 1.1
 	
 	bgShine.isVisible = false
 	bgShine.alpha = 0
-	bgShine.x = display.contentCenterX * 1.50
+	bgShine.x = centerX - 350
 	bgShine.y = display.contentCenterY * 1.15
 	bgShine.rotation = 0
 	
-	puzzleContainer.x = display.screenOriginX - puzzleContainer.width
-	puzzleContainer.y = display.contentCenterY * 1.35
+	puzzleContainer.x = screenRight + 300
+	puzzleContainer.y = centerY + 100
 	
-	smallPanelGroup.x = display.contentCenterX * 0.50
-	smallPanelGroup.y = display.screenOriginY - smallPanel.height
-	
-	titleText.text = "Arma la etiqueta nutricional"
-	titleText.size = 28
-	titleText.x = smallPanel.x
-	titleText.y = smallPanel.y
+	titleText.text = "Ordena la etiqueta nutricional"
+	titleText.size = 37
+	titleText.x = screenRight - 350
+	titleText.y = screenTop - 200
 	
 	panelText.isVisible = false
 	panelText.alpha = 0
-	panelText.x = display.contentCenterX * 0.48
-	panelText.y = display.contentCenterY * 1.35
+	panelText.x = centerX + 300
+	panelText.y = centerY  
 	
 	okButton.isVisible = false
 	okButton.alpha = 0
 	okButton:setEnabled(false)
-	okButton.x = display.contentCenterX
-	okButton.y = display.contentCenterY * 1.80
+	okButton.x = screenRight - 150
+	okButton.y = screenBottom - 100
 	
 	for indexPiece = 1, #piecesGroup.pieces do
 		local currentPiece = piecesGroup.pieces[indexPiece]
@@ -241,15 +252,11 @@ function scene:create( event )
 	sceneGroup:insert(bgShine)
 	
 	puzzleContainer = display.newImage("images/label/panel_01.png")
+	puzzleContainer.alpha = 0
 	sceneGroup:insert(puzzleContainer)
 	
-	smallPanelGroup = display.newGroup()
-	smallPanel = display.newImage("images/label/smallpanel.png")
-	smallPanelGroup:insert(smallPanel)
-	
 	titleText =  display.newText("Arma la etiqueta nutricional", 0, 0, settings.fontName, 28)
-	smallPanelGroup:insert(titleText)
-	sceneGroup:insert(smallPanelGroup)
+	sceneGroup:insert(titleText)
 	
 	local textData = {
 		text = "Una etiqueta nutricional es aquella información que nos indica el valor energético y contenido del alimento en cuanto a proteínas, hidratos de carbono, grasas, fibra alimentaria, sodio, vitaminas y minerales. Debe expresarse por 100 gramos o 100 miligramos.",
@@ -271,7 +278,12 @@ function scene:create( event )
 	
 	createPuzzlePieces(sceneGroup)
 end
-
+local function startTimer()
+	secondsTimer = secondsTimer + 1
+	if isCounting then
+		timer.performWithDelay(1000,startTimer)
+	end
+end
 function scene:show( event )
 
     local sceneGroup = self.view
@@ -282,20 +294,22 @@ function scene:show( event )
 	levelIndex = params.levelIndex
 
     if ( phase == "will" ) then
-		
+		secondsTimer = 0
+		isCounting = true
+		timer.performWithDelay(1000,startTimer)
 		initScreenElements()
 		Runtime:addEventListener("enterFrame", updateGameLoop)
 		
 	elseif ( phase == "did" ) then
 		
-		transition.to(puzzlePanel, {delay = 300, transition = easing.outBounce, x = display.contentCenterX * 1.50, time=1000})
-		transition.to(puzzleContainer, {delay = 300, transition = easing.outBounce, x = display.contentCenterX * 0.50, time=1000, onComplete = function()
+		transition.to(puzzlePanel, {delay = 300, transition = easing.outBounce, x = screenWidth * 0.25, time=1000})
+		transition.to(puzzleContainer, {delay = 300, transition = easing.outBounce, x = screenRight - 350, time=1000, onComplete = function()
 			piecesGroup.isVisible = true;
 			piecesGroup.x = puzzleContainer.x
 			piecesGroup.y = puzzleContainer.y
 			transition.to(piecesGroup, {time = 500, alpha = 1})
 		end})
-		transition.to(smallPanelGroup, {delay = 300, transition = easing.outBounce, y = display.contentCenterY * 0.30, time=1000})
+		transition.to(titleText, {delay = 300, transition = easing.outBounce, y = display.contentCenterY * 0.30, time=1000})
 		timer.performWithDelay(750, function()
 			sound.play("ironshield")
 		end)
