@@ -3,6 +3,7 @@ local director = require( "libs.helpers.director" )
 local widget = require( "widget" )
 local buttonList = require( "data.buttonlist" )
 local database = require( "libs.helpers.database" )
+local sound = require( "libs.helpers.sound" )
 local parentgate = require( "libs.helpers.parentgate" )
 local logger = require( "libs.helpers.logger" )
 local music = require( "libs.helpers.music" )
@@ -11,8 +12,8 @@ local mixpanel = require( "libs.helpers.mixpanel" )
 
 local scene = director.newScene() 
 ----------------------------------------------- Variables
-local buttonPlay, settingsBtn
-local logoGroup, starfieldGroup, asteroidGroup, shineStarGroup
+local buttonPlay, settingsBtn, musicBtn, soundBtn, okBtn, musicOff, soundOff
+local logoGroup, starfieldGroup, asteroidGroup, shineStarGroup, settingsScreen
 local currentPlayer
 ----------------------------------------------- Constants 
 local SIZE_BACKGROUND = 1024
@@ -224,10 +225,35 @@ end
 
 local function pressButton(event)
 	local tag = event.target.tag
+	local enabled
 	if tag == "play" then
 		director.gotoScene("scenes.menus.selecthero")
 	elseif tag == "settings" then
-		print(" you pressed settings")
+		settingsBtn:setEnabled(false)
+		okBtn:setEnabled(true)
+		transition.to(settingsScreen,{ alpha = 1, time = 300})
+	elseif tag == "music" then
+		if musicOff.alpha == 0 then
+			musicOff.alpha = 1
+		else
+			musicOff.alpha = 0
+		end
+		enabled = not database.config("music")
+		music.setEnabled(enabled)
+		database.config( "music", enabled)
+	elseif tag == "sound" then
+		if soundOff.alpha == 0 then
+			soundOff.alpha = 1
+		else
+			soundOff.alpha = 0
+		end
+		enabled = not database.config("sound")
+		sound.setEnabled(enabled)
+		database.config( "sound", enabled)
+	elseif tag == "ok" then
+		settingsBtn:setEnabled(true)
+		okBtn:setEnabled(false)
+		transition.to(settingsScreen,{alpha = 0, time = 300})
 	end
 end
 
@@ -248,6 +274,8 @@ local function createButtons(group)
 	settingsBtn.x = screenLeft + 100
 	settingsBtn.y = screenBottom - 100
 	settingsBtn.tag = "settings"
+	group:insert(settingsBtn)
+	
 end
 
 local function createShineStars(group)
@@ -269,9 +297,60 @@ end
 local function disableButtons()
 	buttonPlay:setEnabled(false)
 end
-
-function scene:create(event)
-	local sceneGroup = self.view
+local function createScene(sceneGroup)
+	
+	settingsScreen = display.newGroup()
+	
+	local setBack = display.newImage("images/settingsscreen/Background.png")
+	setBack.x = centerX
+	setBack.y = centerY
+	setBack.width = screenWidth
+	setBack.height = screenHeight
+	settingsScreen:insert(setBack)
+	
+	local settingsBck = display.newImage("images/settingsscreen/settings.png")
+	settingsBck.x = centerX
+	settingsBck.y = centerY
+	settingsBck.xScale = 1.1
+	settingsBck.yScale = 1.1
+	settingsScreen:insert(settingsBck)
+	
+	buttonList.music.onRelease = pressButton
+	musicBtn = widget.newButton(buttonList.music)
+	musicBtn.x = centerX - 100
+	musicBtn.y = centerY - 20
+	musicBtn.tag = "music"
+	settingsScreen:insert(musicBtn)
+	
+	musicOff = display.newImage("images/buttons/music_2.png")
+	musicOff.x = centerX - 100
+	musicOff.y = centerY - 20
+	musicOff.width = 140
+	musicOff.height = 140
+	musicOff.alpha = 0
+	settingsScreen:insert(musicOff)
+	
+	buttonList.sound.onRelease = pressButton
+	soundBtn = widget.newButton(buttonList.sound)
+	soundBtn.x = centerX + 100
+	soundBtn.y = centerY - 20
+	soundBtn.tag = "sound"
+	settingsScreen:insert(soundBtn)
+	
+	soundOff = display.newImage("images/buttons/sound_2.png")
+	soundOff.x = centerX + 100
+	soundOff.y = centerY - 20
+	soundOff.width = 140
+	soundOff.height = 140
+	soundOff.alpha = 0
+	settingsScreen:insert(soundOff)
+	
+	buttonList.ok.onRelease = pressButton
+	okBtn = widget.newButton(buttonList.ok)
+	okBtn.x = centerX
+	okBtn.y = centerY + 240
+	okBtn.tag = "ok"
+	settingsScreen:insert(okBtn)
 	
 	createBackground(sceneGroup)
 	createAsteroids(sceneGroup)
@@ -279,6 +358,13 @@ function scene:create(event)
 	createStarfield(sceneGroup)
 	createLogo(sceneGroup)
 	createButtons(sceneGroup)
+	
+	settingsScreen.alpha = 0
+	sceneGroup:insert (settingsScreen)
+end
+function scene:create(event)
+	local sceneGroup = self.view
+	createScene(sceneGroup)
 end
 
 function scene:destroy()
