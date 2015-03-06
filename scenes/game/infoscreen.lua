@@ -90,7 +90,7 @@ local function getCalories(age)
 		return tableToUsed[index]
 	else
 		local weekHours = 1.2
-		if hourSlider.value >= 3 then
+		if tonumber(hourSlider.value) >= 3 then
 			weekHours = 1.55
 			if isBoy then
 				weekHours = 1.56

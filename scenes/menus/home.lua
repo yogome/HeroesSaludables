@@ -11,7 +11,7 @@ local mixpanel = require( "libs.helpers.mixpanel" )
 
 local scene = director.newScene() 
 ----------------------------------------------- Variables
-local buttonPlay, buttonSettings
+local buttonPlay, settingsBtn
 local logoGroup, starfieldGroup, asteroidGroup, shineStarGroup
 local currentPlayer
 ----------------------------------------------- Constants 
@@ -21,6 +21,15 @@ local NUMBER_ASTEROIDS = 3
 local SPEED_STARS = 0.5
 --local MARGIN_BUTTON = 20
 --local SCALE_LOGO = 1
+local centerX = display.contentCenterX
+local centerY = display.contentCenterY
+local screenLeft = display.screenOriginX
+local screenWidth = display.viewableContentWidth - screenLeft * 2
+local screenRight = screenLeft + screenWidth
+local screenTop = display.screenOriginY
+local screenHeight = display.viewableContentHeight - screenTop * 2
+local screenBottom = screenTop + screenHeight 
+local mRandom = math.random
 ----------------------------------------------- Caches
 local doublePi = math.pi * 2
 local mathRandom = math.random
@@ -213,21 +222,32 @@ local function createAsteroids(group)
 end
 
 
-local function startGame()
-	director.gotoScene("scenes.menus.selecthero")
+local function pressButton(event)
+	local tag = event.target.tag
+	if tag == "play" then
+		director.gotoScene("scenes.menus.selecthero")
+	elseif tag == "settings" then
+		print(" you pressed settings")
+	end
 end
 
-local function createPlayButton(group)
+local function createButtons(group)
 	
 	local buttonData = buttonList.play
-	buttonData.onRelease = startGame
+	buttonData.onRelease = pressButton
 	
 	buttonPlay = widget.newButton(buttonData)
 	buttonPlay:scale(1.5, 1.5)
 	buttonPlay.x = display.contentCenterX
 	buttonPlay.y = display.contentCenterY * 1.75
-	
+	buttonPlay.tag = "play"
 	group:insert(buttonPlay)
+	
+	buttonList.settings.onRelease = pressButton
+    settingsBtn = widget.newButton(buttonList.settings)
+	settingsBtn.x = screenLeft + 100
+	settingsBtn.y = screenBottom - 100
+	settingsBtn.tag = "settings"
 end
 
 local function createShineStars(group)
@@ -258,7 +278,7 @@ function scene:create(event)
 	createShineStars(sceneGroup)
 	createStarfield(sceneGroup)
 	createLogo(sceneGroup)
-	createPlayButton(sceneGroup)
+	createButtons(sceneGroup)
 end
 
 function scene:destroy()

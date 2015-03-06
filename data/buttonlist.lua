@@ -10,7 +10,7 @@ local buttonlist = {
 	retry = { width = 128, height = 128, defaultFile = "images/buttons/retry_1.png", overFile = "images/buttons/retry_2.png", onPress = playSound},
 	play = { width = 128, height = 128, defaultFile = "images/buttons/play_01.png", overFile = "images/buttons/play_02.png", onPress = playSound},
 	ok = { width = 128, height = 128, defaultFile = "images/buttons/ok_1.png", overFile = "images/buttons/ok_2.png", onPress = playSound},
-	settings = { width = 128, height = 128, defaultFile = "images/buttons/bnt_settings.png", overFile = "images/buttons/bnt_settings.png", onPress = playSound},
+	settings = { width = 128, height = 128, defaultFile = "images/buttons/settings_1.png", overFile = "images/buttons/settings_2.png", onPress = playSound},
 	next = { width = 128, height = 112, defaultFile = "images/buttons/adelante.png", overFile = "images/buttons/adelante_02.png", onPress = playSound},
 	previous = { width = 128, height = 112, defaultFile = "images/buttons/atras.png", overFile = "images/buttons/atras_02.png", onPress = playSound},
 
