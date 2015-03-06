@@ -31,29 +31,21 @@ local screenBottom = screenTop + screenHeight
 local mRandom = math.random  
 
 local SIZE_BACKGROUND = 1024
-local NUMBER_PIECES = 9
+local NUMBER_PIECES = 5
 local labelpositions = {
-	[1] = {x = -220, y = -230},
-	[2] = {x = 120, y = -220},
-	[3] = {x = -220, y = -140},
-	[4] = {x = 120, y = -140},
-	[5] = {x = -220, y = -70},
-	[6] = {x = 120, y = -100},
-	[7] = {x = -220, y = -20},
-	[8] = {x = 120, y = -30},
-	[9] = {x = -220, y = 80},
+	[1] = {x = -220, y = -240},
+	[2] = {x = 120, y = -30},
+	[3] = {x = -220, y = -100},
+	[4] = {x = 120, y = -190},
+	[5] = {x = -220, y = 80},
 }
 
 local correctPositions = {
 	[1] = {x = -1, y = -208},
 	[2] = {x = -1, y = -156},
-	[3] = {x = -1, y = -114},
-	[4] = {x = -1, y = -76},
-	[5] = {x = -1, y = -39},
-	[6] = {x = -1, y = -0},
-	[7] = {x = 0.8, y = 22},
-	[8] = {x = -1, y = 62},
-	[9] = {x = -1, y = 167},
+	[3] = {x = -1, y = -54},
+	[4] = {x = -1, y = 0},
+	[5] = {x = -1, y = 167},
 }
 
 ----------------------Cached functions
