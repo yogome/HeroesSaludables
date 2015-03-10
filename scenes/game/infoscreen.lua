@@ -16,8 +16,8 @@ local kidAge, kdWeight, kdHeight, kidName, kidImc, kidStatus, isBoy, checkFirstS
 local activityNames = {"Caminar","Correr","Basketbal","Futbol","Beisbol","Nadar","Bicicleta","Gimnasia","Otros","Nada"}
 local activityBtnNames = {"caminar","correr","basquet","futbol","baseball","nadar","bici","gimnasia","otros","nada"}
 local activityBooleans = {false,false,false,false,false,false, false,false,false,false}
-local tableCalBoys = {1810,1900,1990,2070,2140,2240,2310,2440}
-local tableCalGirls = {1540,1630,1700,1770,1830,1910,1980,2050}
+local tableCalBoys = {1810,1900,1990,2070,2150,2150,2240,2310,2440}
+local tableCalGirls = {1630,1700,1770,1830,1880,1910,1980,2050,2120}
 local tableObesityGirls = {
 	[1] =  {min = 12.9, max = 18.1},
 	[2] =  {min = 12.9, max = 18.4},
@@ -56,7 +56,7 @@ local function round(what, precision)
 end
 
 local function getImc(height, weight) 
-	local imc = weight / height
+	local imc = weight / (height * height)
 	return round(imc,2)
 end
 local function getKidStatus(age,imc)
@@ -92,7 +92,7 @@ local function getCalories(age)
 		local weekHours = 1.2
 		if tonumber(hourSlider.value) >= 3 then
 			weekHours = 1.55
-			if isBoy then
+			if not isBoy then
 				weekHours = 1.56
 			end
 		end
@@ -157,7 +157,7 @@ local function pressButton(event)
 		print("Nombre= " .. kidName .. ", Género= " .. genre .. ", Peso=" .. kdWeight ..  ", Edad= " .. kidAge ..  ",IMC= " .. kidImc .. ", Estado del niño= " .. kidStatus .. ", Calorías a consumir= " .. kidCalories .. " .")
 		transition.to(secondPlane,{x = screenWidth + screenWidth, time = 500,rotation = 90 })
 		transition.to(thirdPlane,{delay = 400, x = screenLeft, time = 500,rotation = 0 })
-		finalText.text = kidCalories .. " cal"
+		finalText.text = kidCalories .. " kcal"
 		if isBoy then
 			finalYogoKid.alpha = 1
 			finalYogoGirl.alpha = 0
