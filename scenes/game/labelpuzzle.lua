@@ -17,7 +17,7 @@ local piecesGroup
 local panelText, titleText, productName
 local okButton
 local bgShine
-local worldIndex, levelIndex, puzzleIndex
+local worldIndex, levelIndex, puzzleIndex, pieceEndScl, pieceScale
 
 -----------------Constants
 local centerX = display.contentCenterX
@@ -31,10 +31,10 @@ local screenBottom = screenTop + screenHeight
 local mRandom = math.random  
 local SIZE_BACKGROUND = 1024
 local NUMBER_PIECES = 5
-local puzzlesNumber = 4
+local puzzlesNumber = 13
 local puzzlePanels, iconGroup
 local puzzlePieces 
-local productNames = {"","Leche sabor chocolate","Leche Natural"}
+local productNames = {"","Leche sabor chocolate","Leche Natural","Yoghurt","Jugo Natural","Frituras de Queso","Jugo de Manzana","Pastelito de chocolate","Cereal azucarado","Galletas con chispas","Refresco de Cola","Pastelito de chocolate","Frituras de queso"}
 local labelpositions = {
  [1] = {
 	[1] = {x = -220, y = -240},
@@ -63,38 +63,168 @@ local labelpositions = {
 	[3] = {x = -220, y = -100},
 	[4] = {x = 120, y = -190},
 	[5] = {x = -220, y = 80},
-	}
+	},
+[5] = {
+	[1] = {x = -220, y = -240},
+	[2] = {x = 120, y = -30},
+	[3] = {x = -220, y = -100},
+	[4] = {x = 120, y = -190},
+	[5] = {x = -220, y = 80},
+	},
+[6] = {
+	[1] = {x = -220, y = -241},
+	[2] = {x = 120, y = -33},
+	[3] = {x = -220, y = -103},
+	[4] = {x = 120, y = -193},
+	[5] = {x = -220, y = 80},
+	},
+[7] = {
+	[1] = {x = -220, y = -240},
+	[2] = {x = 120, y = -30},
+	[3] = {x = -220, y = -100},
+	[4] = {x = 120, y = -190},
+	[5] = {x = -220, y = 80},
+	},
+[8] = {
+	[1] = {x = -220, y = -240},
+	[2] = {x = 120, y = -30},
+	[3] = {x = -220, y = -100},
+	[4] = {x = 120, y = -190},
+	[5] = {x = -220, y = 80},
+	},
+[9] = {
+	[1] = {x = -220, y = -240},
+	[2] = {x = 120, y = -30},
+	[3] = {x = -220, y = -100},
+	[4] = {x = 120, y = -190},
+	[5] = {x = -220, y = 80},
+	},
+[10] = {
+	[1] = {x = -220, y = -240},
+	[2] = {x = 120, y = -30},
+	[3] = {x = -220, y = -100},
+	[4] = {x = 120, y = -190},
+	[5] = {x = -220, y = 80},
+	},
+[11] = {
+	[1] = {x = -220, y = -240},
+	[2] = {x = 120, y = -30},
+	[3] = {x = -220, y = -100},
+	[4] = {x = 120, y = -190},
+	[5] = {x = -220, y = 80},
+	},
+[12] = {
+	[1] = {x = -500, y = 100},
+	[2] = {x = -400, y = 100},
+	[3] = {x = -300, y = 100},
+	[4] = {x = -200, y = 100},
+	[5] = {x = -100, y = 100},
+	[6] = {x = 0, y = 100},
+	},
+[13] = {
+	[1] = {x = -500, y = 100},
+	[2] = {x = -400, y = 100},
+	[3] = {x = -300, y = 100},
+	[4] = {x = -200, y = 100},
+	[5] = {x = -100, y = 100},
+	[6] = {x = 0, y = 100},
+	},
 }
 
 local correctPositions = {
 [1] = {
-	[1] = {x = -1, y = -208},
-	[2] = {x = -1, y = -156},
-	[3] = {x = -1, y = -54},
-	[4] = {x = -1, y = 0},
-	[5] = {x = -1, y = 167},
+	[1] = {x = 0.1, y = -208},
+	[2] = {x = 0.1, y = -156},
+	[3] = {x = 0.1, y = -54},
+	[4] = {x = 0.1, y = 0},
+	[5] = {x = 0.1, y = 167},
 	},
 [2] = {
-	[1] = {x = -1, y = -160},
-	[2] = {x = -1, y = -108},
-	[3] = {x = -1, y = -6},
-	[4] = {x = -1, y = 48},
-	[5] = {x = -1, y = 167},
+	[1] = {x = 0.1, y = -160},
+	[2] = {x = 0.1, y = -108},
+	[3] = {x = 0.1, y = -6},
+	[4] = {x = 0.1, y = 48},
+	[5] = {x = 0.1, y = 167},
 	},
 [3] = {
-	[1] = {x = -1, y = -142},
-	[2] = {x = -1, y = -91},
-	[3] = {x = -1, y = 12},
-	[4] = {x = -1, y = 66},
-	[5] = {x = -1, y = 167},
+	[1] = {x = 0.1, y = -142},
+	[2] = {x = 0.1, y = -91},
+	[3] = {x = 0.1, y = 12},
+	[4] = {x = 0.1, y = 66},
+	[5] = {x = 0.1, y = 167},
 	},
 [4] = {
-	[1] = {x = -1, y = -155},
-	[2] = {x = -1, y = -103},
-	[3] = {x = -1, y = 2},
-	[4] = {x = -1, y = 53},
-	[5] = {x = -1, y = 167},
-	}
+	[1] = {x = 0.1, y = -155},
+	[2] = {x = 0.1, y = -103},
+	[3] = {x = 0.1, y = 2},
+	[4] = {x = 0.1, y = 53},
+	[5] = {x = 0.1, y = 167},
+	},
+[5] = {
+	[1] = {x = 0.1, y = -155},
+	[2] = {x = 0.1, y = -103},
+	[3] = {x = 0.1, y = 2},
+	[4] = {x = 0.1, y = 53},
+	[5] = {x = 0.1, y = 167},
+	},
+[6] = {
+	[1] = {x = 0.1, y = -156},
+	[2] = {x = 0.1, y = -106},
+	[3] = {x = 0.1, y = -4},
+	[4] = {x = 0.1, y = 47},
+	[5] = {x = 0.1, y = 167},
+	},
+[7] = {
+	[1] = {x = 0.1, y = -155},
+	[2] = {x = 0.1, y = -103},
+	[3] = {x = 0.1, y = 2},
+	[4] = {x = 0.1, y = 53},
+	[5] = {x = 0.1, y = 167},
+	},
+[8] = {
+	[1] = {x = 0.1, y = -158},
+	[2] = {x = 0.1, y = -106},
+	[3] = {x = 0.1, y = -1},
+	[4] = {x = 0.1, y = 50},
+	[5] = {x = 0.1, y = 167},
+	},
+[9] = {
+	[1] = {x = 0.1, y = -149},
+	[2] = {x = 0.1, y = -97},
+	[3] = {x = 0.1, y = 8},
+	[4] = {x = 0.1, y = 59},
+	[5] = {x = 0.1, y = 167},
+	},
+[10] = {
+	[1] = {x = 0.1, y = -158},
+	[2] = {x = 0.1, y = -105},
+	[3] = {x = 0.1, y = 0},
+	[4] = {x = 0.1, y = 51},
+	[5] = {x = 0.1, y = 167},
+	},
+[11] = {
+	[1] = {x = 0.1, y = -148.5},
+	[2] = {x = 0.1, y = -95.5},
+	[3] = {x = 0.1, y = 9.5},
+	[4] = {x = 0.1, y = 60.5},
+	[5] = {x = 0.1, y = 167},
+	},
+[12] = {
+	[1] = {x = -265, y = -23},
+	[2] = {x = -160, y = -23},
+	[3] = {x = -55, y = -23},
+	[4] = {x = 270, y = -23},
+	[5] = {x = 160, y = -23},
+	[6] = {x = 55, y = -23},
+	},
+[13] = {
+	[1] = {x = -265, y = -23},
+	[2] = {x = -160, y = -23},
+	[3] = {x = -55, y = -23},
+	[4] = {x = 270, y = -23},
+	[5] = {x = 160, y = -23},
+	[6] = {x = 55, y = -23},
+	},
 }
 
 ----------------------Cached functions
@@ -140,7 +270,7 @@ local function onTouchPiece(event)
 		label.isCorrect = false
 		
 		if label.scaledUp then
-			label:scale(0.7, 0.7)
+			label:scale(0.91, 0.91)
 			label.scaledUp = false
 		end
 		
@@ -171,7 +301,7 @@ local function onTouchPiece(event)
 				local correctX, correctY = puzzlePanels[puzzleIndex]:localToContent(correctPositions[puzzleIndex][label.id].x, correctPositions[puzzleIndex][label.id].y)
 				local X, Y = puzzleContainer:contentToLocal(correctX, correctY)
 				
-				transition.to(label, {x = X, y = Y, time=100, xScale = 1.1, yScale = 1.1})
+				transition.to(label, {x = X, y = Y, time=100, xScale = pieceEndScl, yScale = pieceEndScl})
 				
 				local correctPieces = 0
 				for indexPiece = 1, #puzzlePieces[puzzleIndex].pieces do
@@ -208,7 +338,11 @@ local function createPuzzlePieces(group)
 	for i = 1, puzzlesNumber do
 		local piecesGroup = display.newGroup()
 		piecesGroup.pieces = {}
-		for indexPiece = 1, NUMBER_PIECES do
+		local numPieces = NUMBER_PIECES
+		if i > 11 then
+			numPieces = 6
+		end
+		for indexPiece = 1, numPieces do
 			local piece = display.newImage("images/label/pieces/" .. i .. "/piece" .. indexPiece .. ".png")
 			piece.id = indexPiece
 			piecesGroup.pieces[indexPiece] = piece
@@ -219,17 +353,32 @@ local function createPuzzlePieces(group)
 	end
 	group:insert(puzzlePieces)
 end
-
+local function hideScreen()
+	if puzzleIndex > 1 then
+		iconGroup[puzzleIndex-1].alpha = 0
+	end
+	productName.alpha = 0
+	bgShine.alpha = 0
+	puzzlePieces[puzzleIndex].alpha = 0
+	panelText.alpha = 0
+	puzzlePanels[puzzleIndex].alpha = 0
+	puzzleContainer.alpha = 0
+	titleText.alpha = 0
+end
 local function gotoNextScreen()
 	
 	okButton:setEnabled(false)
-	
+	if puzzleIndex > 1 then
+		transition.to(iconGroup[puzzleIndex-1],{delay = 200, alpha = 0, time = 500})
+	end
+	transition.to(productName,{delay = 300, alpha = 0, time = 500})
 	transition.to(bgShine, {alpha = 0, time = 500})
 	transition.to(puzzlePieces[puzzleIndex], {alpha = 0, time = 500})
 	transition.to(panelText, {alpha = 0, time = 500})
 	transition.to(puzzlePanels[puzzleIndex], {delay = 600, transition = easing.inBack, x = screenLeft - puzzlePanels[puzzleIndex].width, time=1000})
 	transition.to(puzzleContainer, {delay = 600, transition = easing.inBack, x = display.screenOriginX - puzzleContainer.width, time=1000})
-	transition.to(titleText, {delay = 600, transition = easing.inBack, y = screenTop - 100, time=1000})
+	transition.to(titleText, {delay = 600, transition = easing.inBack, y = screenTop - screenTop, time=1000})
+	transition.to(iconGroup[puzzleIndex],{ alpha = 0, time = 500, delay = 100})
 	transition.to(okButton, {delay = 600, transition = easing.inBack, y = display.viewableContentHeight + okButton.width, time = 1000, onComplete = function()
 		--director.gotoScene("scenes.game.labelquiz")
 		director.showOverlay("scenes.overlays.tips", {params = {nextScene = "scenes.game.shooter", worldIndex = worldIndex, levelIndex = levelIndex}})
@@ -253,42 +402,22 @@ local function initScreenElements()
 	puzzleContainer.x = screenRight + 300
 	puzzleContainer.y = centerY + 100
 	
---	titleText.text = "Ordena la etiqueta \n nutricional"
---	titleText.size = 37
---	titleText.width = 300
---	titleText.height = 200
---	titleText.x = screenRight - 350
---	titleText.y = screenTop - 200
-
-	titleText = display.newEmbossedText({
-      text    = "Ordena la etiqueta nutrimental",  
-      x        = screenRight - 300,
-      y        = screenTop - 200,
-      fontSize = 37,
-      font = "VAGRounded",
-      align    = "center",
-	  width = 350,
-	  height = 200,
-    })
-	
-	
-	panelText.isVisible = false
-	panelText.alpha = 0
-	panelText.x = centerX + 300
-	panelText.y = centerY  
-	
 	okButton.isVisible = false
 	okButton.alpha = 0
 	okButton:setEnabled(false)
 	okButton.x = screenRight - 150
 	okButton.y = screenBottom - 100
 	
+	pieceScale = 1
+	if puzzleIndex > 11 then
+		pieceScale = 0.8
+	end
 	for indexPiece = 1, #puzzlePieces[puzzleIndex].pieces do
 		local currentPiece = puzzlePieces[puzzleIndex].pieces[indexPiece]
 		currentPiece.x = labelpositions[puzzleIndex][indexPiece].x
 		currentPiece.y = labelpositions[puzzleIndex][indexPiece].y
-		currentPiece.xScale = 1
-		currentPiece.yScale = 1
+		currentPiece.xScale = pieceScale
+		currentPiece.yScale = pieceScale
 		currentPiece.isCorrect = false
 		currentPiece.scaledUp = false
 		currentPiece:addEventListener("touch", onTouchPiece)
@@ -303,7 +432,6 @@ end
 function scene:create( event )
 
     local sceneGroup = self.view
-	
 	createBackground(sceneGroup)
 	puzzlePanels = display.newGroup()
 	iconGroup = display.newGroup()
@@ -311,13 +439,17 @@ function scene:create( event )
 	local icon
 	for i = 2, puzzlesNumber do
 		icon = display.newImage("images/label/icons/" .. i .. ".png")
-		icon.x = centerX + 50
+		icon.x = centerX
 		icon.y = screenTop + 100
 		icon.xScale = 0.5
 		icon.yScale = 0.5
 		icon.alpha = 0
 		iconGroup:insert(icon)
 	end
+	
+	bgShine = display.newImage("images/backgrounds/shine.png")
+	sceneGroup:insert(bgShine)
+	
 	local puzzlePanel
 	for i = 1, puzzlesNumber  do
 		puzzlePanel = display.newImage("images/label/panels/" .. i .. ".png")
@@ -328,29 +460,25 @@ function scene:create( event )
 	sceneGroup:insert(iconGroup)
 	sceneGroup:insert(puzzlePanels)
 	
-	bgShine = display.newImage("images/backgrounds/shine.png")
-	sceneGroup:insert(bgShine)
-	
 	puzzleContainer = display.newImage("images/label/panel_01.png")
 	puzzleContainer.alpha = 0
 	sceneGroup:insert(puzzleContainer)
 	
-	titleText =  display.newText("Arma la etiqueta nutricional", 0, 0, settings.fontName, 28)
+--	titleText =  display.newText("Arma la etiqueta nutricional", 0, 0, settings.fontName, 28)
+	titleText = display.newEmbossedText({
+		  text    = "Ordena la etiqueta nutrimental",  
+		  x        = screenRight - 300,
+		  y        = screenTop - 200,
+		  fontSize = 37,
+		  font = "VAGRounded",
+		  align    = "center",
+		  width = 350,
+		  height = 200,
+		})
 	sceneGroup:insert(titleText)
 	
 	productName =  display.newText("Nombre del producto", centerX + 150, screenBottom - 80, settings.fontName, 36)
 	sceneGroup:insert(productName)
-	
-	local textData = {
-		text = "Una etiqueta nutricional es aquella información que nos indica el valor energético y contenido del alimento en cuanto a proteínas, hidratos de carbono, grasas, fibra alimentaria, sodio, vitaminas y minerales. Debe expresarse por 100 gramos o 100 miligramos.",
-		width = 400,
-		font = settings.fontName,   
-		fontSize = 28,
-		align = "center"
-	}
-	
-	panelText = display.newText(textData)
-	sceneGroup:insert(panelText)
 	
 	local buttonData = buttonList.play
 	buttonData.onRelease = gotoNextScreen
@@ -367,6 +495,72 @@ local function startTimer()
 		timer.performWithDelay(1000,startTimer)
 	end
 end
+local function createPanelText(grp)
+	local width = 350
+	local xPos = screenRight - 300
+	local yPos = centerY
+	local size = 28
+	if puzzleIndex > 11 then
+		width = 650
+		xPos = centerX
+		yPos = screenBottom - 140
+		size = 24
+	end
+	local textData = {
+		text = "Una etiqueta nutricional es aquella información que nos indica el valor energético y contenido del alimento en cuanto a proteínas, hidratos de carbono, grasas, fibra alimentaria, sodio, vitaminas y minerales. Debe expresarse por 100 gramos o 100 miligramos.",
+		width = width,
+		font = settings.fontName,   
+		fontSize = size,
+		align = "center"
+	}
+	
+	panelText = display.newText(textData)
+	panelText.alpha = 0
+	panelText.x = xPos
+	panelText.y = yPos
+	grp:insert(panelText)
+end
+
+local function setScreen()
+	puzzlePanels[puzzleIndex].alpha = 1
+	if puzzleIndex > 1 then
+		iconGroup[puzzleIndex-1].alpha = 1
+		transition.from(iconGroup[puzzleIndex - 1],{alpha = 0, delay = 600, time = 300})
+	end
+	productName.alpha = 0
+	productName.text = productNames[puzzleIndex]
+	transition.to(productName,{ alpha = 1, delay = 400, time = 500})
+	titleText.x = screenRight - 300
+	titleText.y = screenTop + 160
+	titleText.alpha = 0
+	if puzzleIndex > 1 then
+		iconGroup[puzzleIndex-1].x = centerX
+		iconGroup[puzzleIndex-1].y = screenTop + 100
+		iconGroup[puzzleIndex-1].xScale = 0.45
+		iconGroup[puzzleIndex-1].yScale = 0.45
+	end
+	pieceEndScl = 1.1
+	bgShine.x = centerX - 350
+	local movePos = screenWidth * 0.25
+	productName.x = centerX + 150 
+	productName.y = screenBottom - 80
+	productName.size = 36
+	if puzzleIndex > 11 then
+		titleText.x = centerX
+		titleText.y = centerY - 150
+		bgShine.x = centerX - 100
+		pieceEndScl = 1
+		movePos = screenLeft + 460
+		productName.size = 45
+		productName.x = centerX 
+		productName.y = screenTop + 75
+		iconGroup[puzzleIndex-1].x = screenRight -  150
+		iconGroup[puzzleIndex-1].y = centerY
+		iconGroup[puzzleIndex-1].xScale = 0.7
+		iconGroup[puzzleIndex-1].yScale = 0.7
+	end
+	transition.to(puzzlePanels[puzzleIndex], {delay = 300, transition = easing.outBounce, x = movePos, time=1000})
+end
 function scene:show( event )
 
     local sceneGroup = self.view
@@ -377,28 +571,27 @@ function scene:show( event )
 	levelIndex = params.levelIndex
 	
     if ( phase == "will" ) then
-		puzzleIndex = 4
+		puzzleIndex = math.random(puzzlesNumber - 2)
+		print( "Toca el rompecabezas número " .. puzzleIndex .. " ")
+--		puzzleIndex = 13
 		secondsTimer = 0
 		isCounting = true
 		timer.performWithDelay(1000,startTimer)
 		initScreenElements()
 		Runtime:addEventListener("enterFrame", updateGameLoop)
-		puzzlePanels[puzzleIndex].alpha = 1
-		if puzzleIndex > 1 then
-			transition.to(iconGroup[puzzleIndex - 1],{alpha = 1, delay = 300, time = 300})
-		end
-		productName.text = productNames[puzzleIndex]
-		transition.from(productName,{ alpha = 0, delay = 400, time = 500, transition = easing.outBounce})
 	elseif ( phase == "did" ) then
-		
-		transition.to(puzzlePanels[puzzleIndex], {delay = 300, transition = easing.outBounce, x = screenWidth * 0.25, time=1000})
+		createPanelText(sceneGroup)
+		setScreen()
 		transition.to(puzzleContainer, {delay = 300, transition = easing.outBounce, x = screenRight - 350, time=1000, onComplete = function()
 			puzzlePieces[puzzleIndex].isVisible = true;
 			puzzlePieces[puzzleIndex].x = puzzleContainer.x
 			puzzlePieces[puzzleIndex].y = puzzleContainer.y
 			transition.to(puzzlePieces[puzzleIndex], {time = 500, alpha = 1})
 		end})
-		transition.to(titleText, {delay = 300, transition = easing.outBounce, y = screenTop + 160, time=1000})
+		timer.performWithDelay(300, function()
+			titleText.alpha = 1
+		end)
+		transition.from(titleText, {delay = 300, transition = easing.outBounce, y = screenTop - screenTop, time=1000})
 		timer.performWithDelay(750, function()
 			sound.play("ironshield")
 		end)
@@ -413,6 +606,10 @@ function scene:hide( event )
     if ( phase == "will" ) then
 		
 	elseif ( phase == "did" ) then
+		hideScreen()
+		titleText.text = "Ordena la etiqueta nutrimental"
+		titleText.size = 37
+		panelText:removeSelf()
 		Runtime:removeEventListener("enterFrame", updateGameLoop)
 
     end
