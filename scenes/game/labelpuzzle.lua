@@ -13,7 +13,7 @@ local scene = director.newScene()
 
 -- local forward references should go here
 local puzzleContainer, largePanelGroup, smallPanel, secondsTimer, isCounting
-local piecesGroup
+local piecesGroup, pieceBackScale
 local panelText, titleText, productName
 local okButton
 local bgShine
@@ -114,20 +114,20 @@ local labelpositions = {
 	[5] = {x = -220, y = 80},
 	},
 [12] = {
-	[1] = {x = -500, y = 100},
-	[2] = {x = -400, y = 100},
-	[3] = {x = -300, y = 100},
-	[4] = {x = -200, y = 100},
-	[5] = {x = -100, y = 100},
-	[6] = {x = 0, y = 100},
+	[1] = {x = -600, y = 100},
+	[2] = {x = -500, y = 100},
+	[3] = {x = -400, y = 100},
+	[4] = {x = -300, y = 100},
+	[5] = {x = -200, y = 100},
+	[6] = {x = -100, y = 100},
 	},
 [13] = {
-	[1] = {x = -500, y = 100},
-	[2] = {x = -400, y = 100},
-	[3] = {x = -300, y = 100},
-	[4] = {x = -200, y = 100},
-	[5] = {x = -100, y = 100},
-	[6] = {x = 0, y = 100},
+	[1] = {x = -600, y = 100},
+	[2] = {x = -500, y = 100},
+	[3] = {x = -400, y = 100},
+	[4] = {x = -300, y = 100},
+	[5] = {x = -200, y = 100},
+	[6] = {x = -100, y = 100},
 	},
 }
 
@@ -270,7 +270,7 @@ local function onTouchPiece(event)
 		label.isCorrect = false
 		
 		if label.scaledUp then
-			label:scale(0.91, 0.91)
+			label:scale(pieceBackScale, pieceBackScale)
 			label.scaledUp = false
 		end
 		
@@ -409,13 +409,29 @@ local function initScreenElements()
 	okButton.y = screenBottom - 100
 	
 	pieceScale = 1
+	pieceBackScale = 0.91
 	if puzzleIndex > 11 then
 		pieceScale = 0.8
 	end
+	local screenRatio = screenWidth / screenHeight
+	if screenRatio <= 1.6  and puzzleIndex <= 11 then
+		pieceScale = 0.8
+		pieceBackScale = 0.73
+	end
+--	print ( " screenRatio is " .. screenRatio .. " ")
 	for indexPiece = 1, #puzzlePieces[puzzleIndex].pieces do
+		local xPs = labelpositions[puzzleIndex][indexPiece].x
+		local yPs = labelpositions[puzzleIndex][indexPiece].y
+		if pieceBackScale == 0.73 then
+			if xPs == -220 then
+				xPs = xPs + 95
+			else
+				xPs = xPs + 25
+			end
+		end
 		local currentPiece = puzzlePieces[puzzleIndex].pieces[indexPiece]
-		currentPiece.x = labelpositions[puzzleIndex][indexPiece].x
-		currentPiece.y = labelpositions[puzzleIndex][indexPiece].y
+		currentPiece.x = xPs
+		currentPiece.y = yPs
 		currentPiece.xScale = pieceScale
 		currentPiece.yScale = pieceScale
 		currentPiece.isCorrect = false
@@ -571,9 +587,9 @@ function scene:show( event )
 	levelIndex = params.levelIndex
 	
     if ( phase == "will" ) then
-		puzzleIndex = math.random(puzzlesNumber - 2)
+		puzzleIndex = math.random(2,puzzlesNumber)
+--		puzzleIndex = 1
 		print( "Toca el rompecabezas número " .. puzzleIndex .. " ")
---		puzzleIndex = 13
 		secondsTimer = 0
 		isCounting = true
 		timer.performWithDelay(1000,startTimer)
