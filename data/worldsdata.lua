@@ -1053,7 +1053,7 @@ local worldsData = {
 		},
 		--Level 15
 		[15] = {
-			x = 2570,
+			x = 2600,
 			y = 100,
 			background = "images/backgrounds/space.png",
 			levelWidth = 10000,
