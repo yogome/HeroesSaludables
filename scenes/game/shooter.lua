@@ -16,6 +16,7 @@ local loseScene = require( "scenes.game.lose" )
 local winScene = require( "scenes.game.win" )
 local players = require( "models.players" )
 
+--physics.setDrawMode("hybrid")
 local scene = director.newScene() 
 ----------------------------------------------- Variables
 local buttonBack 
@@ -25,6 +26,7 @@ local physicsObjectList
 local analogX, analogY
 local analogCircleBegan
 local analogCircleMove
+local analogCircleBounds
 local heartIndicator
 local worldIndex, levelIndex
 local hudGroup
@@ -39,6 +41,7 @@ local currentEasingX, currentEasingY
 local lastTwoCoordinates
 local easingFunctions
 local editorPreviewGroup, editorPreviewLine
+local framecounter = 0
 ----------------------------------------------- Background stars data
 local spaceObjects, objectDespawnX, objectSpawnX, objectDespawnY, objectSpawnY
 local spawnZoneWidth, spawnZoneHeight, halfSpawnZoneWidth, halfSpawnZoneHeight
@@ -69,6 +72,7 @@ local SIZE_FOOD_CONTAINER = {width = 140, height = 260}
 local OFFSET_GRABFRUIT = {x = -62, y = 17}
 local SCALE_EXPLOSION = 0.75
 local SPEED_CAMERA = 100
+local RADIUS_ANALOG = 150
 ----------------------------------------------- Functions
 local function addPhysicsObject(object)
 	physicsObjectList[#physicsObjectList + 1] = object
@@ -241,8 +245,25 @@ local function onKeyEvent( event )
 	return handled
 end 
 
+local function destroyGame()
+	system.deactivate("multitouch")
+	physics.pause()
+	sound.stopPitch()
+	Runtime:removeEventListener("touch", testTouch)
+	camera:stop()
+	
+	for index = #physicsObjectList, 1, -1 do
+		display.remove(physicsObjectList[index])
+		physicsObjectList[index] = nil
+	end
+	physicsObjectList = nil
+	
+	spaceships.stop()
+	physics.stop()
+end
+
 local function retryGame()
-	director.gotoScene("scenes.game.shooter")
+	director.reloadScene("scenes.game.shooter")
 end
 
 local function updateEnemies()
@@ -437,6 +458,14 @@ end
 
 local function collectBubble(earth)
 	if playerCharacter.isCarringItem then
+		earth:setSequence("eat")
+		earth:play()
+		earth:addEventListener("sprite", function(event)
+			if event.phase == "ended" then
+				earth:setSequence("happy")
+				earth:play()
+			end
+		end)
 		foodBubbleGroup:insert(playerCharacter.item)
 		playerCharacter.item.x = playerCharacter.x
 		playerCharacter.item.y = playerCharacter.y
@@ -504,14 +533,38 @@ local function addDamage(bullet)
 	end
 end
 
-local function checkPlayerCollision(player, otherObject)
+local function damagePlayer()
+	playerCharacter.isDamaged = true
+	timer.performWithDelay(1500, function()
+		playerCharacter.isDamaged = false
+		playerCharacter.isVisible = true
+		playerCharacter.alpha = 1
+	end)
+
+end
+
+local function checkPlayerCollision(player, otherObject, element1, element2)
 	if player.name == "player" then
 		if otherObject.name == "planet" then
 			spawnBubble(otherObject)
 		elseif otherObject.name == "earth" then
 			collectBubble(otherObject)
+		elseif otherObject.name == "enemy" then
+			if not playerCharacter.isDamaged then
+				if element2 == 2 then
+					damagePlayer()
+					if not heartIndicator:removeHeart() then
+						gameOver()
+					end
+				end
+			end
 		elseif otherObject.name == "bullet" then
-			addDamage(otherObject)
+			if element2 == 1 then
+				if not playerCharacter.isDamaged then
+					addDamage(otherObject)
+					damagePlayer()
+				end
+			end
 		end
 	end
 end
@@ -521,13 +574,16 @@ local function collisionListener(event)
 		addEnemyTarget(event.object1, event.object2)
 		addEnemyTarget(event.object2, event.object1)
 		
-		checkPlayerCollision(event.object1, event.object2)
-		checkPlayerCollision(event.object2, event.object1)
+		checkPlayerCollision(event.object1, event.object2, event.element1, event.element2)
+		checkPlayerCollision(event.object2, event.object1, event.element2, event.element1)
 	end
 	
 	if event.phase == "ended" then
-		removeEnemyTarget(event.object1, event.object2)
-		removeEnemyTarget(event.object2, event.object1)
+		if event.element1 == 1 then
+			removeEnemyTarget(event.object1, event.object2)
+			removeEnemyTarget(event.object2, event.object1)
+		end
+		
 	end
 end
 
@@ -611,22 +667,39 @@ end
 
 local function testTouch(event)
 	if "began" == event.phase then
+		analogCircleBounds.x = event.x
+		analogCircleBounds.y = event.y
 		analogCircleBegan.x = event.x
 		analogCircleBegan.y = event.y
 		analogCircleMove.x = event.x
 		analogCircleMove.y = event.y
+		analogCircleBounds.isVisible = true
 		analogCircleBegan.isVisible = true
 		analogCircleMove.isVisible = true
 	elseif "moved" == event.phase then
-		analogX = event.x - event.xStart 
-		analogY = event.y - event.yStart
-		analogCircleMove.x = event.x
-		analogCircleMove.y = event.y
+		analogX = (event.x - event.xStart) * 2
+		analogY = (event.y - event.yStart) * 2
+			
+		local diffx = (event.x - event.xStart)
+		local diffy = (event.y - event.yStart)
+		local distance = squareRoot((diffx * diffx) + (diffy * diffy))
+		local vx = diffx / distance
+		local vy = diffy / distance
+		
+		if distance >= RADIUS_ANALOG then
+			analogCircleMove.x = event.xStart + vx * RADIUS_ANALOG
+			analogCircleMove.y = event.yStart + vy * RADIUS_ANALOG
+		else
+			analogCircleMove.x = event.x
+			analogCircleMove.y = event.y
+		end
+
 	elseif "ended" == event.phase then
 		analogX = 0
 		analogY = 0
 		analogCircleBegan.isVisible = false
 		analogCircleMove.isVisible = false
+		analogCircleBounds.isVisible = false
 	end	
 end
 
@@ -697,6 +770,7 @@ local function createPlayerCharacter()
 	local shipPosition = worldsData[worldIndex][levelIndex].ship.position
 	
 	playerCharacter = spaceships.new()
+	playerCharacter.isDamaged = false
 	playerCharacter.isCarringItem = false
 	playerCharacter.name = "player"
 	playerCharacter.x = shipPosition.x
@@ -741,7 +815,7 @@ local function createFoodBubbles()
 	end
 end
 
-local function enterFrame()
+local function enterFrame(event)
 	if playerCharacter and not playerCharacter.removeFromWorld then
 		local velocityX, velocityY = playerCharacter:getLinearVelocity()
 		if analogX and analogY then
@@ -760,18 +834,54 @@ local function enterFrame()
 			table.remove(physicsObjectList, index)
 		end
 	end
+	
+	if playerCharacter.isDamaged then
+		framecounter = framecounter + 1
+		if framecounter % 6 == 0 then
+			playerCharacter.isVisible = false
+			playerCharacter.alpha = 0.5
+			framecounter = 0
+		else
+			playerCharacter.isVisible = true
+		end
+	end
 end
 
 local function loadEarth()
 	local earthData = worldsData[worldIndex][levelIndex].earth
-	earth = display.newImage(earthData.asset)
+	--earth = display.newImage(earthData.asset)
+	
+	local sheetHappyData = {
+		width = 256,
+		height = 256,
+		numFrames = 64,
+		sheetContentWidth = 2048,
+		sheetContentHeight = 2048,
+	}
+	
+	local sheetHappy = graphics.newImageSheet(earthData.assetPath .. "happy.png", sheetHappyData)
+	local sheetEating = graphics.newImageSheet(earthData.assetPath .. "eating.png", sheetHappyData)
+	local sheetSad = graphics.newImageSheet(earthData.assetPath .. "sad.png", sheetHappyData)
+	local sheetBlush = graphics.newImageSheet(earthData.assetPath .. "blush.png", sheetHappyData)
+	
+	local sequenceData = {
+		{name = "happy", sheet = sheetHappy, start = 1, count = 64, time = 1400, loopCount = 0},
+		{name = "eat", sheet = sheetEating, start = 1, count = 64, time = 1400, loopCount = 1},
+		{name = "sad", sheet = sheetSad, start = 1, count = 64, time = 1400, loopCount = 0},
+		{name = "blush", sheet = sheetBlush, start = 1, count = 64, time = 1400, loopCount = 0}
+	}
+	
+	earth = display.newSprite(sheetHappy, sequenceData)
+	earth:setSequence("happy")
+	earth:play()
+	
 	earth.xScale = earthData.scaleFactor
 	earth.yScale = earthData.scaleFactor
 	earth.x = earthData.position.x
 	earth.y = earthData.position.y
 	earth.name = earthData.name
 	
-	physics.addBody(earth, "static", {radius = earth.width * earth.xScale, isSensor = true})
+	physics.addBody(earth, "static", {radius = earth.contentWidth * 0.75, isSensor = true})
 	camera:add(earth)
 	addPhysicsObject(earth)
 end
@@ -829,7 +939,7 @@ local function loadEnemies()
 			addPhysicsObject(bullet)
 		end
 		
-		physics.addBody(enemyObject, "dynamic",  {radius = enemyObject.viewRadius, isSensor = true})
+		physics.addBody(enemyObject, "dynamic",  {radius = enemyObject.viewRadius, isSensor = true}, {density = 0.1, friction = 2, bounce = 3, radius = enemyObject.viewRadius * 0.2})
 		enemyObject.gravityScale = 0
 		enemyObject.type = enemySpawnData[indexEnemy].type
 		enemyObject.name = "enemy"
@@ -958,6 +1068,10 @@ end
 local function initialize(event)
 	local params = event.params or {}
 	
+	analogCircleBounds.isVisible = false
+	analogCircleBegan.isVisible = false
+	analogCircleMove.isVisible = false
+	
 	isGameover = false
 	isFoodSpawned = {
 		["fruit"] = false,
@@ -1006,24 +1120,24 @@ local function initialize(event)
 	buttonBack.alpha = 0
 end
 
-local function updateGameLoop()
+local function updateGameLoop(event)
 	updateParallax()
 	updateEnemies()
 	showDebugInformation()
-	enterFrame()
+	enterFrame(event)
 end
 
 local function intro()
 	local function trackNextPlanet(planetIndex)
 		if planetIndex <= #planets then
 			camera:setFocus(planets[planetIndex])
-			introTimer = timer.performWithDelay(1800, function()
+			introTimer = timer.performWithDelay(500, function()
 				trackNextPlanet(planetIndex + 1)
 			end)
 		else
 			camera.damping = 10
 			camera:setFocus(playerCharacter)
-			transition.to(buttonBack, {alpha = 1, time = 500, transition = easing.outQuad})
+			--transition.to(buttonBack, {alpha = 1, time = 500, transition = easing.outQuad})
 			scene.enableButtons()
 		end
 	end
@@ -1077,24 +1191,6 @@ local function createGame()
 	Runtime:addEventListener("preCollision", preCollisionListener)
 end
 
-local function destroyGame()
-	system.deactivate("multitouch")
-	physics.pause()
-	sound.stopPitch()
-	Runtime:removeEventListener("touch", testTouch)
-	Runtime:removeEventListener("enterFrame", enterFrame)
-	camera:stop()
-	
-	for index = #physicsObjectList, 1, -1 do
-		display.remove(physicsObjectList[index])
-		physicsObjectList[index] = nil
-	end
-	physicsObjectList = nil
-	
-	spaceships.stop()
-	physics.stop()
-end
-
 function scene:create(event)
 	local sceneGroup = self.view
 	
@@ -1130,6 +1226,14 @@ function scene:create(event)
 	analogCircleMove.alpha = 0.2
 	analogCircleMove.isVisible = false
 	sceneGroup:insert(analogCircleMove)
+	
+	analogCircleBounds = display.newCircle(0,0, RADIUS_ANALOG)
+	analogCircleBounds.alpha = 0.8
+	analogCircleBounds.strokeWidth = 3
+	analogCircleBounds:setFillColor(0,0)
+	analogCircleBounds:setStrokeColor(1)
+	analogCircleBounds.isVisible = false
+	sceneGroup:insert(analogCircleBounds)
 	
 	local debugTextOptions = {
 		x = display.contentWidth - 100,
@@ -1174,8 +1278,11 @@ function scene:hide( event )
 		self.disableButtons()
 	elseif ( phase == "did" ) then
 		if introTimer then timer.cancel(introTimer) end
+		Runtime:removeEventListener("collision", collisionListener)
+		Runtime:removeEventListener("preCollision", preCollisionListener)
 		Runtime:removeEventListener("enterFrame", updateGameLoop)
 		Runtime:removeEventListener( "key", onKeyEvent )
+		director.hideOverlay()
 		destroyGame()
 	end
 end

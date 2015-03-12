@@ -32,12 +32,20 @@ local worldsData = {
 						[2] = {x = 0, y = -400}
 					}
 				},
+				{
+					type = "shooter",
+					angle = 10,
+					spawnPoint = { x = -500, y = -800},
+					patrolPath = {
+						[1] = { x = -500, y = -800},
+					}
+				},
 			},
 			earth = {
 				name = "earth",
-				asset = "images/planets/earth_happy.png",
+				assetPath = "images/planets/earth/",
 				position = {x = -600, y = -700},
-				scaleFactor = 0.75
+				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
@@ -200,9 +208,9 @@ local worldsData = {
 			},
 			earth = {
 				name = "earth",
-				asset = "images/planets/earth_happy.png",
+				assetPath = "images/planets/earth/",
 				position = {x = -1400, y = 0},
-				scaleFactor = 0.75
+				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
@@ -255,9 +263,9 @@ local worldsData = {
 			},
 			earth = {
 				name = "earth",
-				asset = "images/planets/earth_happy.png",
+				assetPath = "images/planets/earth/",
 				position = {x = -600, y = -700},
-				scaleFactor = 0.75
+				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
