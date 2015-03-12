@@ -91,10 +91,12 @@ local function followTarget(self)
 			self.isPatroling = false
 		end
 		
-		local stepX = self.target.x - self.x
-		local stepY = self.target.y - self.y
-		
 		local differenceX = self.target.x - self.x
+		local differenceY = self.target.y - self.y
+		
+		local stepX = differenceX * 1.8
+		local stepY = differenceY * 1.8
+		
 		self.xScale = differenceX > 0 and 1 or -1
 
 		self.x = self.x + (stepX  * THRESHOLD_FOLLOWSPEED)
