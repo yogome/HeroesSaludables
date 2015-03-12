@@ -703,11 +703,36 @@ local function testTouch(event)
 	end	
 end
 
+local function drawDebugGrid(levelWidth, levelHeight)
+	
+	local startX = levelWidth * -0.5
+	local startY = levelHeight * -0.5
+	
+	local lines = 10 
+	local lineDistanceX = levelWidth / lines
+	local lineDistanceY = levelHeight / lines
+	
+	for indexVertical = 1, lines do
+		local line = display.newLine(startX + (lineDistanceX * (indexVertical - 1)),  startY, startX + (lineDistanceX * (indexVertical - 1)), levelHeight)
+		camera:add(line)
+		line.strokeWidth = 2
+	end
+	
+	for indexHorizontal = 1, lines do
+		local line = display.newLine(startX, startY + (lineDistanceY * (indexHorizontal - 1)), levelWidth, startY + (lineDistanceY * (indexHorizontal - 1)))
+		camera:add(line)
+		line.strokeWidth = 2
+	end
+	
+end
+
 local function createBorders()
 	
 	local levelData = worldsData[worldIndex][levelIndex]
 	local levelWidth = levelData.levelWidth
 	local levelHeight = levelData.levelHeight
+	
+	drawDebugGrid(levelWidth, levelHeight)
 	
 	local halfLevelWidth = levelWidth * 0.5
 	local halfLevelHeight = levelHeight * 0.5
