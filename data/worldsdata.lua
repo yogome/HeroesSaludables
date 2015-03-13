@@ -66,7 +66,7 @@ local worldsData = {
 		},
 		--Level 2
 		[2] = {
-			x = 450,
+			x = 470,
 			y = -50,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -142,7 +142,7 @@ local worldsData = {
 		},
 		--Level 3
 		[3] = {
-			x = 630,
+			x = 740,
 			y = 80,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -195,7 +195,7 @@ local worldsData = {
 		},
 		--Level 4
 		[4] = {
-			x = 840,
+			x = 910,
 			y = -80,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -274,7 +274,7 @@ local worldsData = {
 		},
 		--Level 5
 		[5] = {
-			x = 1000,
+			x = 1180,
 			y = 100,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -330,7 +330,7 @@ local worldsData = {
 		},
 		--Level 6
 		[6] = {
-			x = 1180,
+			x = 1410,
 			y = -110,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -392,8 +392,8 @@ local worldsData = {
 		},
 		--Level 7
 		[7] = {
-			x = 1260,
-			y = 210,
+			x = 1680,
+			y = 100,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
 			levelHeight = 1500,
@@ -450,7 +450,7 @@ local worldsData = {
 		},
 		--Level 8
 		[8] = {
-			x = 1480,
+			x = 1950,
 			y = 0,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -498,8 +498,8 @@ local worldsData = {
 		},
 		--Level 9
 		[9] = {
-			x = 1590,
-			y = 200,
+			x = 2220,
+			y = 130,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
 			levelHeight = 1500,
@@ -558,7 +558,7 @@ local worldsData = {
 		},
 		--Level 10
 		[10] = {
-			x = 1820,
+			x = 2490,
 			y = -130,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -603,8 +603,8 @@ local worldsData = {
 		},
 		--Level 11
 		[11] = {
-			x = 1870,
-			y = 230,
+			x = 2660,
+			y = 100,
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
 			levelHeight = 2000,
@@ -625,7 +625,7 @@ local worldsData = {
 				},
 				{
 					type = "canoner",
-					spawnPoint = { x = -0, y = -500},
+					spawnPoint = { x = 800, y = -800},
 					patrolPath = {
 						[1] = { x = -800, y = -200},
 						[2] = {x = 800, y = -800},
@@ -672,8 +672,8 @@ local worldsData = {
 		},
 		--Level 12
 		[12] = {
-			x = 2110,
-			y = -110,
+			x = 2930,
+			y = -80,
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
 			levelHeight = 2000,
@@ -761,8 +761,8 @@ local worldsData = {
 		},
 		--Level 13
 		[13] = {
-			x = 2220,
-			y = 230,
+			x = 3100,
+			y = 70,
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
 			levelHeight = 2000,
@@ -857,8 +857,8 @@ local worldsData = {
 		},
 		--Level 14
 		[14] = {
-			x = 2350,
-			y = -135,
+			x = 3300,
+			y = -80,
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
 			levelHeight = 2000,
@@ -946,7 +946,7 @@ local worldsData = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
 				position = {x = 0, y = 0},
-				scaleFactor = 0.75
+				scaleFactor = 1.2
 			},
 			planets = {
 				[1] = {
@@ -966,12 +966,12 @@ local worldsData = {
 		},
 		--Level 15
 		[15] = {
-			x = 2600,
+			x = 3560,
 			y = 100,
 			background = "images/backgrounds/space.png",
-			levelWidth = 10000,
-			levelHeight = 10000,
-			ship = {position = {x = 0, y = 0}},
+			levelWidth = 4000,
+			levelHeight = 2000,
+			ship = {position = {x = -1700, y = 200}},
 			objectives = {
 				fruit = 1,
 				vegetable = 1,
@@ -979,57 +979,113 @@ local worldsData = {
 			},
 			enemySpawnData = {
 				{
-					type = "follower",
-					spawnPoint = { x = -500, y = 0},
+					type = "shooter",
+					spawnPoint = { x = -1200, y = 400},
+					angle = 315
+				},
+				{
+					type = "shooter",
+					spawnPoint = { x = -1200, y = -400},
+					angle = 45
+				},
+				{
+					type = "shooter",
+					spawnPoint = { x = 500, y = -300},
+					angle = 270
+				},
+				{
+					type = "shooter",
+					spawnPoint = { x = 1900, y = 900},
+					angle = 180
+				},
+				{
+					type = "canoner",
+					spawnPoint = { x = 1600, y = -800},
 					patrolPath = {
-						[1] = { x = -500, y = 0},
-						[2] = {x = 0, y = 500}
+						[1] = { x = 1700, y = -100},
+						[2] = {x = 1600, y = -800}
 					}
 				},
 				{
 					type = "canoner",
-					spawnPoint = { x = 400, y = -800},
+					spawnPoint = { x = 1600, y = 300},
 					patrolPath = {
-						[1] = { x = 400, y = -800},
-						[2] = {x = 0, y = -400}
+						[1] = { x = 1100, y = 800},
+						[2] = {x = 1600, y = 300}
 					}
 				},
 			},
 			earth = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
-				position = {x = -600, y = -700},
+				position = {x = 0, y = 0},
 				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
 					foodType = "fruit",
 					asset = "images/planets/fruits_1.png",
-					position = {x = -700, y = 700}
+					position = {x = 0, y = -700}
 				},
 				[2] = {
 					foodType = "protein",
 					asset = "images/planets/proteins_1.png",
-					position = {x = 500, y = 550}
+					position = {x = 0, y = 700}
 				},
 				[3] = {
 					foodType = "vegetable",
 					asset = "images/planets/vegetables_1.png",
-					position = {x = 740, y = -800}
+					position = {x = -1300, y = 0}
 				}
 			},
 			asteroids = {
 				[1] = {
-					lineStart = {x = -200, y = 600},
-					lineEnd = {x = -700, y = 100},
+					lineStart = {x = -1700, y = -400},
+					lineEnd = {x = -800, y = 0},
 					easingX = easing.inSine,
 					easingY = easing.outSine,
 				},
 				[2] = {
-					lineStart = {x = 100, y = -200},
-					lineEnd = {x = 600, y = -700},
+					lineStart = {x = -800, y = 0},
+					lineEnd = {x = -1700, y = 400},
+					easingX = easing.outSine,
+					easingY = easing.inSine,
+				},
+				[3] = {
+					lineStart = {x = -600, y = -900},
+					lineEnd = {x = 0, y = -300},
+					easingX = easing.outSine,
+					easingY = easing.inSine,
+				},
+				[4] = {
+					lineStart = {x = 0, y = -300},
+					lineEnd = {x = 500, y = -600},
 					easingX = easing.inSine,
 					easingY = easing.outSine,
+				},
+				[5] = {
+					lineStart = {x = -600, y = 900},
+					lineEnd = {x = 0, y = 300},
+					easingX = easing.outSine,
+					easingY = easing.inSine,
+				},
+				[6] = {
+					lineStart = {x = 0, y = 300},
+					lineEnd = {x = 500, y = 600},
+					easingX = easing.inSine,
+					easingY = easing.outSine,
+				},
+				[7] = {
+					lineStart = {x = 900, y = -600},
+					lineEnd = {x = 1100, y = 0},
+					easingX = easing.inSine,
+					easingY = easing.outSine,
+				},
+				[8] = {
+					lineStart = {x = 1100, y = 0},
+					lineEnd = {x = 700, y = 400},
+					easingX = easing.outSine,
+					easingY = easing.inSine,
 				},
 			},
 		},
