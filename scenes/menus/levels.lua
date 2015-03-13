@@ -19,7 +19,7 @@ local buttonBack
 local titleGroup, title, language
 local buttonsEnabled
 local currentPlayer
-local scrollView
+local scrollView, secondPlane, thirdPlane
 local scrollViewButtonGroup
 local levelsGroup
 local worldIndex
@@ -27,6 +27,8 @@ local prevLastUnlockedLevel, lastUnlockedLevel
 local playerCharacter
 local coinText, starText
 ----------------------------------------------- Constants
+local screenLeft = display.screenOriginX
+local screenWidth = display.viewableContentWidth - screenLeft * 2
 local COLOR_BACKGROUND = {47/255,190/255,196/255}
 local WIDTH_BACKGROUND = 1024
 local HEIGHT_BACKGROUND = 768
@@ -63,6 +65,9 @@ end
 
 local function updateGameLoop(event)
 	updateCharacterShip(event.time)
+	local scrollX, scrollY = scrollView:getContentPosition()
+	secondPlane.x = (25200 + scrollX * 0.3) % (scrollView.width ) - scrollView.width * 2
+	thirdPlane.x = (25200 + scrollX * 0.2) % (scrollView.width) - scrollView.width * 2
 end
 
 local function levelIconTapped(event)
@@ -277,6 +282,9 @@ end
 function scene:create(event)
 	local sceneGroup = self.view
 	
+	secondPlane = display.newGroup()
+	thirdPlane = display.newGroup()
+	
 	local scrollViewOptions = {
 		x = display.contentCenterX,
 		y = display.contentCenterY,
@@ -302,6 +310,26 @@ function scene:create(event)
 		scrollView:insert(background)
 	end
 	
+	for index = 1, NUM_BACKGROUNDS do
+		local background = display.newImage("images/levels/secondPlane/fondo"..index..".png")
+		background.anchorX = 0
+		background.x = ((index - 1) * WIDTH_BACKGROUND) * backgroundScale
+		background.y = scrollView.height * 0.5
+		background.xScale = backgroundScale
+		background.yScale = backgroundScale
+		secondPlane:insert(background)
+	end
+	
+	for index = 1, NUM_BACKGROUNDS do
+		local background = display.newImage("images/levels/thirdPlane/fondo"..index..".png")
+		background.anchorX = 0
+		background.x = ((index - 1) * WIDTH_BACKGROUND) * backgroundScale
+		background.y = scrollView.height * 0.5
+		background.xScale = backgroundScale
+		background.yScale = backgroundScale
+		thirdPlane:insert(background)
+	end
+	
 	scrollViewButtonGroup = display.newGroup()
 	scrollView:insert(scrollViewButtonGroup)
 	
@@ -315,7 +343,8 @@ function scene:create(event)
 	sceneGroup:insert(buttonBack)
 	
 	createUI(sceneGroup)
-	
+	sceneGroup:insert(secondPlane)
+	sceneGroup:insert(thirdPlane)
 end
 
 function scene:destroy()
