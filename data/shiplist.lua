@@ -1,7 +1,17 @@
 local shiplist = {
-	[1] = {spritesheet = "images/ships/ship1_a.png"},
-	[2] = {spritesheet = "images/ships/ship2_a.png"},
-	[3] = {spritesheet = "images/ships/ship3_a.png"},
+	[1] = {
+		iconPath = "images/ships/shop_ship1.png",
+		price = 100,
+		spritesheet = "images/ships/ship1_a.png"
+	},
+	[2] = {
+	iconPath = "images/ships/shop_ship2.png",
+	price = 100,
+	spritesheet = "images/ships/ship2_a.png"},
+	[3] = {
+	iconPath = "images/ships/shop_ship3.png",
+	price = 100,
+	spritesheet = "images/ships/ship3_a.png"},
 }
 
 return shiplist

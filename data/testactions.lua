@@ -21,6 +21,10 @@ local function goLevels()
 	director.gotoScene("scenes.menus.levels")
 end
 
+local function goSelector()
+	director.gotoScene("scenes.menus.choosehero")
+end
+
 local function goLabel()
 	director.gotoScene("scenes.game.labelquiz")
 end
