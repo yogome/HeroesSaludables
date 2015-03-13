@@ -17,7 +17,10 @@ local buttonlist = {
 	previous = { width = 128, height = 112, defaultFile = "images/buttons/atras.png", overFile = "images/buttons/atras_02.png", onPress = playSound},
 	left = { width = 90, height = 128, defaultFile = "images/buttons/izquierda_1.png", overFile = "images/buttons/izquierda_2.png", onPress = playSound},
 	right = { width = 90, height = 128, defaultFile = "images/buttons/derecha_1.png", overFile = "images/buttons/derecha_2.png", onPress = playSound},
-	
+	buy = { width = 244, height = 128, defaultFile = "images/selecthero/new/btn_comprar.png", overFile = "images/selecthero/new/btn_comprar_2.png", onPress = playSound},
+	edit = { width = 64, height = 64, defaultFile = "images/buttons/edit_01.png", overFile = "images/buttons/edit_02.png", onPress = playSound},
+	gobattle = { width = 256, height = 154, defaultFile = "images/selecthero/new/toBattle_es_01.png", onPress = playSound},
+	powercubes = { width = 256, height = 137, defaultFile = "images/selecthero/new/morePowercubes_1.png", overFile = "images/selecthero/new/morePowercubes_2.png", onPress = playSound},
 }
 
 return buttonlist

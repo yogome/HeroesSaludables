@@ -14,7 +14,7 @@ local enemyFactory = require("entities.enemies")
 local extramath = require( "libs.helpers.extramath" )
 local loseScene = require( "scenes.game.lose" )
 local winScene = require( "scenes.game.win" )
-local players = require( "models.players" )
+local dataSaver = require("services.datasaver")
 
 --physics.setDrawMode("hybrid")
 local scene = director.newScene() 
@@ -396,35 +396,6 @@ local function removeEnemyTarget(enemy, target)
 	end
 end
 
-local function saveLevelData(playerData)
-	
-	
-	local nextLevel = levelIndex + 1
-	if nextLevel <= #playerData.unlockedWorlds[worldIndex].levels then
-		playerData.unlockedWorlds[worldIndex].levels[nextLevel].unlocked = true
-	end
-	
-	local unlockedLevelsCount = 0
-	for indexLevel = 1, #playerData.unlockedWorlds[worldIndex].levels do
-		local currentLevel = playerData.unlockedWorlds[worldIndex].levels[indexLevel]
-		if currentLevel.unlocked then
-			unlockedLevelsCount = unlockedLevelsCount + 1
-		end
-	end
-	
-	if unlockedLevelsCount >= #playerData.unlockedWorlds[worldIndex].levels then
-		local nextWorld = worldIndex + 1
-		if nextWorld <= #playerData.unlockedWorlds then
-			playerData.unlockedWorlds[nextWorld].unlocked = true
-		end
-	end
-	
-	if heartIndicator.currentHearts >= playerData.unlockedWorlds[worldIndex].levels[levelIndex].stars then
-		playerData.unlockedWorlds[worldIndex].levels[levelIndex].stars = heartIndicator.currentHearts
-	end
-	players.save(playerData)
-end
-
 local function checkAmounts()
 	local isComplete = true
 	for key, value in pairs(collectedFood) do
@@ -448,9 +419,6 @@ local function checkAmounts()
 				winScene.disableButtons()
 				director.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
 			end
-			local currentPlayer = players.getCurrent()
-			currentPlayer.coins = currentPlayer.coins + 500
-			saveLevelData(currentPlayer)
 			winScene.show(heartIndicator.currentHearts, 500, onBackReleased, onRetryReleased, onPlayReleased)
 		end
 	end
@@ -723,7 +691,6 @@ local function drawDebugGrid(levelWidth, levelHeight)
 		camera:add(line)
 		line.strokeWidth = 2
 	end
-	
 end
 
 local function createBorders()
@@ -964,7 +931,7 @@ local function loadEnemies()
 			addPhysicsObject(bullet)
 		end
 		
-		physics.addBody(enemyObject, "dynamic",  {radius = enemyObject.viewRadius, isSensor = true}, {density = 0.1, friction = 2, bounce = 3, radius = enemyObject.viewRadius * 0.2})
+		physics.addBody(enemyObject, "dynamic",  {radius = enemyObject.viewRadius, isSensor = true}, {density = 0.00001, radius = enemyObject.viewRadius * 0.2})
 		enemyObject.gravityScale = 0
 		enemyObject.type = enemySpawnData[indexEnemy].type
 		enemyObject.name = "enemy"
@@ -1093,6 +1060,7 @@ end
 local function initialize(event)
 	local params = event.params or {}
 	
+	dataSaver.initialize()
 	analogCircleBounds.isVisible = false
 	analogCircleBegan.isVisible = false
 	analogCircleMove.isVisible = false

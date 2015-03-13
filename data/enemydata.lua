@@ -10,7 +10,7 @@ local enemies = {
 		projectileData = {
 			fireFrame = 10,
 			speed = 7,
-			asset = "images/enemies/proyectil-02.png",
+			asset = "images/enemies/proyectil-01.png",
 		},
 	},
 	["shooter"] = {
@@ -24,7 +24,7 @@ local enemies = {
 		projectileData = {
 			fireFrame = 50,
 			speed = 10,
-			asset = "images/enemies/proyectil-01.png",
+			asset = "images/enemies/proyectil-02.png",
 		},
 	},
 	["follower"] = {

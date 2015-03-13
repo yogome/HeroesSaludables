@@ -1,64 +1,80 @@
 local herolist = {
+[1] = {--------BOYS
 	[1] = {
-		name = "EAGLE",
-		skinName = "Eagle",
-		iconPath = "images/heroes/eagle.png",
+                name = "ARTHURIUS",
+		skinName = "Arthurius",
+		iconPath = "images/selecthero/boys/arthurius.png",
+                price = 100,
 	},
 	[2] = {
-		name = "ARTHURIUS",
-		skinName = "Arthurius",
-		iconPath = "images/heroes/arthurius.png",
+		name = "EAGLE",
+		skinName = "Eagle",
+		iconPath = "images/selecthero/boys/eagle.png",
+                price = 100,
 	},
 	[3] = {
-		name = "DYNAMO",
-		skinName = "Dynamo",
-		iconPath = "images/heroes/dynamo.png",
+		name = "DINAMITA",
+		skinName = "Dinamita",
+		iconPath = "images/selecthero/boys/dinamita.png",
+                price = 100,
 	},
 	[4] = {
 		name = "JUSTICIA",
 		skinName = "Justice",
-		iconPath = "images/heroes/justicia.png",
+		iconPath = "images/selecthero/boys/justice.png",
+                price = 100,
 	},
 	[5] = {
-		name = "MAC",
-		skinName = "Mac",
-		iconPath = "images/heroes/mac.png",
+		name = "OOF",
+		skinName = "Oof",
+		iconPath = "images/selecthero/boys/oof.png",
+                price = 100,
 	},
-	[6] = {
-		name = "LUNA",
-		skinName = "Luna",
-		iconPath = "images/heroes/luna.png",
-	},
-	[7] = {
-		name = "THEFFANIE",
-		skinName = "Theffanie",
-		iconPath = "images/heroes/theffanie.png",
-	},
-	[8] = {
-		name = "QUARKY",
-		skinName = "Quarky",
-		iconPath = "images/heroes/quarky.png",
-	},
-	[9] = {
-		name = "PAZ",
-		skinName = "Paz",
-		iconPath = "images/heroes/paz.png",
-	},
-	[10] = {
-		name = "CAMILLA",
-		skinName = "Camila",
-		iconPath = "images/heroes/camilla.png",
-	},
-	[11] = {
-		name = "TOMIKO",
-		skinName = "Tomiko",
-		iconPath = "images/heroes/tomiko.png",
-	},
-	[12] = {
+        [6] = {
 		name = "NAO",
 		skinName = "Nao",
-		iconPath = "images/heroes/mac.png",
+		iconPath = "images/selecthero/boys/nao.png",
+                price = 100,
 	},
+},
+    [2] = {    -------GIRLS
+	[1] = {
+                name = "THEFFANIE",
+		skinName = "Theffanie",
+		iconPath = "images/selecthero/girls/theffanie.png",
+                price = 100,
+	},
+	[2] = {
+		name = "LUNA",
+		skinName = "Luna",
+		iconPath = "images/selecthero/girls/luna.png",
+                price = 100,
+	},
+	[3] = {
+		name = "ESTRELLA",
+		skinName = "Estrella",
+		iconPath = "images/selecthero/girls/estrella.png",
+                price = 100,
+	},
+	[4] = {
+		name = "PAZ",
+		skinName = "Paz",
+		iconPath = "images/selecthero/girls/paz.png",
+                price = 100,
+	},
+	[5] = {
+		name = "OONA",
+		skinName = "Oona",
+		iconPath = "images/selecthero/girls/oona.png",
+                price = 100,
+	},
+	[6] = {
+		name = "TOMIKO",
+		skinName = "Tomiko",
+		iconPath = "images/selecthero/girls/tomiko.png",
+                price = 100,
+	},
+    }
 }
 
 return herolist

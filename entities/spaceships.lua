@@ -2,7 +2,7 @@
 local extramath = require( "libs.helpers.extramath" ) 
 local logger = require( "libs.helpers.logger" )
 local physics = require( "physics" )
-local animator = require( "units.animator" )
+local animator = require( "services.animator" )
 local heroList = require( "data.herolist" )
 local players = require( "models.players" )
 
@@ -32,7 +32,7 @@ end
 
 local function createNewShip(newShip, shipData)
 	
-	physics.addBody( newShip, {density = 0.001, friction = 0.3, bounce = 1, radius = 50 * 0.8})
+	physics.addBody( newShip, {density = 0.0009, friction = 5, bounce = 1, radius = 50 * 0.8})
 	newShip.gravityScale = 0
 	newShip.isFixedRotation = true
 	newShip.linearDamping = 2
@@ -62,11 +62,19 @@ local function createNewShip(newShip, shipData)
 	shipBack:scale(SCALE_SHIP, SCALE_SHIP)
 	newShip:insert(shipBack)
 	
-	local heroSkin = heroList[currentPlayer.heroIndex].skinName
-	local playerCharacter = animator.newCharacter(heroSkin, "PLACEHOLDER", "units/hero/skeleton.json", "units/hero/")
-	playerCharacter:setHat(string.format("hat_extra_%02d", (currentPlayer.hatIndex-1)))
+	local heroSkin = heroList[currentPlayer.yogotarType][currentPlayer.yogotarId].skinName
+	
+	local characterData = {
+        skin = "Eagle",
+        skeletonFile = "units/heroes/skeleton.json",
+        imagePath = "units/heroes/",
+        attachmentPath = "units/attachments/",
+        scale = 0.15
+    }
+	
+	local playerCharacter = animator.newCharacter(characterData)
+	--playerCharacter:setHat(string.format("hat_extra_%02d", (currentPlayer.hatIndex-1)))
 	playerCharacter:setAnimation("IDLE")
-	playerCharacter.group:scale(SCALE_YOGOTAR, SCALE_YOGOTAR)
 	playerCharacter.group.x = OFFSET_YOGOTAR.x
 	playerCharacter.group.y = OFFSET_YOGOTAR.y
 	newShip:insert(playerCharacter.group)
