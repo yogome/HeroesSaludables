@@ -21,7 +21,7 @@ local worldsData = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
 			levelHeight = 1500 ,
-			ship = {position = {x = 1200, y = 500}},
+			ship = {position = {x = 1100, y = 0}},
 			objectives = {
 				fruit = 3,
 				vegetable = 0,
@@ -71,11 +71,11 @@ local worldsData = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
 			levelHeight = 1500,
-			ship = {position = {x = -1300, y = 600}},
+			ship = {position = {x = 1300, y = 100}},
 			objectives = {
-				fruit = 6,
-				vegetable = 6,
-				protein = 6
+				fruit = 0,
+				vegetable = 0,
+				protein = 3,
 			},
 			enemySpawnData = {
 				{
@@ -147,7 +147,7 @@ local worldsData = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
 			levelHeight = 1500,
-			ship = {position = {x = 1400, y =  200}},
+			ship = {position = {x = 1400, y =  300}},
 			objectives = {
 				fruit = 0,
 				vegetable = 0,
@@ -181,7 +181,7 @@ local worldsData = {
 				[1] = {
 					foodType = "protein",
 					asset = "images/planets/proteins_1.png",
-					position = {x = 1300, y = 550}
+					position = {x = 1300, y = 500}
 				},
 			},
 			asteroids = {
@@ -200,11 +200,11 @@ local worldsData = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
 			levelHeight = 1500,
-			ship = {position = {x = 900, y = 500}},
+			ship = {position = {x = 900, y = 100}},
 			objectives = {
-				fruit = 1,
-				vegetable = 1,
-				protein = 1,
+				fruit = 2,
+				vegetable = 0,
+				protein = 0,
 			},
 			enemySpawnData = {
 				{
@@ -279,7 +279,7 @@ local worldsData = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
 			levelHeight = 1500,
-			ship = {position = {x = 300, y = -200}},
+			ship = {position = {x = 700, y = 250}},
 			objectives = {
 				fruit = 0,
 				vegetable = 3,
