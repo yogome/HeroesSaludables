@@ -494,6 +494,7 @@ function scene:create( event )
 	sceneGroup:insert(titleText)
 	
 	productName =  display.newText("Nombre del producto", centerX + 150, screenBottom - 80, settings.fontName, 36)
+	productName.alpha = 0
 	sceneGroup:insert(productName)
 	
 	local buttonData = buttonList.play

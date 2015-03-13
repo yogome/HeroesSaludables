@@ -27,7 +27,7 @@ local worldIndex, levelIndex
 
 ----------------------------Constansts
 local SIZE_BACKGROUND = 1024
-local NUMBER_PIECES = 9
+local NUMBER_PIECES = 5
 local centerX = display.contentCenterX
 local centerY = display.contentCenterY
 local screenLeft = display.screenOriginX
@@ -56,8 +56,8 @@ local labelpositions = {
 	[1] = {x = 37, y = -206, answer = 1, centerpos= {x = 36, y = -205, width = 300, height = 85}},	
 	[2] = {x = 37, y = -129, answer = 2, centerpos= {x = 36, y = -130, width = 300, height = 50}},	
 	[3] = {x = 37, y = -78, answer = 3, centerpos= {x = 36, y = -77, width = 300, height = 30}},	
-	[4] = {x = -9, y = 12, answer = 4, centerpos= {x = 36, y = 10, width = 300, height = 110}},	
-	[5] = {x = -10, y = 131 , answer = 5, centerpos= {x = 36, y = 165, width = 300, height = 155}},	
+	[4] = {x = 37, y = 12, answer = 4, centerpos= {x = 36, y = 10, width = 300, height = 110}},	
+	[5] = {x = 37, y = 165 , answer = 5, centerpos= {x = 36, y = 165, width = 300, height = 155}},	
 	[6] = {x = 143, y = 12, answer = 4, centerpos= {x = 36, y = 10, width = 300, height = 110}},
 	[7] = {x = 142, y = 131, answer = 5, centerpos= {x = 36, y = 165, width = 300, height = 155}},	
 	[8] = {x = 36, y = 195, answer = 5, centerpos= {x = 36, y = 165, width = 300, height = 155}},	
@@ -228,8 +228,8 @@ local function createBackground(group)
     local background = display.newImage("images/label/labelBackground.png")
 	background.x = centerX
 	background.y = centerY
-    background.xScale = screenWidth
-    background.yScale = screenHeight
+    background.width = screenWidth
+    background.height = screenHeight
     group:insert(background)
 end
 
@@ -237,7 +237,7 @@ local function createPuzzlePieces(group)
 	piecesGroup = display.newGroup()
 	piecesGroup.pieces = {}
 	for indexPiece = 1, NUMBER_PIECES do
-		local piece = display.newImage("images/label/piece"..indexPiece..".png")
+		local piece = display.newImage("images/label/btn-0"..indexPiece..".png")
 		piece.id = indexPiece
 		piecesGroup.pieces[indexPiece] = piece
 		piecesGroup:insert(piece)
