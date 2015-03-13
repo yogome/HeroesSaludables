@@ -732,7 +732,7 @@ local function createBorders()
 	local levelWidth = levelData.levelWidth
 	local levelHeight = levelData.levelHeight
 	
-	drawDebugGrid(levelWidth, levelHeight)
+--	drawDebugGrid(levelWidth, levelHeight)
 	
 	local halfLevelWidth = levelWidth * 0.5
 	local halfLevelHeight = levelHeight * 0.5
