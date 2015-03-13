@@ -779,8 +779,9 @@ function game:show( event )
 	    nextButton:setEnabled(true)
 		backButton:setEnabled(true)
 		okButton:setEnabled(true)
-	elseif ( phase == "did" ) then
 		animateScene()
+	elseif ( phase == "did" ) then
+		
 	end
 end
 

@@ -12,7 +12,7 @@ local mixpanel = require( "libs.helpers.mixpanel" )
 
 local scene = director.newScene() 
 ----------------------------------------------- Variables
-local buttonPlay, settingsBtn, musicBtn, soundBtn, okBtn, musicOff, soundOff
+local buttonPlay, settingsBtn, musicBtn, soundBtn, okBtn, musicOff, soundOff, backBtn
 local logoGroup, starfieldGroup, asteroidGroup, shineStarGroup, settingsScreen
 local currentPlayer
 ----------------------------------------------- Constants 
@@ -229,6 +229,7 @@ local function pressButton(event)
 	if tag == "play" then
 		director.gotoScene("scenes.menus.selecthero")
 	elseif tag == "settings" then
+		backBtn:setEnabled(false)
 		settingsBtn:setEnabled(false)
 		okBtn:setEnabled(true)
 		transition.to(settingsScreen,{ alpha = 1, time = 300})
@@ -251,9 +252,12 @@ local function pressButton(event)
 		sound.setEnabled(enabled)
 		database.config( "sound", enabled)
 	elseif tag == "ok" then
+		backBtn:setEnabled(true)
 		settingsBtn:setEnabled(true)
 		okBtn:setEnabled(false)
 		transition.to(settingsScreen,{alpha = 0, time = 300})
+	elseif tag == "back" then
+		director.gotoScene("scenes.game.infoscreen", { effect = "fade", time = 300, params = nil})
 	end
 end
 
@@ -271,10 +275,17 @@ local function createButtons(group)
 	
 	buttonList.settings.onRelease = pressButton
     settingsBtn = widget.newButton(buttonList.settings)
-	settingsBtn.x = screenLeft + 100
+	settingsBtn.x = screenRight - 100
 	settingsBtn.y = screenBottom - 100
 	settingsBtn.tag = "settings"
 	group:insert(settingsBtn)
+	
+	buttonList.back.onRelease = pressButton
+	backBtn = widget.newButton(buttonList.back)
+	backBtn.x = screenLeft + 100
+	backBtn.y = screenBottom - 100
+	backBtn.tag = "back"
+	group:insert(backBtn)
 	
 end
 
