@@ -201,6 +201,7 @@ local function gotoLevel()
 	end
     transition.to(powercubeBar, {width = newSize, time = 1000, onComplete = function()
         isAnimatingBar = false
+		director.gotoScene("scenes.menus.worlds")
         --helperDoors.loader("scenes.game.versus", {world = currentWorld, level = currentLevel}, {})
     end})
     
@@ -878,8 +879,8 @@ local function createUI()
 		if parent and parent.playMusic then
 			parent.playMusic()
 		end
-        director.hideOverlay()
-		map.updateYogotar(currentYogotarType, currentSelectedYogotar, currentHat)
+        --director.hideOverlay()
+		--map.updateYogotar(currentYogotarType, currentSelectedYogotar, currentHat)
     end
     buttonBack = widget.newButton(buttonInfo)
     buttonBack.x = display.screenOriginX + (buttonBack.contentWidth * 0.5)
@@ -1271,7 +1272,7 @@ function scene:hide( event )
 	if ( phase == "will" ) then
 		
 		local transitionOffset = 0
-		for indexLayer = 1, 3 do
+		for indexLayer = 1, 1 do
 			local randomSign = (math.random(1,2) * 2) - 3
 			local currentBackground = backgroundGroup.backgrounds[indexLayer]
                 transition.to(currentBackground, {time =  500, transition = easing.inSine, delay = transitionOffset, x = display.contentCenterX + (currentBackground.contentWidth * randomSign), onComplete = function()
