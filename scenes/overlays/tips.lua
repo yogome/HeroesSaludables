@@ -5,10 +5,11 @@ local widget = require("widget")
 
 ----------------------------Variables
 local scene = director.newScene()
-local tipGroup
+local tipGroup, tip
 local previousTip
 local nextScene
 local worldIndex, levelIndex
+local okButton
 
 ----------------------------Constants
 local NUMBER_TIPS = 13
@@ -38,7 +39,7 @@ function scene:create( event )
 	sceneGroup:insert(tipGroup)
 	
 	buttonList.ok.onRelease = closeOverlay
-	local okButton = widget.newButton(buttonList.ok)
+	okButton = widget.newButton(buttonList.ok)
 	okButton.x = display.screenOriginX + display.viewableContentWidth - 100
 	okButton.y = display.screenOriginY + display.viewableContentHeight - 100
 	
@@ -65,19 +66,18 @@ function scene:show( event )
 		
 		previousTip = randomTip
 		
-		local tip = display.newImage("images/tips/tips-".. randomTip ..".png")
+		tip = display.newImage("images/tips/tips-".. randomTip ..".png")
 		
+		okButton:setEnabled(true)
 		tip.height = display.contentHeight
 		tip.x = display.contentCenterX
 		tip.y = display.contentCenterY
 
 		tipGroup:insert(tip)
-		
 	elseif ( phase == "did" ) then
 	
     end
 end
-
 
 function scene:hide( event )
 
@@ -85,7 +85,8 @@ function scene:hide( event )
     local phase = event.phase
 
     if ( phase == "will" ) then
-    elseif ( phase == "did" ) then
+	elseif ( phase == "did" ) then
+		display.remove(tip)
     end
 end
 
