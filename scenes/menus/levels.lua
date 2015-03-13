@@ -26,6 +26,7 @@ local worldIndex
 local prevLastUnlockedLevel, lastUnlockedLevel
 local playerCharacter
 local coinText, starText
+local sizeScroll
 ----------------------------------------------- Constants
 local COLOR_BACKGROUND = {47/255,190/255,196/255}
 local WIDTH_BACKGROUND = 1024
@@ -77,7 +78,8 @@ local function levelIconTapped(event)
 		if randomTool == 1 then
 			scene = "scenes.game.labelpuzzle"
 		elseif randomTool == 2 then
-			scene = "scenes.game.labelquiz"
+			scene = "scenes.game.labelpuzzle"
+			--scene = "scenes.game.labelquiz"
 		elseif randomTool == 3 then
 			scene = "scenes.game.questionquiz"
 		end
@@ -102,7 +104,17 @@ local function createSpaceShip()
 		playerCharacter.x = prevLastUnlockedLevel.x + OFFSET_X_PLAYER
 		playerCharacter.y = prevLastUnlockedLevel.y + OFFSET_Y_PLAYER
 		
-		scrollView:scrollToPosition({x = -playerCharacter.x})
+		if -playerCharacter.x >= (sizeScroll / 8) * 7 then
+			
+		end
+		
+
+		local position = playerCharacter.x
+		if playerCharacter.x >= sizeScroll - ((sizeScroll / 8) * 7) then
+			position = sizeScroll - 1536
+		end
+		
+		scrollView:scrollToPosition({x = -position, time = 1000})
 		transition.to(playerCharacter, {delay = 100, time = FLY_TIME,x = lastUnlockedLevel.x, onStart = function()
 			timer.performWithDelay(1100, function()
 				--sound.play("breakSound")
@@ -285,15 +297,20 @@ function scene:create(event)
 		hideBackground = false,
 		verticalScrollDisabled = true,
 		isBounceEnabled = false,
+		listener = function()
+			print(scrollView:getContentPosition())
+			print(playerCharacter.x)
+		end
 	}
 	
 	scrollView = widget.newScrollView(scrollViewOptions)
 	sceneGroup:insert(scrollView)
 
 	local backgroundScale = display.viewableContentHeight / HEIGHT_BACKGROUND
-	
+	sizeScroll = 0
 	for index = 1, NUM_BACKGROUNDS do
 		local background = display.newImage("images/levels/background0"..index..".png")
+		sizeScroll = sizeScroll + background.contentWidth
 		background.anchorX = 0
 		background.x = ((index - 1) * WIDTH_BACKGROUND) * backgroundScale
 		background.y = scrollView.height * 0.5
@@ -302,6 +319,7 @@ function scene:create(event)
 		scrollView:insert(background)
 	end
 	
+	print(sizeScroll)
 	scrollViewButtonGroup = display.newGroup()
 	scrollView:insert(scrollViewButtonGroup)
 	
