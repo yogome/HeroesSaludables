@@ -10,7 +10,7 @@ local sound = require("libs.helpers.sound")
 
 local game = director.newScene() 
 ----------------------------------------------- Variables
-local ageSlider, weightSlider, firstPlane, heightSlider, kidWeightText, kidHeightText, hourSlider, thirdPlane, thirdOkBtn, thirdBackBtn,finalYogoKid, finalYogoGirl, finalText
+local ageSlider, weightSlider, firstPlane, heightSlider, kidWeightText, kidHeightText, hourSlider, thirdPlane, thirdOkBtn, thirdBackBtn,finalYogoKid, finalYogoGirl, finalText, alertGroup, textAlert
 local ageText, textBox, textCompleted, nextButton,yogoKid, yogoGirl, secondPlane, okButton, backButton, hourText,kidCalories
 local kidAge, kdWeight, kdHeight, kidName, kidImc, kidStatus, isBoy, checkFirstScreen, checkSecondScreen, checkFirst, checkSecond, oneCategory, selectGenre
 local activityNames = {"Caminar","Correr","Basketbal","Futbol","Beisbol","Nadar","Bicicleta","Gimnasia","Otros","Nada"}
@@ -111,10 +111,32 @@ local function getCalories(age)
 		end		
 	end
 end
+local function turnOnAlert(alert)
+	textAlert.text = "Te falta " .. alert
+	transition.to ( alertGroup,{ alpha = 1, time = 300})
+	transition.to( alertGroup,{ alpha = 0, time =300, delay = 600})
+end
 local function pressButton(event)
 	local tag = event.target.tag
 	local genre = "niño"
+--	print( " " .. heightSlider.value .. " " .. weightSlider.value )
 	if tag == "next" then
+		if textCompleted == "" then
+			turnOnAlert("Nombre")
+			return
+		elseif weightSlider.value== 0 or weightSlider.value == "none" then
+			turnOnAlert("Peso")
+			return
+		elseif ageSlider.value == "none" then
+			turnOnAlert("Edad")
+			return
+		elseif heightSlider.value == 0 or heightSlider.value == "none" then
+			turnOnAlert("Altura")
+			return
+		elseif not selectGenre then
+			turnOnAlert("Género")
+			return
+		end
 		checkFirst = false
 		checkSecond = true
 		nextButton:setEnabled(false)
@@ -369,6 +391,7 @@ local function createScene(sceneGrp)
 	thirdPlane = display.newGroup()
 	pressedButtons = display.newGroup()
 	unpressedButtons = display.newGroup()
+	alertGroup = display.newGroup()
 	
 	local background = display.newImage("images/infoscreen/Background.png")
 	background.x = centerX
@@ -419,7 +442,7 @@ local function createScene(sceneGrp)
 	nextButton.x = centerX + 350
 	nextButton.y = ageSlider.y - 10
 	nextButton.xScale = 0.9
-	nextButton.alpha = 0
+	nextButton.alpha = 1
 	nextButton.tag = "next"
 	firstPlane:insert(nextButton)
 	
@@ -724,6 +747,17 @@ local function createScene(sceneGrp)
 	
 	sceneGrp:insert(thirdPlane)
 	
+	local rect = display.newRoundedRect( centerX, screenTop + 100, 250, 70, 12)
+	rect:setFillColor( 165/255,48/255,1)
+	alertGroup:insert (rect)
+	
+	textAlert = display.newText("Te falta ", rect.x , rect.y, settings.fontName, 28)
+	textAlert:setFillColor (1,1,1)
+	alertGroup:insert (textAlert)
+	alertGroup.alpha = 0
+	sceneGrp:insert(alertGroup)
+	
+	
 end
 
 function game:create(event)
@@ -736,17 +770,17 @@ end
 local function update()
 --	print ( weightSlider.value .. " weight ".. heightSlider.value .. " height " .. ageSlider.value .. " age " )
 	if checkFirst then
-		if checkFirstScreen then
-			if(selectGenre and textCompleted ~= "" and weightSlider.value~= "none" and weightSlider.value ~= 0 and heightSlider.value ~= 0 and ageSlider.value ~= "none" and heightSlider.value ~= "none") then
-				transition.to(nextButton,{alpha = 1, time = 300})
-				checkFirstScreen = false
-			end
-		else
-			if(textCompleted == "" or weightSlider.value== 0 or ageSlider.value == "none" or heightSlider.value == 0) then
-				transition.to(nextButton,{alpha = 0, time = 300})
-				checkFirstScreen = true
-			end
-		end
+--		if checkFirstScreen then
+--			if(selectGenre and textCompleted ~= "" and weightSlider.value~= "none" and weightSlider.value ~= 0 and heightSlider.value ~= 0 and ageSlider.value ~= "none" and heightSlider.value ~= "none") then
+--				transition.to(nextButton,{alpha = 1, time = 300})
+--				checkFirstScreen = false
+--			end
+--		else
+--			if(textCompleted == "" or weightSlider.value== 0 or ageSlider.value == "none" or heightSlider.value == 0) then
+--				transition.to(nextButton,{alpha = 1, time = 300})
+--				checkFirstScreen = true
+--			end
+--		end
 	end
 	if checkSecond then
 		if checkSecondScreen then
