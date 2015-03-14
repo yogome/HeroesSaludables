@@ -167,26 +167,26 @@ end
 local function gotoLevel()
     scene.disableButtons()
 	
-	if showTutorial then
-		uiGroup:insert(buttonGoLevelGroup)
-		dataSaver:setShownTutorial(3)
-		display.remove(tutorialGroup)
-	end
+--	if showTutorial then
+--		uiGroup:insert(buttonGoLevelGroup)
+--		dataSaver:setShownTutorial(3)
+--		display.remove(tutorialGroup)
+--	end
         
 	local totalTime = 300
 	local x, y = buttonPowercubes:localToContent(0,0)
-	for indexPowercube = 1, #uiGroup.powercubes do
-		local currentPowercube = uiGroup.powercubes[indexPowercube]
-        uiGroup:insert(currentPowercube)
-		currentPowercube.alpha = 1
-		currentPowercube.isVisible = true
-        currentPowercube.x = buttonGoLevelGroup.x + buttonGoLevelGroup.contentWidth * 0.20
-        currentPowercube.y = buttonGoLevelGroup.y - buttonGoLevelGroup.contentHeight * 0.20
-		transition.from(currentPowercube, {delay = 75 * indexPowercube, time = totalTime, x = x, y = y + buttonPowercubes.contentWidth * 0.25, alpha = 0, onComplete = function()
-			sound.play("scoreGiven")
-			transition.to(currentPowercube, {time = 100, x = currentPowercube.x + 10, y = currentPowercube.y, alpha = 0})
-		end})
-	end
+--	for indexPowercube = 1, #uiGroup.powercubes do
+--		local currentPowercube = uiGroup.powercubes[indexPowercube]
+--        uiGroup:insert(currentPowercube)
+--		currentPowercube.alpha = 1
+--		currentPowercube.isVisible = true
+--        currentPowercube.x = buttonGoLevelGroup.x + buttonGoLevelGroup.contentWidth * 0.20
+--        currentPowercube.y = buttonGoLevelGroup.y - buttonGoLevelGroup.contentHeight * 0.20
+--		transition.from(currentPowercube, {delay = 75 * indexPowercube, time = totalTime, x = x, y = y + buttonPowercubes.contentWidth * 0.25, alpha = 0, onComplete = function()
+--			sound.play("scoreGiven")
+--			transition.to(currentPowercube, {time = 100, x = currentPowercube.x + 10, y = currentPowercube.y, alpha = 0})
+--		end})
+--	end
 	
     currentPowercubes = currentPowercubes - LEVEL_COST
     powercubeText.text = currentPowercubes
