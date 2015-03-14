@@ -263,7 +263,7 @@ local function destroyGame()
 end
 
 local function retryGame()
-	director.reloadScene("scenes.game.shooter")
+	director.reloadScene("scenes.game.shooter", {params = {worldIndex = worldIndex, levelIndex = levelIndex}})
 end
 
 local function updateEnemies()
