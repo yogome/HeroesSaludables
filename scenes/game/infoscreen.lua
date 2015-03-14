@@ -193,7 +193,7 @@ local function pressButton(event)
 		transition.to(thirdPlane,{x = screenWidth + screenWidth, time = 500,rotation = 90 })
 		transition.to(secondPlane,{delay = 400, x = screenLeft, time = 500,rotation = 0 })
 	elseif tag == "okFinal" then
-		director.gotoScene("scenes.menus.home", { effect = "fade", time = 100, params = nil})
+		director.gotoScene("scenes.menus.home", { effect = "fade", time = 500, params = nil})
 	end
 end
 local function savePlayerInfo(event)

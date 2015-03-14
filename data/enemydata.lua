@@ -22,7 +22,7 @@ local enemies = {
 		viewRadius = 300,
 		onHasTarget = "none",
 		projectileData = {
-			fireFrame = 50,
+			fireFrame = 100,
 			speed = 10,
 			asset = "images/enemies/proyectil-02.png",
 		},
