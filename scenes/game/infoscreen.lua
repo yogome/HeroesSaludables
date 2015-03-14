@@ -338,6 +338,14 @@ local function animateScene()
 	transition.from(firstPlane,{delay = 300, x = screenWidth + screenWidth, time = 500,rotation = 90 })
 	
 end
+local function disableButtons()
+	for i = 1, (#activityBooleans - 1) do
+		pressedButtons[i].alpha = 1
+		unpressedButtons[i].alpha = 0
+		activityBooleans[i] = false
+	end
+	hourSlider:initialize()
+end
 local function pressedActivity(event)
 	sound.play("pop")
 	local index = event.target.index
@@ -353,12 +361,7 @@ local function pressedActivity(event)
 			transition.to(okButton,{ alpha = 1, time=300})
 			transition.to(hourSlider,{alpha = 0, time = 300})
 			transition.to(hourText,{alpha = 0, time = 300})
-			for i = 1, (#activityBooleans - 1) do
-				pressedButtons[i].alpha = 1
-				unpressedButtons[i].alpha = 0
-				activityBooleans[i] = false
-			end
-			hourSlider:initialize()
+			disableButtons()
 		end
 	else
 		pressedButtons[index].alpha = 1
@@ -804,11 +807,18 @@ function game:show( event )
 		
 	if ( phase == "will" ) then
 		oneCategory = false
-		checkSecond = false
+		if checkSecond == nil then
+			checkSecond = false
+		end
+		disableButtons()
 		checkFirst = true
 		checkFirstScreen = true
-		selectGenre = false
-		textCompleted = ""
+		if yogoKid.xScale == 0.5 and yogoGirl.xScale == 0.5 then
+			selectGenre = false
+		end
+		if textCompleted == nil then
+			textCompleted = ""
+		end
 		Runtime:addEventListener("enterFrame", update)
 	    nextButton:setEnabled(true)
 		backButton:setEnabled(true)
