@@ -27,7 +27,7 @@ local function initialize()
 	
 	transition.to(logoSprite, {delay = 2800, time = 800, alpha = 0, transition = easing.inQuad, onComplete = function()
 		sound.stopPitch()
-		director.gotoScene("scenes.menus.home", {effect = "fade", time = 600})
+		director.gotoScene("scenes.game.infoscreen", {effect = "fade", time = 600})
 	end})
 end
 ----------------------------------------------- Module functions 
