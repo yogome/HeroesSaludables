@@ -201,7 +201,7 @@ local function gotoLevel()
 	end
     transition.to(powercubeBar, {width = newSize, time = 1000, onComplete = function()
         isAnimatingBar = false
-		director.gotoScene("scenes.menus.worlds")
+		director.gotoScene("scenes.menus.worlds", {effect = "fade", time = 600})
         --helperDoors.loader("scenes.game.versus", {world = currentWorld, level = currentLevel}, {})
     end})
     
@@ -1250,15 +1250,15 @@ function scene:show( event )
 		animateScene(params)
 		animateShip()
 		
-		if currentPowercubes < 25 then
-			buttonGoLevel:setEnabled(false)
-			buttonGoLevelGroup.button:setFillColor(0.5)
-			buttonGoLevelGroup.cost:setFillColor(0.7,0,0)
-		else
-			buttonGoLevel:setEnabled(true)
-			buttonGoLevelGroup.button:setFillColor(1)
-			buttonGoLevelGroup.cost:setFillColor(1)
-		end
+--		if currentPowercubes < 25 then
+--			buttonGoLevel:setEnabled(false)
+--			buttonGoLevelGroup.button:setFillColor(0.5)
+--			buttonGoLevelGroup.cost:setFillColor(0.7,0,0)
+--		else
+--			buttonGoLevel:setEnabled(true)
+--			buttonGoLevelGroup.button:setFillColor(1)
+--			buttonGoLevelGroup.cost:setFillColor(1)
+--		end
 		
 		
 		
