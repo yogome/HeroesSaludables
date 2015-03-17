@@ -19,7 +19,7 @@ local dataSaver = require("services.datasaver")
 --physics.setDrawMode("hybrid")
 local scene = director.newScene() 
 ----------------------------------------------- Variables
-local buttonBack 
+local buttonPause 
 local camera
 local playerCharacter
 local physicsObjectList
@@ -42,6 +42,7 @@ local lastTwoCoordinates
 local easingFunctions
 local editorPreviewGroup, editorPreviewLine
 local framecounter = 0
+local isPaused
 ----------------------------------------------- Background stars data
 local spaceObjects, objectDespawnX, objectSpawnX, objectDespawnY, objectSpawnY
 local spawnZoneWidth, spawnZoneHeight, halfSpawnZoneWidth, halfSpawnZoneHeight
@@ -263,7 +264,8 @@ local function destroyGame()
 end
 
 local function retryGame()
-	director.reloadScene("scenes.game.shooter", {params = {worldIndex = worldIndex, levelIndex = levelIndex}})
+	director.hideScene("scenes.game.shooter");
+	director.gotoScene("scenes.game.shooter",{params = {worldIndex = worldIndex, levelIndex = levelIndex}})
 end
 
 local function updateEnemies()
@@ -629,8 +631,9 @@ local function createBackground(sceneGroup)
 	backgroundGroup:insert(backgroundContainer)
 end
 
-local function onReleasedBack()
-	director.gotoScene( "scenes.menus.levels", {params = {worldIndex = worldIndex}, effect = "fade", time = 800, } )
+local function onReleasePause()
+	isPaused = true
+	director.showOverlay("scenes.menus.youWin",{params = { effect="fromRight", time=500, screen = "pause", worldIndex=worldIndex, levelIndex=levelIndex}})
 end 
 
 local function testTouch(event)
@@ -841,7 +844,7 @@ end
 
 local function loadEarth()
 	local earthData = worldsData[worldIndex][levelIndex].earth
-	--earth = display.newImage(earthData.asset)
+	earth = display.newImage(earthData.asset)
 	
 	local sheetHappyData = {
 		width = 256,
@@ -1065,6 +1068,8 @@ local function initialize(event)
 	analogCircleBegan.isVisible = false
 	analogCircleMove.isVisible = false
 	
+	isPaused = false
+	
 	isGameover = false
 	isFoodSpawned = {
 		["fruit"] = false,
@@ -1079,8 +1084,8 @@ local function initialize(event)
 		["protein"] = 0,
 	}
 	
-	worldIndex = params.worldIndex or 1
-	levelIndex = params.levelIndex or 1
+	worldIndex = params.worldIndex
+	levelIndex = params.levelIndex
 	
 	collectedFood = {
 		["fruit"] = 0,
@@ -1089,6 +1094,9 @@ local function initialize(event)
 	}
 	
 	cameraEdit = {x = 0, y = 0}
+	
+	analogX = 0
+	analogY = 0
 	
 	editCircle.isVisible = false
 	
@@ -1110,21 +1118,22 @@ local function initialize(event)
 	currentEasingX = easingFunctions[currentEasingXIndex].name
 	currentEasingY = easingFunctions[currentEasingYIndex].name
 	
-	buttonBack.alpha = 0
 end
 
 local function updateGameLoop(event)
-	updateParallax()
-	updateEnemies()
-	showDebugInformation()
-	enterFrame(event)
+	if not isPaused then
+		updateParallax()
+		updateEnemies()
+		showDebugInformation()
+		enterFrame(event)
+	end
 end
 
 local function intro()
 	local function trackNextPlanet(planetIndex)
 		if planetIndex <= #planets then
 			camera:setFocus(planets[planetIndex])
-			introTimer = timer.performWithDelay(500, function()
+			introTimer = timer.performWithDelay(1800, function()
 				trackNextPlanet(planetIndex + 1)
 			end)
 		else
@@ -1144,16 +1153,16 @@ local function intro()
 end
 ----------------------------------------------- Class functions 
 function scene.backAction()
-	robot.press(buttonBack)
+	robot.press(buttonPause)
 	return true
 end  
 
 function scene.enableButtons()
-	buttonBack:setEnabled(true)
+	buttonPause:setEnabled(true)
 end
 
 function scene.disableButtons()
-	buttonBack:setEnabled(false)
+	buttonPause:setEnabled(false)
 end
 
 local function createGame()
@@ -1203,12 +1212,12 @@ function scene:create(event)
 	editCircle.isVisible = false
 	asteroidGroup:insert(editCircle)
 	
-	buttonList.back.onRelease = onReleasedBack
-	buttonBack = widget.newButton(buttonList.back)
-	buttonBack:scale(SCALE_BUTTON_BACK, SCALE_BUTTON_BACK)
-	buttonBack.x = display.screenOriginX + buttonBack.width * SCALE_BUTTON_BACK * 0.5 + PADDING
-	buttonBack.y = display.screenOriginY + buttonBack.height * SCALE_BUTTON_BACK * 0.5 + PADDING
-	sceneGroup:insert(buttonBack)
+	buttonList.pause.onRelease = onReleasePause
+	buttonPause = widget.newButton(buttonList.pause)
+	buttonPause:scale(SCALE_BUTTON_BACK, SCALE_BUTTON_BACK)
+	buttonPause.x = display.contentWidth - buttonPause.contentWidth * 0.5
+	buttonPause.y = display.screenOriginY + buttonPause.contentHeight * 0.5
+	sceneGroup:insert(buttonPause)
 	
 	analogCircleBegan = display.newCircle(0, 0, 30)
 	analogCircleBegan.alpha = 0.2
@@ -1271,6 +1280,7 @@ function scene:hide( event )
 		self.disableButtons()
 	elseif ( phase == "did" ) then
 		if introTimer then timer.cancel(introTimer) end
+		playerCharacter:analog(0, 0)
 		Runtime:removeEventListener("collision", collisionListener)
 		Runtime:removeEventListener("preCollision", preCollisionListener)
 		Runtime:removeEventListener("enterFrame", updateGameLoop)
@@ -1278,6 +1288,22 @@ function scene:hide( event )
 		director.hideOverlay()
 		destroyGame()
 	end
+end
+
+function scene:pause(pauseFlag)
+	
+	
+	if pauseFlag then
+		isPaused = true
+		
+	else
+		
+		isPaused = false
+		director.hideOverlay()
+		
+	end
+	
+	
 end
 
 scene:addEventListener( "create" )
