@@ -199,12 +199,13 @@ local function gotoLevel()
 	if newSize <= 0 then
 		newSize = 0
 	end
-    transition.to(powercubeBar, {width = newSize, time = 1000, onComplete = function()
-        isAnimatingBar = false
-		director.gotoScene("scenes.menus.worlds", {effect = "fade", time = 600})
-        --helperDoors.loader("scenes.game.versus", {world = currentWorld, level = currentLevel}, {})
-    end})
-    
+--    transition.to(powercubeBar, {width = newSize, time = 1000, onComplete = function()
+--        isAnimatingBar = false
+--		
+--        --helperDoors.loader("scenes.game.versus", {world = currentWorld, level = currentLevel}, {})
+--    end})
+
+    director.gotoScene("scenes.menus.worlds", {effect = "fade", time = 600})
     dataSaver:setYogotarType(currentYogotarType)
     dataSaver:setCurrentYogotar(currentSelectedYogotar)
     dataSaver:setPowercubes(currentPowercubes)
@@ -876,12 +877,11 @@ local function createUI()
     
     local buttonInfo = buttonList.back
     buttonInfo.onRelease = function()
-		if parent and parent.playMusic then
-			parent.playMusic()
-		end
+		director.gotoScene("scenes.menus.home",{time = 400, effect = "fade"})
         --director.hideOverlay()
 		--map.updateYogotar(currentYogotarType, currentSelectedYogotar, currentHat)
     end
+	
     buttonBack = widget.newButton(buttonInfo)
     buttonBack.x = display.screenOriginX + (buttonBack.contentWidth * 0.5)
     buttonBack.y = display.screenOriginY + (buttonBack.contentHeight * 0.5)
