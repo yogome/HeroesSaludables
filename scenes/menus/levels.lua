@@ -86,7 +86,8 @@ local function levelIconTapped(event)
 			scene = "scenes.game.labelpuzzle"
 			--scene = "scenes.game.labelquiz"
 		elseif randomTool == 3 then
-			scene = "scenes.game.questionquiz"
+			--scene = "scenes.game.questionquiz"
+			scene = "scenes.game.labelpuzzle"
 		end
 		director.gotoScene(scene, {effect = "fade", time = 500, params = {worldIndex = worldIndex, levelIndex = levelIndex}})
 		--director.gotoScene("scenes.game.shooter", { effect = "zoomInOutFade", time = 600, ,})
@@ -159,6 +160,7 @@ local function createLevels()
 		for index = 1, #worldData do
 			local levelData = worldData[index]
 			local level = display.newGroup()
+			
 			level.x = levelData.x
 			level.y = scrollView.height * 0.5 + levelData.y
 			levelsGroup:insert(level)
@@ -169,6 +171,11 @@ local function createLevels()
 			
 			local levelImage = display.newImage("images/levels/base0"..math.random(1,3)..".png")
 			level:insert(levelImage)
+			
+			local levelText = display.newText(index, 0,0,settings.fontName, 38)
+			levelText.y = -18
+			levelText:setFillColor(0)
+			level:insert(levelText)
 			
 --			local levelNumber = display.newText(string.format("%02d", index),  OFFSET_BASE_NUMBER.x, OFFSET_BASE_NUMBER.y, settings.fontName, SIZE_FONT_LEVEL)
 --			level:insert(levelNumber)
