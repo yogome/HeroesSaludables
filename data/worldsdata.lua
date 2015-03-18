@@ -7,6 +7,8 @@ local screenRight = screenLeft + screenWidth
 local screenTop = display.screenOriginY
 local screenHeight = display.viewableContentHeight - screenTop * 2
 local screenBottom = screenTop + screenHeight 
+local numberOfBacks = 4
+local scale = (display.viewableContentHeight / 768) * 1024 * numberOfBacks
 --------------------------------------
 
 local worldsData = {
@@ -16,7 +18,7 @@ local worldsData = {
 		icon = "images/worlds/Mundos-03.png",
 		--Level 1
 		[1] = {
-			x = 270,
+			x = scale * .067,
 			y = 100,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -66,7 +68,7 @@ local worldsData = {
 		},
 		--Level 2
 		[2] = {
-			x = 470,
+			x = scale * .12,
 			y = -50,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -142,7 +144,7 @@ local worldsData = {
 		},
 		--Level 3
 		[3] = {
-			x = 740,
+			x = scale * .18,
 			y = 80,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -175,7 +177,7 @@ local worldsData = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
 				position = {x = -1300, y = -550},
-				scaleFactor = 0.75
+				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
@@ -195,7 +197,7 @@ local worldsData = {
 		},
 		--Level 4
 		[4] = {
-			x = 910,
+			x = scale * .24,
 			y = -80,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -236,7 +238,7 @@ local worldsData = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
 				position = {x = -700, y = 0},
-				scaleFactor = 0.75
+				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
@@ -274,7 +276,7 @@ local worldsData = {
 		},
 		--Level 5
 		[5] = {
-			x = 1180,
+			x = scale * .3,
 			y = 100,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -312,7 +314,7 @@ local worldsData = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
 				position = {x = 1100, y = -400},
-				scaleFactor = 0.75
+				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
@@ -330,7 +332,7 @@ local worldsData = {
 		},
 		--Level 6
 		[6] = {
-			x = 1410,
+			x = scale * .36,
 			y = -110,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -377,7 +379,7 @@ local worldsData = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
 				position = {x = 1300, y = 0},
-				scaleFactor = 0.75
+				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
@@ -392,7 +394,7 @@ local worldsData = {
 		},
 		--Level 7
 		[7] = {
-			x = 1680,
+			x = scale * .42,
 			y = 100,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -435,7 +437,7 @@ local worldsData = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
 				position = {x = -1200, y = -550},
-				scaleFactor = 0.75
+				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
@@ -450,7 +452,7 @@ local worldsData = {
 		},
 		--Level 8
 		[8] = {
-			x = 1950,
+			x = scale * .48,
 			y = 0,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -483,7 +485,7 @@ local worldsData = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
 				position = {x = -1100, y = 0},
-				scaleFactor = 0.75
+				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
@@ -498,7 +500,7 @@ local worldsData = {
 		},
 		--Level 9
 		[9] = {
-			x = 2220,
+			x = scale * .54,
 			y = 130,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -540,7 +542,7 @@ local worldsData = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
 				position = {x = -1300, y = 0},
-				scaleFactor = 0.75
+				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
@@ -558,7 +560,7 @@ local worldsData = {
 		},
 		--Level 10
 		[10] = {
-			x = 2490,
+			x = scale * .6,
 			y = -130,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
@@ -583,7 +585,7 @@ local worldsData = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
 				position = {x = 1300, y = 0},
-				scaleFactor = 0.75
+				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
@@ -603,7 +605,7 @@ local worldsData = {
 		},
 		--Level 11
 		[11] = {
-			x = 2660,
+			x = scale * .66,
 			y = 100,
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
@@ -636,7 +638,7 @@ local worldsData = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
 				position = {x = -1800, y = -800},
-				scaleFactor = 0.75
+				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
@@ -672,7 +674,7 @@ local worldsData = {
 		},
 		--Level 12
 		[12] = {
-			x = 2930,
+			x = scale * .72,
 			y = -80,
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
@@ -741,7 +743,7 @@ local worldsData = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
 				position = {x = -1800, y = -700},
-				scaleFactor = 0.75
+				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
@@ -761,7 +763,7 @@ local worldsData = {
 		},
 		--Level 13
 		[13] = {
-			x = 3100,
+			x = scale * .78 ,
 			y = 70,
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
@@ -829,7 +831,7 @@ local worldsData = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
 				position = {x = -1400, y = -500},
-				scaleFactor = 0.75
+				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
@@ -857,7 +859,7 @@ local worldsData = {
 		},
 		--Level 14
 		[14] = {
-			x = 3300,
+			x = scale * .86,
 			y = -80,
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
@@ -966,7 +968,7 @@ local worldsData = {
 		},
 		--Level 15
 		[15] = {
-			x = 3560,
+			x = scale * .92,
 			y = 100,
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,

@@ -67,8 +67,9 @@ end
 local function updateGameLoop(event)
 	updateCharacterShip(event.time)
 	local scrollX, scrollY = scrollView:getContentPosition()
-	secondPlane.x = (25200 + scrollX * 0.3) % (scrollView.width ) - scrollView.width * 2
-	thirdPlane.x = (25200 + scrollX * 0.2) % (scrollView.width) - scrollView.width * 2
+	levelsGroup.x = scrollX
+	secondPlane.x = (screenWidth * 2200 + (scrollX - 100) * 0.3) % (scrollView.width ) - scrollView.width * 2
+	thirdPlane.x = (screenWidth * 1800 + (scrollX -  100) * 0.2) % (scrollView.width) - scrollView.width * 2
 end
 
 local function levelIconTapped(event)
@@ -135,10 +136,10 @@ local function createSpaceShip()
 		playerCharacter.y = lastUnlockedLevel.y + OFFSET_Y_PLAYER
 	end
 	
-	scrollView:insert(playerCharacter)
+	levelsGroup:insert(playerCharacter)
 end
 
-local function createLevels()
+local function createLevels(sceneGroup)
 	local worldData = worldsdata[worldIndex]
 	lastUnlockedLevel = nil
 	prevLastUnlockedLevel = nil
@@ -248,7 +249,7 @@ local function createLevels()
 		end
 		levelsGroup:insert(filler)
 		
-		scrollView:insert(levelsGroup)
+		sceneGroup:insert(levelsGroup)
 	end
 end
 
@@ -312,14 +313,10 @@ function scene:create(event)
 		hideBackground = false,
 		verticalScrollDisabled = true,
 		isBounceEnabled = false,
-		listener = function()
-			print(scrollView:getContentPosition())
-			print(playerCharacter.x)
-		end
+
 	}
 	
 	scrollView = widget.newScrollView(scrollViewOptions)
-	sceneGroup:insert(scrollView)
 
 	local backgroundScale = display.viewableContentHeight / HEIGHT_BACKGROUND
 	sizeScroll = 0
@@ -354,6 +351,10 @@ function scene:create(event)
 		thirdPlane:insert(background)
 	end
 	
+	sceneGroup:insert(scrollView)
+	sceneGroup:insert(thirdPlane)
+	sceneGroup:insert(secondPlane)
+			
 	scrollViewButtonGroup = display.newGroup()
 	scrollView:insert(scrollViewButtonGroup)
 	
@@ -367,8 +368,6 @@ function scene:create(event)
 	sceneGroup:insert(buttonBack)
 	
 	createUI(sceneGroup)
-	sceneGroup:insert(secondPlane)
-	sceneGroup:insert(thirdPlane)
 end
 
 function scene:destroy()
@@ -386,7 +385,7 @@ function scene:show( event )
 		physics.start()
 		language = database.config("language") or "en"
 		currentPlayer = players.getCurrent()
-		createLevels()
+		createLevels(sceneGroup)
 		loadLevelData()
 		spaceships.start()
 		createSpaceShip()
