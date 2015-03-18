@@ -62,7 +62,7 @@ local function onCorrectAnswer()
 	titleText.text = "¡Respuesta Correcta!"
 	titleText.size = 42
 	
-	playerCharacter:setAnimationAndIdle("WIN")
+	playerCharacter:setAnimation("WIN")
 	marks.correct.isVisible = true
 	marks.correct:play()
 	
@@ -79,7 +79,7 @@ local function onWrongAnswer()
 						La respuesta correcta es:]]
 	titleText.size = 34
 	
-	playerCharacter:setAnimationAndIdle("LOSE")
+	playerCharacter:setAnimation("LOSE", false)
 	
 	marks.wrong.isVisible = true
 	marks.wrong:play()
@@ -246,7 +246,7 @@ local function gotoNextScreen()
 	end})
 	
 	local function yogotarJump()
-		playerCharacter:setAnimationAndIdle("WIN")
+		playerCharacter:setAnimation("JUMPIN", false)
 		transition.to(playerCharacter.group, {time = 500, transition = easing.inQuint, xScale = 0.8, yScale = 0.8, y = playerCharacter.group.y - 100, onComplete = function()
 			shipGroup:insert(playerCharacter.group)
 			shipGroup:insert(playerShip)
@@ -313,7 +313,7 @@ local function initScreenElements(group)
 	answerRect.isVisible = false
 	answerRect.alpha = 0.7
 	
-	playerCharacter:setAnimation("WALK")
+	playerCharacter:setAnimation("RUN")
 	playerCharacter.group.x = display.screenOriginX - 200
 	playerCharacter.group.y = display.contentCenterY * 1.90
 	playerCharacter.group.xScale = 1
@@ -366,9 +366,19 @@ local function createAnswerSquares(group)
 end
 
 local function createPlayerCharacter(group)
-	local heroSkin = heroList[currentPlayer.heroIndex].skinName
-	playerCharacter = animator.newCharacter(heroSkin, "PLACEHOLDER", "units/hero/skeleton.json", "units/hero/")
-	playerCharacter:setHat(string.format("hat_extra_%02d", (currentPlayer.hatIndex-1)))
+	local heroSkin = heroList[currentPlayer.yogotarType][currentPlayer.yogotarId].skinName
+	
+	local characterData = {
+        skin = heroSkin,
+        skeletonFile = "units/heroes/skeleton.json",
+        imagePath = "units/heroes/",
+        attachmentPath = "units/attachments/",
+        scale = 0.8
+    }
+	
+	playerCharacter = animator.newCharacter(characterData)
+	playerCharacter.setAnimationMix("RUN", "IDLE2")
+	--playerCharacter:setHat(string.format("hat_extra_%02d", (currentPlayer.hatIndex-1)))
 	local playerShadow = display.newCircle(0,-10,40)
 	playerShadow.xScale = 3
 	playerShadow:setFillColor(0)
@@ -461,7 +471,7 @@ function scene:show( event )
 		transition.to(answerPanelGroup, {delay = 300, transition = easing.outBounce, x = display.contentCenterX * 1.50, time=1000})
 		transition.to(questionPanelGroup, {delay = 300, transition = easing.outBounce, y = display.contentCenterY * 0.40, time=1000})
 		transition.to(playerCharacter.group, {x = display.contentCenterX * 0.50, time = 1500, onComplete = function()
-			playerCharacter:setAnimation("IDLE")
+			playerCharacter:setAnimation("IDLE2", true)
 		end})
 		timer.performWithDelay(750, function()
 			sound.play("ironshield")
