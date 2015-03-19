@@ -85,9 +85,9 @@ local function levelIconTapped(event)
 			scene = "scenes.game.labelpuzzle"
 		elseif randomTool == 2 then
 			scene = "scenes.game.labelpuzzle"
-			--scene = "scenes.game.labelquiz"
+--			scene = "scenes.game.labelquiz"
 		elseif randomTool == 3 then
-			--scene = "scenes.game.questionquiz"
+--			scene = "scenes.game.questionquiz"
 			scene = "scenes.game.labelpuzzle"
 		end
 		director.gotoScene(scene, {effect = "fade", time = 500, params = {worldIndex = worldIndex, levelIndex = levelIndex}})

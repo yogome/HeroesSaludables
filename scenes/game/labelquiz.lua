@@ -13,7 +13,6 @@ local scene = director.newScene()
 
 ----------------------------Variables
 local answerPanelGroup, questionPanelGroup, questionPanel
-local piecesGroup
 local panelText, titleText
 local okButton
 local bgShine
@@ -22,12 +21,14 @@ local playerCharacter
 local answerRect
 local marks
 local currentPlayer
-local playerShip, shipGroup
+local puzzleIndex = 2
+local playerShip, shipGroup, puzzlesGroup, iconGroup
 local worldIndex, levelIndex
 
 ----------------------------Constansts
 local SIZE_BACKGROUND = 1024
-local NUMBER_PIECES = 5
+local NUMBER_PIECES = 8
+local numberPuzzles = 10
 local centerX = display.contentCenterX
 local centerY = display.contentCenterY
 local screenLeft = display.screenOriginX
@@ -43,25 +44,27 @@ local mathSin = math.sin
 local mathAbs = math.abs
 local mathRandom = math.random
 -- -------------------------------------------------------------------------------
-
+local iconOrder = { 2, 3, 4, 7, 8, 11, 9, 10, 5, 6 }
 local questions = {
-	[1] = {text = "¿Dónde se ven las proteínas del producto?", answerid = 5}, 
+	[1] = {text = "¿Dónde se ven las proteínas del producto?", answerid = 7}, 
 	[2] = {text = "¿En que parte se indica el sodio del producto?", answerid = 4},
 	[3] = {text = "¿Dónde se indica el tamaño de la porción en el producto?", answerid = 1},
-	[4] = {text = "¿Dónde se indica la cantidad por porción del producto?", answerid = 2},
-	[5] = {text = "¿Dónde se indican las grasas totales en el producto?", answerid = 4},
+	[4] = {text = "¿Dónde se indican las grasas en el producto?", answerid = 3},
+	[5] = {text = "¿Dónde se indican los carbohidratos en el producto?", answerid = 5},
+	[6] = {text = "¿Dónde se indican la fibra dietética en el producto?", answerid = 6},
+	[7] = {text = "¿Dónde se indic el contenido energético en el producto?", answerid = 2},
+	[8] = {text = "¿Dónde se indican los ingredientes del producto?", answerid = 8},
 }
 
 local labelpositions = {
-	[1] = {x = 37, y = -206, answer = 1, centerpos= {x = 36, y = -205, width = 300, height = 85}},	
-	[2] = {x = 37, y = -129, answer = 2, centerpos= {x = 36, y = -130, width = 300, height = 50}},	
-	[3] = {x = 37, y = -78, answer = 3, centerpos= {x = 36, y = -77, width = 300, height = 30}},	
-	[4] = {x = 37, y = 12, answer = 4, centerpos= {x = 36, y = 10, width = 300, height = 110}},	
-	[5] = {x = 37, y = 165 , answer = 5, centerpos= {x = 36, y = 165, width = 300, height = 155}},	
-	[6] = {x = 143, y = 12, answer = 4, centerpos= {x = 36, y = 10, width = 300, height = 110}},
-	[7] = {x = 142, y = 131, answer = 5, centerpos= {x = 36, y = 165, width = 300, height = 155}},	
-	[8] = {x = 36, y = 195, answer = 5, centerpos= {x = 36, y = 165, width = 300, height = 155}},	
-	[9] = {x = 36, y = 230, answer = 5, centerpos= {x = 36, y = 165, width = 300, height = 155}},
+	[1] = {x = 48, y = -177, answer = 1, centerpos= {x = 48, y = -177, width = 320, height = 86}},	
+	[2] = {x = 48, y = -119, answer = 2, centerpos= {x = 48, y = -119, width = 320, height = 36}},	
+	[3] = {x = 48, y = -45, answer = 3, centerpos= {x = 48, y = -45, width = 320, height = 105}},	
+	[4] = {x = 48, y = 20, answer = 4, centerpos= {x = 48, y = 20, width = 320, height = 18}},	
+	[5] = {x = 48, y = 57 , answer = 5, centerpos= {x = 48, y = 57, width = 320, height = 51}},	
+	[6] = {x = 48, y = 108, answer = 6, centerpos= {x = 48, y = 108, width = 320, height = 47}},
+	[7] = {x = 48, y = 143, answer = 7, centerpos= {x = 48, y = 143, width = 320, height = 23}},	
+	[8] = {x = 48, y = 190, answer = 8, centerpos= {x = 48, y = 190, width = 320, height = 71}},	
 }
 
 local function checkAnswers(time)
@@ -175,8 +178,8 @@ local function onTouchPiece(event)
 			
 			answerRect.isVisible = true
 			
-			for indexLabel = 1, #piecesGroup.pieces do
-				piecesGroup.pieces[indexLabel]:removeEventListener("touch", onTouchPiece)
+			for indexLabel = 1, #puzzlesGroup[puzzleIndex].pieces do
+				puzzlesGroup[puzzleIndex].pieces[indexLabel]:removeEventListener("touch", onTouchPiece)
 			end
 			
 			local selectedLabel = labelpositions[label.id]
@@ -234,15 +237,22 @@ local function createBackground(group)
 end
 
 local function createPuzzlePieces(group)
-	piecesGroup = display.newGroup()
-	piecesGroup.pieces = {}
-	for indexPiece = 1, NUMBER_PIECES do
-		local piece = display.newImage("images/label/btn-0"..indexPiece..".png")
-		piece.id = indexPiece
-		piecesGroup.pieces[indexPiece] = piece
-		piecesGroup:insert(piece)
+	puzzlesGroup = display.newGroup()
+	local piecesGroup
+	for piece = 1, numberPuzzles do 
+		piecesGroup = nil
+		piecesGroup = display.newGroup()
+		piecesGroup.pieces = {}
+		for indexPiece = 1, NUMBER_PIECES do
+			local piece = display.newImage("images/label/puzzlelabel/" ..piece .. "/"..indexPiece..".png")
+			piece.id = indexPiece
+			piecesGroup.pieces[indexPiece] = piece
+			piecesGroup:insert(piece)
+		end
+		piecesGroup.alpha = 0
+		puzzlesGroup:insert(piecesGroup)
 	end
-	group:insert(piecesGroup)
+	group:insert(puzzlesGroup)
 end
 
 local function gotoNextScreen()
@@ -255,9 +265,9 @@ local function gotoNextScreen()
 	end)
 	
 	transition.to(bgShine, {alpha = 0, time = 500})
-	transition.to(piecesGroup, {alpha = 0, time = 500})
+	transition.to(puzzlesGroup[puzzleIndex], {alpha = 0, time = 500})
 	transition.to(panelText, {alpha = 0, time = 500})
-	transition.to(answerPanelGroup, {delay = 600, transition = easing.inBack, x = display.viewableContentWidth + answerPanelGroup.width, time=1000})
+	transition.to(answerPanelGroup, {delay = 600, transition = easing.inBack, x = screenRight - 150, time=1000})
 	transition.to(questionPanelGroup, {delay = 600, transition = easing.inBack, y = display.screenOriginY - questionPanelGroup.height, time=1000})
 	transition.to(answerRect, {alpha = 0, transition = easing.inQuad, time = 1000})
 	transition.to(okButton, {delay = 600, transition = easing.inBack, y = display.viewableContentHeight + okButton.width, time = 1000})
@@ -284,7 +294,7 @@ end
 local function initScreenElements(group)
 	
 	answerPanelGroup.x = display.viewableContentWidth + answerPanelGroup.width
-	answerPanelGroup.y = display.contentCenterY * 1.15
+	answerPanelGroup.y = centerY
 	
 	bgShine.isVisible = false
 	bgShine.alpha = 0
@@ -309,26 +319,26 @@ local function initScreenElements(group)
 	okButton.x = display.contentCenterX
 	okButton.y = display.contentCenterY * 1.80
 	
-	for indexPiece = 1, #piecesGroup.pieces do
-		local currentPiece = piecesGroup.pieces[indexPiece]
+	for indexPiece = 1, #puzzlesGroup[puzzleIndex].pieces do
+		local currentPiece = puzzlesGroup[puzzleIndex].pieces[indexPiece]
 		currentPiece.x = labelpositions[indexPiece].x
 		currentPiece.y = labelpositions[indexPiece].y
-		currentPiece.xScale = 1.25
-		currentPiece.yScale = 1.25
+		currentPiece.xScale = 1.06
+		currentPiece.yScale = 1.06
 		currentPiece.isCorrect = false
 		currentPiece.scaledUp = false
 		currentPiece:addEventListener("touch", onTouchPiece)
 	end
 	
-	piecesGroup.isVisible = true
-	piecesGroup.alpha = 1
+--	puzzlesGroup[puzzleIndex].isVisible = true
+	puzzlesGroup[puzzleIndex].alpha = 1
 	
 	answerRect.isVisible = false
 	answerRect.alpha = 0.7
 	
 	playerCharacter:setAnimation("WALK")
 	playerCharacter.group.x = display.screenOriginX - 200
-	playerCharacter.group.y = display.contentCenterY * 1.90
+	playerCharacter.group.y = screenBottom - 100
 	playerCharacter.group.xScale = 1
 	playerCharacter.group.yScale = 1
 	group:insert(playerCharacter.group)
@@ -367,6 +377,17 @@ function scene:create( event )
 
     local sceneGroup = self.view
 	
+	iconGroup = display.newGroup()
+    for i = 1, #iconOrder do
+		local iconi = display.newImage("images/label/icons/".. iconOrder[i] .. ".png")
+		iconi.x = centerX - 50
+		iconi.y = screenTop + 130
+		iconi.xScale = 0.6
+		iconi.yScale = 0.6
+		iconi.alpha = 0
+		iconGroup:insert(iconi)
+	end
+    
 	createBackground(sceneGroup)
 	
 	currentPlayer = players.getCurrent()
@@ -401,6 +422,8 @@ function scene:create( event )
 	sceneGroup:insert(okButton)
 	
 	local answerPanel = display.newImage("images/label/panel_03.png")
+--	answerPanel.x = screenRight - 100
+--	answerPanel.y = centerY
 	answerPanelGroup:insert(answerPanel)
 	
 	createPuzzlePieces(answerPanelGroup)
@@ -428,12 +451,14 @@ function scene:show( event )
 	local params = event.params or {}
 	worldIndex = params.worldIndex
 	levelIndex = params.levelIndex
-
     if ( phase == "will" ) then
+		puzzleIndex = mathRandom(10)
+		print("puzzle Index " .. puzzleIndex)
 		initScreenElements(sceneGroup)
 		Runtime:addEventListener("enterFrame", updateGameloop)
 		
 	elseif ( phase == "did" ) then
+		transition.to(iconGroup[puzzleIndex],{ delay = 300, alpha = 1, time = 600})
 		transition.to(answerPanelGroup, {delay = 300, transition = easing.outBounce, x = display.contentCenterX * 1.50, time=1000})
 		transition.to(questionPanelGroup, {delay = 300, transition = easing.outBounce, y = display.contentCenterY * 0.40, time=1000})
 		transition.to(playerCharacter.group, {x = display.contentCenterX * 0.50, time = 1500, onComplete = function()
@@ -455,7 +480,8 @@ function scene:hide( event )
 		
 		
 	elseif ( phase == "did" ) then
-		
+		iconGroup[puzzleIndex].alpha = 0
+		puzzlesGroup[puzzleIndex].alpha = 0
 		Runtime:removeEventListener("enterFrame", updateGameloop)
     end
 end
