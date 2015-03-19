@@ -43,6 +43,8 @@ local easingFunctions
 local editorPreviewGroup, editorPreviewLine
 local framecounter = 0
 local isPaused
+local distanceLines 
+local planetIndicators
 ----------------------------------------------- Background stars data
 local spaceObjects, objectDespawnX, objectSpawnX, objectDespawnY, objectSpawnY
 local spawnZoneWidth, spawnZoneHeight, halfSpawnZoneWidth, halfSpawnZoneHeight
@@ -447,7 +449,7 @@ local function collectBubble(earth)
 		end})
 		local foodType = playerCharacter.item.type
 		collectedFood[foodType] = collectedFood[foodType] + 1
-		foodTexts[foodType].text = collectedFood[foodType].."/"..targetAmounts[foodType]
+		--foodTexts[foodType].text = collectedFood[foodType].."/"..targetAmounts[foodType]
 		
 		checkAmounts()
 	end
@@ -520,6 +522,7 @@ local function checkPlayerCollision(player, otherObject, element1, element2)
 		elseif otherObject.name == "earth" then
 			collectBubble(otherObject)
 		elseif otherObject.name == "enemy" then
+			print("enemy hit")
 			if not playerCharacter.isDamaged then
 				if element2 == 2 then
 					damagePlayer()
@@ -553,7 +556,6 @@ local function collisionListener(event)
 			removeEnemyTarget(event.object1, event.object2)
 			removeEnemyTarget(event.object2, event.object1)
 		end
-		
 	end
 end
 
@@ -960,50 +962,6 @@ local function createHUD(sceneView)
 	hudGroup.x = display.screenOriginX
 	hudGroup.y = display.screenOriginY
 	
-	local foodContainer = display.newGroup()
-	foodContainer.x = display.screenOriginX + SIZE_FOOD_CONTAINER.width * 0.5 + PADDING
-	foodContainer.y = display.contentCenterY
-	hudGroup:insert(foodContainer)
-	
-	local containerBG =  display.newRoundedRect( 0, 0, SIZE_FOOD_CONTAINER.width, SIZE_FOOD_CONTAINER.height, 30)
-	containerBG.strokeWidth = 3
-	containerBG:setFillColor( 0.5, 0.5, 0.5, 0.5 )
-	containerBG:setStrokeColor( 0.5,0,0 )
-	foodContainer:insert(containerBG)
-	
-	local foods = {
-		[1] = {image = "images/food/strawberry.png", type = "fruit"},
-		[2] = {image = "images/food/carrot.png", type = "vegetable"},
-		[3] = {image = "images/food/meat.png", type = "protein"},
-	}
-	
-	for index = 1, #foods do
-		local foodIcon = display.newImage(foods[index].image)
-		foodIcon:scale(0.5,0.5)
-		foodIcon.x = -containerBG.width * 0.25
-		foodIcon.y = -containerBG.height * 0.5 + (containerBG.height / (#foods + 1)) * index
-		foodContainer:insert(foodIcon)
-		
-		local targetAmount = levelData.objectives[foods[index].type]
-		targetAmounts[foods[index].type] = targetAmount
-		
-		local foodAmountOptions = {
-			x = containerBG.width * 0,
-			y = foodIcon.y,
-			font = settings.fontName,
-			fontSize = 32,
-			width = 100,
-			text = "0/"..targetAmount,
-			align = "left",
-		}
-
-		local foodAmount = display.newText(foodAmountOptions)
-		foodAmount.anchorX = 0
-		foodContainer:insert(foodAmount)
-		
-		foodTexts[foods[index].type] = foodAmount
-	end
-	
 	heartIndicator = display.newGroup()
 	heartIndicator.currentHearts = NUMBER_HEARTS
 	heartIndicator.hearts = {}
@@ -1120,12 +1078,82 @@ local function initialize(event)
 	
 end
 
+local function updateDistanceVector()
+		
+		if not isGameover then
+			for indexLine = 1, #planets do
+				display.remove(distanceLines[indexLine])
+				
+				
+				
+				local currentPlanet = planets[indexLine]
+				
+				local diffX =(-camera.scrollX + display.contentWidth * 0.48) - currentPlanet.x
+				local diffY =(-camera.scrollY + display.contentHeight * 0.48) - currentPlanet.y
+				
+				--camera:toPoint(currentPlanet.x,currentPlanet.y)
+				local limitX = display.contentWidth * 0.48
+				local limitY = display.contentHeight * 0.48				
+				
+				--print(camera.scrollX, camera.scrollY)
+				if diffX < limitX and diffX > -limitX and diffY < limitY and diffY > -limitY then
+					planetIndicators[indexLine].x = currentPlanet.x
+					planetIndicators[indexLine].y = currentPlanet.y
+				else
+					
+					if diffX >= limitX then
+						planetIndicators[indexLine].x = (-camera.scrollX + display.contentWidth * 0.48) - limitX
+					end
+					
+					if diffX <= -limitX then
+						planetIndicators[indexLine].x = (-camera.scrollX + display.contentWidth * 0.48) + limitX
+					end
+					
+					if diffY >= limitY then
+						planetIndicators[indexLine].y = (-camera.scrollY + display.contentHeight * 0.48) - limitY
+					end
+					
+					if diffY <= -limitY then
+						planetIndicators[indexLine].y = (-camera.scrollY + display.contentHeight * 0.48) + limitY
+					end
+
+				end
+				
+				
+--				if diffX <= limitX then
+--					planetIndicators[indexLine].x = (-camera.scrollX + display.contentWidth * 0.5) + limitX
+--				end
+--				
+--				if diffX >= -limitX then
+--					planetIndicators[indexLine].x = -((-camera.scrollX + display.contentWidth * 0.5) + limitX)
+--				end
+											
+				--planetIndicators[indexLine].x = currentPlanet.x
+				--planetIndicators[indexLine].y = currentPlanet.y
+				
+				
+				
+				
+				local distance = (diffX * diffX) + (diffY * diffY)
+				local distance = squareRoot(distance)
+				
+--				local line = display.newLine(-camera.scrollX + display.contentWidth * 0.5, -camera.scrollY + display.contentHeight * 0.5, currentPlanet.x, currentPlanet.y)
+--				line.strokeWidth = 3
+--				distanceLines[indexLine] = line
+--				camera:add(line)
+			end
+		end
+	
+	
+end
+
 local function updateGameLoop(event)
 	if not isPaused then
 		updateParallax()
 		updateEnemies()
 		showDebugInformation()
 		enterFrame(event)
+		updateDistanceVector()
 	end
 end
 
@@ -1260,6 +1288,7 @@ function scene:show( event )
     local phase = event.phase
 
     if ( phase == "will" ) then
+		
 		initialize(event)
 		createGame()
 		setUpCamera()
@@ -1267,6 +1296,17 @@ function scene:show( event )
 		Runtime:addEventListener("enterFrame", updateGameLoop)
 		Runtime:addEventListener( "key", onKeyEvent )
 		self.disableButtons()
+		
+		distanceLines = {}
+		planetIndicators = {}
+		
+		for indexPlanet = 1, #planets do			
+			local circle = display.newCircle(planets[indexPlanet].x, planets[indexPlanet].y, 30)
+			planetIndicators[indexPlanet] = circle
+			circle:setFillColor(1)
+			camera:add(circle)
+		end
+		
 	elseif ( phase == "did" ) then
 		intro()
 	end
@@ -1295,12 +1335,11 @@ function scene:pause(pauseFlag)
 	
 	if pauseFlag then
 		isPaused = true
-		
+		physics.pause()
 	else
-		
 		isPaused = false
 		director.hideOverlay()
-		
+		physics.start()
 	end
 	
 	
