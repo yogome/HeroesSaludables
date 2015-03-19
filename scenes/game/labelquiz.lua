@@ -12,23 +12,23 @@ local sound = require("libs.helpers.sound")
 local scene = director.newScene()
 
 ----------------------------Variables
-local answerPanelGroup, questionPanelGroup, questionPanel
+local answerPanelGroup, questionPanelGroup, questionPanel, frontAnswerPanel
 local panelText, titleText
 local okButton
 local bgShine
 local currentQuestion
 local playerCharacter
-local answerRect
+local answerRect, frontAnswerRect, boolIndex
 local marks
 local currentPlayer
 local puzzleIndex = 2
-local playerShip, shipGroup, puzzlesGroup, iconGroup
+local playerShip, shipGroup, puzzlesGroup, iconGroup, frontPuzzlesGroup
 local worldIndex, levelIndex
 
 ----------------------------Constansts
 local SIZE_BACKGROUND = 1024
 local NUMBER_PIECES = 8
-local numberPuzzles = 10
+local numberPuzzles = 12
 local centerX = display.contentCenterX
 local centerY = display.contentCenterY
 local screenLeft = display.screenOriginX
@@ -37,14 +37,13 @@ local screenRight = screenLeft + screenWidth
 local screenTop = display.screenOriginY
 local screenHeight = display.viewableContentHeight - screenTop * 2
 local screenBottom = screenTop + screenHeight 
-local mRandom = math.random 
 ----------------------------Cached Functions
 local mathSqrt = math.sqrt
 local mathSin = math.sin
 local mathAbs = math.abs
 local mathRandom = math.random
 -- -------------------------------------------------------------------------------
-local iconOrder = { 2, 3, 4, 7, 8, 11, 9, 10, 5, 6 }
+local iconOrder = { 2, 3, 4, 7, 8, 11, 9, 10, 5, 6, 12, 13 }
 local questions = {
 	[1] = {text = "¿Dónde se ven las proteínas del producto?", answerid = 7}, 
 	[2] = {text = "¿En que parte se indica el sodio del producto?", answerid = 4},
@@ -52,8 +51,16 @@ local questions = {
 	[4] = {text = "¿Dónde se indican las grasas en el producto?", answerid = 3},
 	[5] = {text = "¿Dónde se indican los carbohidratos en el producto?", answerid = 5},
 	[6] = {text = "¿Dónde se indican la fibra dietética en el producto?", answerid = 6},
-	[7] = {text = "¿Dónde se indic el contenido energético en el producto?", answerid = 2},
+	[7] = {text = "¿Dónde se indica el contenido energético en el producto?", answerid = 2},
 	[8] = {text = "¿Dónde se indican los ingredientes del producto?", answerid = 8},
+}
+local frontQuestions = {
+	[1] = {text = "¿Dónde se ven las grasas saturadas del producto?", answerid = 1}, 
+	[2] = {text = "¿En que parte se indican otras grasas del producto?", answerid = 2},
+	[3] = {text = "¿Dónde se indican las azúcares totales en el producto?", answerid = 3},
+	[4] = {text = "¿Dónde se indica la energía por porción del producto?", answerid = 4},
+	[5] = {text = "¿Dónde se indica la energía en el producto?", answerid = 5},
+	[6] = {text = "¿Dónde se indica el sodio en el producto?", answerid = 6},
 }
 
 local labelpositions = {
@@ -66,17 +73,29 @@ local labelpositions = {
 	[7] = {x = 48, y = 143, answer = 7, centerpos= {x = 48, y = 143, width = 320, height = 23}},	
 	[8] = {x = 48, y = 190, answer = 8, centerpos= {x = 48, y = 190, width = 320, height = 71}},	
 }
+local frontlabelpositions = {
+	[1] = {x = -266, y = -22, answer = 1, centerpos= {x = -266, y = -22, width = 100, height = 120}},	
+	[2] = {x = -161, y = -22, answer = 2, centerpos= {x = -161, y = -22, width = 100, height = 120}},	
+	[3] = {x = -54, y = -22,  answer = 3, centerpos= {x = -54, y = -22,  width = 100, height = 120}},	
+	[4] = {x = 271, y = -22,   answer = 4, centerpos= {x = 271, y = -22, width = 100, height = 120}},	
+	[5] = {x = 161, y = -22,  answer = 5, centerpos= {x = 161, y = -22,  width = 100, height = 120}},	
+	[6] = {x = 53, y = -22,  answer = 6, centerpos= {x = 53, y = -22,    width = 100, height = 120}},
+}
 
-local function checkAnswers(time)
-	if answerRect.isVisible then
+local function checkAnswers(time, rect)
+	if rect.isVisible then
 		local scale = mathAbs(mathSin(time * 0.005)) * 0.05
-		answerRect.xScale = (scale + 1)
-		answerRect.yScale = (scale + 1)
+		rect.xScale = (scale + 1)
+		rect.yScale = (scale + 1)
 	end
 end
 
 local function updateGameloop(event)
-	checkAnswers(event.time)
+	if boolIndex then
+		checkAnswers(event.time, answerRect)
+	else
+		checkAnswers(event.time, frontAnswerRect)
+	end
 	playerCharacter.enterFrame()
 end
 
@@ -175,28 +194,43 @@ local function onTouchPiece(event)
 		elseif "ended" == phase or "cancelled" == phase then
 			display.getCurrentStage():setFocus( nil )
 			label.isFocus = false
-			
-			answerRect.isVisible = true
-			
-			for indexLabel = 1, #puzzlesGroup[puzzleIndex].pieces do
-				puzzlesGroup[puzzleIndex].pieces[indexLabel]:removeEventListener("touch", onTouchPiece)
+			if boolIndex then
+				answerRect.isVisible = true
+			else
+				frontAnswerRect.isVisible = true
 			end
-			
-			local selectedLabel = labelpositions[label.id]
+			if boolIndex then
+				for indexLabel = 1, #puzzlesGroup[puzzleIndex].pieces do
+					puzzlesGroup[puzzleIndex].pieces[indexLabel]:removeEventListener("touch", onTouchPiece)
+				end
+			else
+				for indexLabel = 1, #frontPuzzlesGroup[puzzleIndex - 10].pieces do
+					frontPuzzlesGroup[puzzleIndex - 10].pieces[indexLabel]:removeEventListener("touch", onTouchPiece)
+				end
+			end
+			local selectedLabel, rect, correctAnswer
+			if boolIndex then
+				selectedLabel = labelpositions[label.id]
+				rect = answerRect
+				correctAnswer = labelpositions[currentQuestion.answerid]
+			else
+				selectedLabel = frontlabelpositions[label.id]
+				rect = frontAnswerRect
+				correctAnswer = frontlabelpositions[currentQuestion.answerid]
+			end
 			if selectedLabel.answer == currentQuestion.answerid then
-				answerRect.x = selectedLabel.centerpos.x
-				answerRect.y = selectedLabel.centerpos.y
-				answerRect:setStrokeColor(0, 0.5, 0)
-				answerRect.width = selectedLabel.centerpos.width
-				answerRect.height = selectedLabel.centerpos.height
+				rect.x = selectedLabel.centerpos.x
+				rect.y = selectedLabel.centerpos.y
+				rect:setStrokeColor(0, 0.5, 0)
+				rect.width = selectedLabel.centerpos.width
+				rect.height = selectedLabel.centerpos.height
 				onCorrectAnswer()
 			else
-				local correctAnswer = labelpositions[currentQuestion.answerid]
-				answerRect.width = correctAnswer.centerpos.width
-				answerRect.height = correctAnswer.centerpos.height
-				answerRect:setStrokeColor(0.5, 0, 0)
-				answerRect.x = correctAnswer.centerpos.x
-				answerRect.y = correctAnswer.centerpos.y
+				rect.width = correctAnswer.centerpos.width
+				rect.height = correctAnswer.centerpos.height
+				rect:setStrokeColor(0.5, 0, 0)
+				rect.x = correctAnswer.centerpos.x
+				rect.y = correctAnswer.centerpos.y
 				onWrongAnswer()
 			end
 		end
@@ -235,11 +269,28 @@ local function createBackground(group)
     background.height = screenHeight
     group:insert(background)
 end
-
+local function createFrontPieces(group)
+	frontPuzzlesGroup = display.newGroup()
+	local piecesGroup
+	for piece = 11, numberPuzzles do 
+		piecesGroup = nil
+		piecesGroup = display.newGroup()
+		piecesGroup.pieces = {}
+		for indexPiece = 1, NUMBER_PIECES - 2 do
+			local piece = display.newImage("images/label/pieces/" .. piece + 1 .. "/piece"..indexPiece..".png")
+			piece.id = indexPiece
+			piecesGroup.pieces[indexPiece] = piece
+			piecesGroup:insert(piece)
+		end
+		piecesGroup.alpha = 0
+		frontPuzzlesGroup:insert(piecesGroup)
+	end
+	group:insert(frontPuzzlesGroup)
+end
 local function createPuzzlePieces(group)
 	puzzlesGroup = display.newGroup()
 	local piecesGroup
-	for piece = 1, numberPuzzles do 
+	for piece = 1, numberPuzzles - 2 do 
 		piecesGroup = nil
 		piecesGroup = display.newGroup()
 		piecesGroup.pieces = {}
@@ -265,11 +316,19 @@ local function gotoNextScreen()
 	end)
 	
 	transition.to(bgShine, {alpha = 0, time = 500})
-	transition.to(puzzlesGroup[puzzleIndex], {alpha = 0, time = 500})
 	transition.to(panelText, {alpha = 0, time = 500})
-	transition.to(answerPanelGroup, {delay = 600, transition = easing.inBack, x = screenRight - 150, time=1000})
+	transition.to(iconGroup[puzzleIndex],{ alpha = 0, time = 400})
+	if boolIndex then
+		transition.to(puzzlesGroup[puzzleIndex], {alpha = 0, time = 500})
+		transition.to(answerPanelGroup, {delay = 600, transition = easing.inBack, x = screenRight + screenWidth, time=1000})
+		transition.to(answerRect, {alpha = 0, transition = easing.inQuad, time = 1000})
+	else
+		transition.to(frontPuzzlesGroup[puzzleIndex - 10], {alpha = 0, time = 500})
+		transition.to(frontAnswerPanel, {delay = 600, transition = easing.inBack, x = screenRight + screenRight, time=1000})
+		transition.to(frontAnswerRect, {alpha = 0, transition = easing.inQuad, time = 1000})
+	end
+	
 	transition.to(questionPanelGroup, {delay = 600, transition = easing.inBack, y = display.screenOriginY - questionPanelGroup.height, time=1000})
-	transition.to(answerRect, {alpha = 0, transition = easing.inQuad, time = 1000})
 	transition.to(okButton, {delay = 600, transition = easing.inBack, y = display.viewableContentHeight + okButton.width, time = 1000})
 	transition.to(shipGroup, {delay = 1300, transition = easing.inQuad, x = display.viewableContentWidth + 500, time = 1500, onComplete = function()
 	--	transition.to(shipGroup, {delay = 1500, transition = easing.inQuad, x = display.contentCenterX, time = 1500, onComplete = function()
@@ -296,6 +355,9 @@ local function initScreenElements(group)
 	answerPanelGroup.x = display.viewableContentWidth + answerPanelGroup.width
 	answerPanelGroup.y = centerY
 	
+	frontAnswerPanel.x = display.viewableContentWidth + frontAnswerPanel.width
+	frontAnswerPanel.y = centerY
+	
 	bgShine.isVisible = false
 	bgShine.alpha = 0
 	bgShine.x = display.contentCenterX * 1.50
@@ -305,9 +367,17 @@ local function initScreenElements(group)
 	questionPanelGroup.x = display.contentCenterX * 0.50
 	questionPanelGroup.y = display.screenOriginY - questionPanel.height
 	
-	local randomQuestion = mathRandom(1, #questions)
+	local randIndex = #questions
+	if not boolIndex then
+		randIndex = #frontQuestions
+	end
+	local randomQuestion = mathRandom(1, randIndex)
 	
 	currentQuestion = questions[randomQuestion]
+	if not boolIndex then
+		currentQuestion = frontQuestions[randomQuestion]
+	end
+	
 	titleText.text = currentQuestion.text
 	titleText.fontSize = 28
 	titleText.x = questionPanel.x
@@ -319,22 +389,46 @@ local function initScreenElements(group)
 	okButton.x = display.contentCenterX
 	okButton.y = display.contentCenterY * 1.80
 	
-	for indexPiece = 1, #puzzlesGroup[puzzleIndex].pieces do
-		local currentPiece = puzzlesGroup[puzzleIndex].pieces[indexPiece]
-		currentPiece.x = labelpositions[indexPiece].x
-		currentPiece.y = labelpositions[indexPiece].y
-		currentPiece.xScale = 1.06
-		currentPiece.yScale = 1.06
-		currentPiece.isCorrect = false
-		currentPiece.scaledUp = false
-		currentPiece:addEventListener("touch", onTouchPiece)
+	local pzScale = 1.06
+	local currentPiece 
+	if boolIndex then
+		for indexPiece = 1, #puzzlesGroup[puzzleIndex].pieces do
+			currentPiece = puzzlesGroup[puzzleIndex].pieces[indexPiece]
+			currentPiece.x = labelpositions[indexPiece].x
+			currentPiece.y = labelpositions[indexPiece].y
+			currentPiece.xScale = pzScale
+			currentPiece.yScale = pzScale
+			currentPiece.isCorrect = false
+			currentPiece.scaledUp = false
+			currentPiece:addEventListener("touch", onTouchPiece)
+		end
+	else
+		for indexPiece = 1, #frontPuzzlesGroup[puzzleIndex - 10].pieces do
+			currentPiece = frontPuzzlesGroup[puzzleIndex - 10].pieces[indexPiece]
+			currentPiece.x = frontlabelpositions[indexPiece].x
+			currentPiece.y = frontlabelpositions[indexPiece].y
+			pzScale = 0.9
+			currentPiece.xScale = pzScale
+			currentPiece.yScale = pzScale
+			currentPiece.isCorrect = false
+			currentPiece.scaledUp = false
+			currentPiece:addEventListener("touch", onTouchPiece)
+		end
 	end
 	
---	puzzlesGroup[puzzleIndex].isVisible = true
-	puzzlesGroup[puzzleIndex].alpha = 1
+	if boolIndex then
+		puzzlesGroup[puzzleIndex].alpha = 1
+	else
+		frontPuzzlesGroup[puzzleIndex - 10].alpha = 1
+	end
 	
-	answerRect.isVisible = false
-	answerRect.alpha = 0.7
+	if boolIndex  then
+		answerRect.isVisible = false
+		answerRect.alpha = 0.7
+	else
+		frontAnswerRect.isVisible = false
+		frontAnswerRect.alpha = 0.7
+	end
 	
 	playerCharacter:setAnimation("WALK")
 	playerCharacter.group.x = display.screenOriginX - 200
@@ -380,7 +474,7 @@ function scene:create( event )
 	iconGroup = display.newGroup()
     for i = 1, #iconOrder do
 		local iconi = display.newImage("images/label/icons/".. iconOrder[i] .. ".png")
-		iconi.x = centerX - 50
+		iconi.x = centerX - 30
 		iconi.y = screenTop + 130
 		iconi.xScale = 0.6
 		iconi.yScale = 0.6
@@ -394,6 +488,9 @@ function scene:create( event )
 	
 	answerPanelGroup = display.newGroup()
 	sceneGroup:insert(answerPanelGroup)
+	
+	frontAnswerPanel = display.newGroup()
+	sceneGroup:insert(frontAnswerPanel)
 	
 	bgShine = display.newImage("images/backgrounds/shine.png")
 	sceneGroup:insert(bgShine)
@@ -422,17 +519,25 @@ function scene:create( event )
 	sceneGroup:insert(okButton)
 	
 	local answerPanel = display.newImage("images/label/panel_03.png")
---	answerPanel.x = screenRight - 100
---	answerPanel.y = centerY
 	answerPanelGroup:insert(answerPanel)
 	
+	local frontAnswer = display.newImage("images/label/panels/12.png")
+	frontAnswerPanel:insert(frontAnswer)
+	
 	createPuzzlePieces(answerPanelGroup)
+	createFrontPieces(frontAnswerPanel)
 	
 	answerRect = display.newRect(0,0,0,0)
 	answerRect.strokeWidth = 10
 	answerRect:setStrokeColor(0)
 	answerRect:setFillColor(0,0,0,0)
 	answerPanelGroup:insert(answerRect)
+	
+	frontAnswerRect = display.newRoundedRect(0,0,0,0,12)
+	frontAnswerRect.strokeWidth = 10
+	frontAnswerRect:setStrokeColor(0)
+	frontAnswerRect:setFillColor(0,0,0,0)
+	frontAnswerPanel:insert(frontAnswerRect)
 	
 	createPlayerCharacter(sceneGroup)
 	
@@ -452,16 +557,22 @@ function scene:show( event )
 	worldIndex = params.worldIndex
 	levelIndex = params.levelIndex
     if ( phase == "will" ) then
-		puzzleIndex = mathRandom(10)
+		puzzleIndex = mathRandom(numberPuzzles)
+--		puzzleIndex = 11
+		boolIndex = puzzleIndex < 11
 		print("puzzle Index " .. puzzleIndex)
 		initScreenElements(sceneGroup)
 		Runtime:addEventListener("enterFrame", updateGameloop)
 		
 	elseif ( phase == "did" ) then
 		transition.to(iconGroup[puzzleIndex],{ delay = 300, alpha = 1, time = 600})
-		transition.to(answerPanelGroup, {delay = 300, transition = easing.outBounce, x = display.contentCenterX * 1.50, time=1000})
+		if boolIndex then
+			transition.to(answerPanelGroup, {delay = 300, transition = easing.outBounce, x = display.contentCenterX * 1.50, time=1000})
+		else
+			transition.to(frontAnswerPanel, {delay = 300, transition = easing.outBounce, x = screenRight - 450, time=1000})
+		end
 		transition.to(questionPanelGroup, {delay = 300, transition = easing.outBounce, y = display.contentCenterY * 0.40, time=1000})
-		transition.to(playerCharacter.group, {x = display.contentCenterX * 0.50, time = 1500, onComplete = function()
+		transition.to(playerCharacter.group, {x = display.contentCenterX * 0.40, time = 1500, onComplete = function()
 			playerCharacter:setAnimation("IDLE")
 		end})
 		timer.performWithDelay(750, function()
@@ -481,7 +592,11 @@ function scene:hide( event )
 		
 	elseif ( phase == "did" ) then
 		iconGroup[puzzleIndex].alpha = 0
-		puzzlesGroup[puzzleIndex].alpha = 0
+		if boolIndex then
+			puzzlesGroup[puzzleIndex].alpha = 0
+		else
+			frontPuzzlesGroup[puzzleIndex - 10].alpha = 0
+		end
 		Runtime:removeEventListener("enterFrame", updateGameloop)
     end
 end

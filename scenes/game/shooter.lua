@@ -1084,8 +1084,8 @@ local function initialize(event)
 		["protein"] = 0,
 	}
 	
-	worldIndex = params.worldIndex
-	levelIndex = params.levelIndex
+	worldIndex = params.worldIndex or 1
+	levelIndex = params.levelIndex or 1
 	
 	collectedFood = {
 		["fruit"] = 0,

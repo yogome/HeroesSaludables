@@ -8,6 +8,7 @@ local players = require("models.players")
 local heroList = require("data.herolist")
 local shipList = require("data.shiplist")
 local sound = require("libs.helpers.sound")
+local questions = require("data.questionlist")
 
 local scene = director.newScene()
 
@@ -28,20 +29,20 @@ local worldIndex, levelIndex
 
 local SIZE_BACKGROUND = 1024
 local NUMBER_PIECES = 9
+local centerX = display.contentCenterX
+local centerY = display.contentCenterY
+local screenLeft = display.screenOriginX
+local screenWidth = display.viewableContentWidth - screenLeft * 2
+local screenRight = screenLeft + screenWidth
+local screenTop = display.screenOriginY
+local screenHeight = display.viewableContentHeight - screenTop * 2
+local screenBottom = screenTop + screenHeight 
 ----------------------------Cached Functions
 local mathSqrt = math.sqrt
 local mathSin = math.sin
 local mathAbs = math.abs
 local mathRandom = math.random
 -- -------------------------------------------------------------------------------
-
-local questions = {
-	[1] = {text = "¿Dónde puedes encontrar etiquetas nutrimentales?", answerid = 1, answers = {[1] = "En LA PARTE DE ATRAS todas las bebidas y alimentos empaquetados.", [2] = "En la tiendita.", [3] = "Llamando por teléfono al numero de emergencia.", [4] = "No se encuentra en ningún lugar.",}}, 
-	[2] = {text = "¿Qué es un envase?", answerid = 2, answers = {[1] = "Una juguete que sale en los dulces.", [2] = "La bolsita o el paquetito donde viene el producto o alimento.", [3] = "Ninguna de las opciones.", [4] = "Un alimento que se vende en la calle.",}},
-	[3] = {text = "¿Qué es una porción?", answerid = 1, answers = {[1] = "Es una parte, pedazo o una fraccion del producto total.", [2] = "Un producto entero", [3] = "Un pedazo de envoltura", [4] = "Es exactamente 20 gramos",}},
-	--[4] = {text = "¿Pregunta 4(D)?", answerid = 4, answers = {[1] = "Respuesta A", [2] = "Respuesta B", [3] = "Respuesta C", [4] = "Respuesta D",}},
-	--[5] = {text = "¿Pregunta 5(A)?", answerid = 1, answers = {[1] = "Respuesta A", [2] = "Respuesta B", [3] = "Respuesta C", [4] = "Respuesta D",}},
-}
 
 local function checkAnswers(time)
 	if answerRect.isVisible then
@@ -216,11 +217,11 @@ end
 
 local function createBackground(group)
 	local dynamicScale = display.viewableContentWidth / SIZE_BACKGROUND
-    local background = display.newImage("images/backgrounds/label.png")
+    local background = display.newImage("images/label/labelBackground.png")
 	background.x = display.contentCenterX
 	background.y = display.contentCenterY
-    background.xScale = dynamicScale
-    background.yScale = dynamicScale
+    background.width  = screenWidth
+    background.height = screenHeight
     group:insert(background)
 end
 
@@ -315,7 +316,7 @@ local function initScreenElements(group)
 	
 	playerCharacter:setAnimation("RUN")
 	playerCharacter.group.x = display.screenOriginX - 200
-	playerCharacter.group.y = display.contentCenterY * 1.90
+	playerCharacter.group.y = display.contentCenterY * 1.85
 	playerCharacter.group.xScale = 1
 	playerCharacter.group.yScale = 1
 	group:insert(playerCharacter.group)
