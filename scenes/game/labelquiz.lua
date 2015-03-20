@@ -47,19 +47,21 @@ local iconOrder = { 2, 3, 4, 7, 8, 11, 9, 10, 5, 6, 12, 13 }
 local questions = {
 	[1] = {text = "¿Dónde se ven las proteínas del producto?", answerid = 7}, 
 	[2] = {text = "¿En que parte se indica el sodio del producto?", answerid = 4},
-	[3] = {text = "¿Dónde se indica el tamaño de la porción en el producto?", answerid = 1},
-	[4] = {text = "¿Dónde se indican las grasas en el producto?", answerid = 3},
-	[5] = {text = "¿Dónde se indican los carbohidratos en el producto?", answerid = 5},
-	[6] = {text = "¿Dónde se indican la fibra dietética en el producto?", answerid = 6},
-	[7] = {text = "¿Dónde se indica el contenido energético en el producto?", answerid = 2},
+	[3] = {text = "¿Dónde se indican las porciones por envase en el producto?", answerid = 1},
+	[4] = {text = "¿Dónde se indican las grasas totales en el producto?", answerid = 3},
+	[5] = {text = "¿Dónde se indican los azúcares en el producto?", answerid = 5},
+	[6] = {text = "¿Dónde se indica la fibra en el producto?", answerid = 6},
+	[7] = {text = "¿Dónde se indican las kilocalorías en el producto?", answerid = 2},
 	[8] = {text = "¿Dónde se indican los ingredientes del producto?", answerid = 8},
+	[9] = {text = "¿Dónde se indican el tamaño de la porción en el producto?", answerid = 1},
+	[10] = {text = "¿Dónde se indica el colesterol en el producto?", answerid = 3},
 }
 local frontQuestions = {
 	[1] = {text = "¿Dónde se ven las grasas saturadas del producto?", answerid = 1}, 
 	[2] = {text = "¿En que parte se indican otras grasas del producto?", answerid = 2},
-	[3] = {text = "¿Dónde se indican las azúcares totales en el producto?", answerid = 3},
+	[3] = {text = "¿Dónde se indican las azúcares en el producto?", answerid = 3},
 	[4] = {text = "¿Dónde se indica la energía por porción del producto?", answerid = 4},
-	[5] = {text = "¿Dónde se indica la energía en el producto?", answerid = 5},
+	[5] = {text = "¿Dónde se indica la energía total en el producto?", answerid = 5},
 	[6] = {text = "¿Dónde se indica el sodio en el producto?", answerid = 6},
 }
 
@@ -74,12 +76,12 @@ local labelpositions = {
 	[8] = {x = 48, y = 190, answer = 8, centerpos= {x = 48, y = 190, width = 320, height = 71}},	
 }
 local frontlabelpositions = {
-	[1] = {x = -266, y = -22, answer = 1, centerpos= {x = -266, y = -22, width = 100, height = 120}},	
-	[2] = {x = -161, y = -22, answer = 2, centerpos= {x = -161, y = -22, width = 100, height = 120}},	
-	[3] = {x = -54, y = -22,  answer = 3, centerpos= {x = -54, y = -22,  width = 100, height = 120}},	
-	[4] = {x = 271, y = -22,   answer = 4, centerpos= {x = 271, y = -22, width = 100, height = 120}},	
-	[5] = {x = 161, y = -22,  answer = 5, centerpos= {x = 161, y = -22,  width = 100, height = 120}},	
-	[6] = {x = 53, y = -22,  answer = 6, centerpos= {x = 53, y = -22,    width = 100, height = 120}},
+	[1] = {x = -266, y = -22, answer = 1, centerpos= {x = -266, y = -22, width = 96, height = 120}},	
+	[2] = {x = -161, y = -22, answer = 2, centerpos= {x = -161, y = -22, width = 96, height = 120}},	
+	[3] = {x = -54, y = -22,  answer = 3, centerpos= {x = -54, y = -22,  width = 96, height = 120}},	
+	[4] = {x = 271, y = -22,   answer = 4, centerpos= {x = 271, y = -22, width = 96, height = 120}},	
+	[5] = {x = 161, y = -22,  answer = 5, centerpos= {x = 161, y = -22,  width = 96, height = 120}},	
+	[6] = {x = 53, y = -22,  answer = 6, centerpos= {x = 53, y = -22,    width = 96, height = 120}},
 }
 
 local function checkAnswers(time, rect)
@@ -533,7 +535,7 @@ function scene:create( event )
 	answerRect:setFillColor(0,0,0,0)
 	answerPanelGroup:insert(answerRect)
 	
-	frontAnswerRect = display.newRoundedRect(0,0,0,0,12)
+	frontAnswerRect = display.newRoundedRect(0,0,0,0,25)
 	frontAnswerRect.strokeWidth = 10
 	frontAnswerRect:setStrokeColor(0)
 	frontAnswerRect:setFillColor(0,0,0,0)
@@ -557,8 +559,8 @@ function scene:show( event )
 	worldIndex = params.worldIndex
 	levelIndex = params.levelIndex
     if ( phase == "will" ) then
-		puzzleIndex = mathRandom(numberPuzzles)
---		puzzleIndex = 11
+--		puzzleIndex = mathRandom(numberPuzzles)
+		puzzleIndex = 11
 		boolIndex = puzzleIndex < 11
 		print("puzzle Index " .. puzzleIndex)
 		initScreenElements(sceneGroup)
