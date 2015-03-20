@@ -11,7 +11,7 @@ local sound = require("libs.helpers.sound")
 local game = director.newScene() 
 ----------------------------------------------- Variables
 local ageSlider, weightSlider, firstPlane, heightSlider, kidWeightText, kidHeightText, hourSlider, thirdPlane, thirdOkBtn, thirdBackBtn,finalYogoKid, finalYogoGirl, finalText, alertGroup, textAlert
-local ageText, textBox, textCompleted, nextButton,yogoKid, yogoGirl, secondPlane, okButton, backButton, hourText,kidCalories
+local textBox, textCompleted, nextButton,yogoKid, yogoGirl, secondPlane, okButton, backButton, hourText,kidCalories, hand
 local kidAge, kdWeight, kdHeight, kidName, kidImc, kidStatus, isBoy, checkFirstScreen, checkSecondScreen, checkFirst, checkSecond, oneCategory, selectGenre
 local activityNames = {"Caminar","Correr","Basketbal","Futbol","Beisbol","Nadar","Bicicleta","Gimnasia","Otros","Nada"}
 local activityBtnNames = {"caminar","correr","basquet","futbol","baseball","nadar","bici","gimnasia","otros","nada"}
@@ -58,6 +58,18 @@ end
 local function getImc(height, weight) 
 	local imc = weight / (height * height)
 	return round(imc,2)
+end
+local function createSpriteAnimation()
+	
+        local sheetData = { width = 256, height = 256, numFrames = 6, sheetContentWidth = 1024, sheetContentHeight = 512 }
+	local masterSheet1 = graphics.newImageSheet( "images/infoscreen/manoTuto.png", sheetData )
+
+	local sequenceData = {
+		{ name = "tap", sheet = masterSheet1, start = 1, count = 2, time = 1200, loopCount = 0 },
+                { name = "ok", sheet = masterSheet1, start = 3, count = 7, time = 1200, loopCount = 1 },
+	}
+	local masterWinSprite = display.newSprite( masterSheet1, sequenceData )
+	return  masterWinSprite
 end
 local function getKidStatus(age,imc)
 	local index = age - 4
@@ -111,7 +123,33 @@ local function getCalories(age)
 		end		
 	end
 end
+local function getHandPos(alert)
+	local positionX, positionY
+	if alert == "Nombre" then
+		positionX = centerX + 150
+		positionY = screenTop + 230
+	elseif alert == "Edad" then
+		positionX = centerX + 100
+		positionY = screenBottom - 110
+	elseif alert == "Peso" then
+		positionX = centerX + 230
+		positionY = centerY 
+	elseif alert == "Género" then
+		positionX = centerX + 20
+		positionY = centerY + 50
+	elseif alert == "Altura" then
+		positionX = centerX + 220
+		positionY = centerY + 160
+	end
+	return positionX, positionY
+end
 local function turnOnAlert(alert)
+	transition.cancel()
+	local positionX, positionY = getHandPos(alert)
+	hand.x = positionX
+	hand.y = positionY
+	transition.to(hand,{ alpha = 1, time = 300})
+	transition.to(hand,{ alpha = 0, time = 300, delay = 1000})
 	textAlert.text = "Te falta " .. alert
 	transition.to ( alertGroup,{ alpha = 1, time = 300})
 	transition.to( alertGroup,{ alpha = 0, time =300, delay = 600})
@@ -436,7 +474,7 @@ local function createScene(sceneGrp)
 	ageSlider.y = centerY + 200
 	firstPlane:insert(ageSlider)
 	
-	local ageText = display.newEmbossedText("Edad",centerX - 180, ageSlider.y,"VAGRounded", 28 )
+    local ageText = display.newEmbossedText("Edad",centerX - 180, ageSlider.y,"VAGRounded", 28 )
 	ageText:setFillColor(0.2,1,0.2)
 	firstPlane:insert(ageText)
 	
@@ -567,6 +605,12 @@ local function createScene(sceneGrp)
 	kidHeightText = display.newText("   mts", centerX + 235, centerY + 49 , settings.fontName, 22)
 	kidHeightText:setFillColor(0.2,1,0.2)
 	firstPlane:insert(kidHeightText)
+	
+	hand = createSpriteAnimation()
+    hand.xScale = 0.6
+    hand.yScale = 0.6
+    hand.alpha = 0
+	firstPlane:insert(hand)
 	
 	sceneGrp:insert(firstPlane)
 --	firstPlane.alpha = 0
@@ -824,6 +868,8 @@ function game:show( event )
 		backButton:setEnabled(true)
 		okButton:setEnabled(true)
 		animateScene()
+		hand:setSequence("tap")
+        hand:play()
 	elseif ( phase == "did" ) then
 		
 	end
@@ -835,6 +881,7 @@ function game:hide( event )
 	if ( phase == "will" ) then
 	    
 	elseif ( phase == "did" ) then
+		hand:pause()
 		Runtime:removeEventListener("enterFrame",update)
 	end
 end

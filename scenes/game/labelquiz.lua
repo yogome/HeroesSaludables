@@ -559,8 +559,8 @@ function scene:show( event )
 	worldIndex = params.worldIndex
 	levelIndex = params.levelIndex
     if ( phase == "will" ) then
---		puzzleIndex = mathRandom(numberPuzzles)
-		puzzleIndex = 11
+		puzzleIndex = mathRandom(numberPuzzles)
+--		puzzleIndex = 11
 		boolIndex = puzzleIndex < 11
 		print("puzzle Index " .. puzzleIndex)
 		initScreenElements(sceneGroup)
