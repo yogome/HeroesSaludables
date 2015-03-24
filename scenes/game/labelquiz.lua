@@ -279,7 +279,7 @@ local function createFrontPieces(group)
 		piecesGroup = display.newGroup()
 		piecesGroup.pieces = {}
 		for indexPiece = 1, NUMBER_PIECES - 2 do
-			local piece = display.newImage("images/label/pieces/" .. piece + 1 .. "/piece"..indexPiece..".png")
+			local piece = display.newImage("images/label/pieces/phase1/" .. piece + 1 .. "/piece"..indexPiece..".png")
 			piece.id = indexPiece
 			piecesGroup.pieces[indexPiece] = piece
 			piecesGroup:insert(piece)
