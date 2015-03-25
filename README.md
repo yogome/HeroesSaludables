@@ -25,4 +25,4 @@ To install on android devices follow the next steps
 3. Open the APK File using a file browser
 4. When asked what to do, select *Install* button
 
-Yogome, inc
+Yogome, inc. 2015
