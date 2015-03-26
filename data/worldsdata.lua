@@ -23,7 +23,7 @@ local worldsData = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
 			levelHeight = 1500 ,
-			ship = {position = {x = 1100, y = 0}},
+			ship = {position = {x = 1100, y = 600}},
 			objectives = {
 				fruit = 3,
 				vegetable = 0,
@@ -36,14 +36,6 @@ local worldsData = {
 					patrolPath = {
 						[1] = { x = -300 , y = 600},
 						[2] = {x = -300, y = -600}
-					}
-				},
-				{
-					type = "follower",
-					spawnPoint = { x = 290, y = -500},
-					patrolPath = {
-						[1] = { x = 300, y = 600},
-						[2] = {x = 300, y = -600}
 					}
 				},
 			},
@@ -95,11 +87,6 @@ local worldsData = {
 						[1] = { x = 400, y = -550},
 						[2] = {x = 400, y = 550}
 					}
-				},
-				{
-					type = "shooter",
-					spawnPoint = { x = 0, y = -550},
-					angle = 270
 				},
 			},
 			asteroids = {
@@ -158,18 +145,10 @@ local worldsData = {
 			enemySpawnData = {
 				{
 					type = "follower",
-					spawnPoint = { x = -1290, y = 450},
+					spawnPoint = { x = -990, y = 450},
 					patrolPath = {
-						[1] = { x = -1300, y = 450},
-						[2] = {x = -300, y = -450},
-					}
-				},
-				{
-					type = "follower",
-					spawnPoint = { x = 410, y = -500},
-					patrolPath = {
-						[1] = { x = 300, y = 450},
-						[2] = {x = 1300, y = -450},
+						[1] = { x = -1000, y = 450},
+						[2] = {x = -0, y = -450},
 					}
 				},
 			},
@@ -188,8 +167,8 @@ local worldsData = {
 			},
 			asteroids = {
 				[1] = {
-					lineStart = {x = -450, y = 600},
-					lineEnd = {x = 450, y = -600},
+					lineStart = {x = -200, y = 600},
+					lineEnd = {x = 1000, y = -600},
 					easingX = easing.inOutSine,
 					easingY = easing.outInSine,
 				},
@@ -337,18 +316,13 @@ local worldsData = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
 			levelHeight = 1500,
-			ship = {position = {x = 1300, y = -500}},
+			ship = {position = {x = -1300, y = -500}},
 			objectives = {
 				fruit = 3,
 				vegetable = 0,
 				protein = 0,
 			},
 			enemySpawnData = {
-				{
-					type = "shooter",
-					spawnPoint = { x = -900, y = -600},
-					angle = 270
-				},
 				{
 					type = "shooter",
 					spawnPoint = { x = -500, y = 600},
@@ -368,11 +342,6 @@ local worldsData = {
 					type = "shooter",
 					spawnPoint = { x = 500, y = -600},
 					angle = 270
-				},
-				{
-					type = "shooter",
-					spawnPoint = { x = 900, y = 600},
-					angle = 90
 				},
 			},
 			earth = {
@@ -399,7 +368,7 @@ local worldsData = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
 			levelHeight = 1500,
-			ship = {position = {x = -1100, y = 600}},
+			ship = {position = {x = -1100, y = -600}},
 			objectives = {
 				fruit = 3,
 				vegetable = 0,
@@ -429,7 +398,7 @@ local worldsData = {
 				},
 				{
 					type = "shooter",
-					spawnPoint = { x = -100, y = 600},
+					spawnPoint = { x = 50, y = 600},
 					angle = 45
 				},
 			},
@@ -457,7 +426,7 @@ local worldsData = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
 			levelHeight = 1500,
-			ship = {position = {x = -1200, y = 400}},
+			ship = {position = {x = 1200, y = 400}},
 			objectives = {
 				fruit = 0,
 				vegetable = 0,
@@ -516,10 +485,20 @@ local worldsData = {
 					type = "follower",
 					spawnPoint = { x = 0, y = 490},
 					patrolPath = {
-						[1] = { x = 500, y = 0},
-						[2] = {x = 0, y = -500},
-						[3] = { x = -500, y = 0},
-						[4] = {x = 0, y = 500},
+						[1] = { x = 100, y = -300},
+						[2] = {x = 300, y = 0},
+						[3] = {x = 100, y = -300},
+						[4] = {x = 300, y = 0},
+					}
+				},
+				{
+					type = "follower",
+					spawnPoint = { x = 0, y = -490},
+					patrolPath = {
+						[1] = { x = -100, y = -300},
+						[2] = {x = -300, y = 0},
+						[3] = {x = -100, y = -300},
+						[4] = {x = -300, y = 0},
 					}
 				},
 				{
@@ -531,11 +510,6 @@ local worldsData = {
 					type = "shooter",
 					spawnPoint = { x = -600, y = 600},
 					angle = 45
-				},
-				{
-					type = "shooter",
-					spawnPoint = { x = -700, y = 0},
-					angle = 0
 				},
 			},
 			earth = {
@@ -718,24 +692,11 @@ local worldsData = {
 					}
 				},
 				{
-					type = "shooter",
-					spawnPoint = { x = 400, y = 0},
-					angle = 0
-				},
-				{
-					type = "shooter",
-					spawnPoint = { x = 800, y = -900},
-					angle = 270
-				},
-				{
 					type = "canoner",
 					spawnPoint = { x = -800 , y = -800},
 					patrolPath = {
-						[1] = { x = -1800, y = 800 },
-						[2] = {x = -1600, y = 700},
-						[3] = {x = -800, y = 600},
-						[4] = {x = -200, y = 500},
-						[5] = {x = 200, y = 400},
+						[1] = { x = -100, y = 800 },
+						[2] = {x = 900, y = -400},
 					}
 				},
 			},
@@ -872,26 +833,6 @@ local worldsData = {
 			},
 			enemySpawnData = {
 				{
-					type = "follower",
-					spawnPoint = { x = -380, y = 0},
-					patrolPath = {
-						[1] = { x = -400, y = 0},
-						[2] = {x = 0, y = -400},
-						[3] = {x = 400, y = 0},
-						[4] = {x = 0, y = -400},
-					}
-				},
-				{
-					type = "follower",
-					spawnPoint = { x = 380, y = 0},
-					patrolPath = {
-						[1] = { x = 400, y = 0},
-						[2] = {x = 0, y = -400},
-						[3] = {x = -400, y = 0},
-						[4] = {x = 0, y = 400},
-					}
-				},
-				{
 					type = "shooter",
 					spawnPoint = { x = -600, y = 0},
 					angle = 180
@@ -913,26 +854,10 @@ local worldsData = {
 				},
 				{
 					type = "canoner",
-					spawnPoint = { x = -800, y = -100},
-					patrolPath = {
-						[1] = { x = -1000, y = -100},
-						[2] = { x = -200, y = -700},
-					}
-				},
-				{
-					type = "canoner",
 					spawnPoint = { x = 800, y = -100},
 					patrolPath = {
 						[1] = { x = 1000, y = -100},
 						[2] = { x = 200, y = -700},
-					}
-				},
-				{
-					type = "canoner",
-					spawnPoint = { x = 800, y = -100},
-					patrolPath = {
-						[1] = { x = 1000, y = 100},
-						[2] = { x = 200, y = 700},
 					}
 				},
 				{
@@ -989,16 +914,6 @@ local worldsData = {
 					type = "shooter",
 					spawnPoint = { x = -1200, y = -400},
 					angle = 45
-				},
-				{
-					type = "shooter",
-					spawnPoint = { x = 500, y = -300},
-					angle = 270
-				},
-				{
-					type = "shooter",
-					spawnPoint = { x = 1900, y = 900},
-					angle = 180
 				},
 				{
 					type = "canoner",
