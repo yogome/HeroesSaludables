@@ -1058,10 +1058,10 @@ end
 
 local function loadObstacles()
 	
---	local blackhole = obstacles.newObstacle("lol")
---	physics.addBody(blackhole, {isSensor = true, radius = 150})
---	blackhole.x = -250
---	camera:add(blackhole)
+	local blackhole = obstacles.newObstacle("blackhole")
+	physics.addBody(blackhole, {isSensor = true, radius = 150})
+	blackhole.x = -250
+	camera:add(blackhole)
 	
 end
 
