@@ -30,9 +30,12 @@ end
 local function goInfo()
 	director.gotoScene("scenes.game.infoscreen")
 end
+local function goInfo()
+	director.gotoScene("scenes.game.operationquiz")
+end
 
 local function goLabelQuiz()
-	director.gotoScene("scenes.game.labelpuzzle")
+	director.gotoScene("scenes.game.operationquiz")
 end
 
 local function goWorlds()
@@ -100,10 +103,11 @@ local testActions = {
 
 	{"Go Home", goHome, {0.5,0.5,0.5}},
 	{"Go Info", goInfo, {0.5,0.5,0.5},2},
+	{"Go Operations", goOperations, {0.5,0.5,0.5},2},
 	{"Go Hero", goHero, {0.5,0.5,0.5}},
 	{"Go Game", goGame, {0.5,0.5,0.5}},
 	{"Go Label", goLabel, {0.5,0.5,0.5}},
-	{"Go Label Quiz", goLabelQuiz, {0.5,0.5,0.5}},
+	{"Go Label Quiz", goLabelQuiz, {0.5,0.5,0.5} , 2},
 	{"Go Question Quiz", goQuestion, {0.5,0.5,0.5}},
 	{"Clear queue", clearQueue, {0.5,0.6,0.3}},
 	
