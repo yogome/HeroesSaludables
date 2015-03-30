@@ -12,10 +12,10 @@ local started
 local spaceshipList
 ---------------------------------------------- Constants
 local ANALOG_MAX = 128
-local MAX_SHIP_VELOCITY = 500
+local MAX_SHIP_VELOCITY = 1000
 local THRESHOLD_ROTATION_ANIMATION = 0.1
-local SCALE_SHIP = 0.5
-local SCALE_YOGOTAR = 0.17
+local SCALE_SHIP = 0.6
+local SCALE_YOGOTAR = 0.15
 local OFFSET_YOGOTAR = {x = 16, y = 32}
 ---------------------------------------------- Caches
 local mathAbs = math.abs 
@@ -32,12 +32,12 @@ end
 
 local function createNewShip(newShip, shipData)
 	
-	physics.addBody( newShip, {density = 0.0009, friction = 5, bounce = 1, radius = 50 * 0.8})
+	physics.addBody( newShip, {density = 0.00009, friction = 0, bounce = 0, radius = 50 * 0.8})
 	newShip.gravityScale = 0
-	newShip.isFixedRotation = true
-	newShip.linearDamping = 2
+	newShip.isFixedRotation = false
+	newShip.linearDamping = 8
 	
-	newShip.speedRatio = 0.001
+	newShip.speedRatio = 0.0005
 	
 	--local thrustData = { width = 32, height = 32, numFrames = 2, sheetContentWidth = 64, sheetContentHeight = 32 }
 	--local thrustSheet = graphics.newImageSheet( "images/shooter/thrust.png", thrustData )
@@ -69,12 +69,12 @@ local function createNewShip(newShip, shipData)
         skeletonFile = "units/heroes/skeleton.json",
         imagePath = "units/heroes/",
         attachmentPath = "units/attachments/",
-        scale = 0.15
+        scale = SCALE_YOGOTAR
     }
 	
 	local playerCharacter = animator.newCharacter(characterData)
 	--playerCharacter:setHat(string.format("hat_extra_%02d", (currentPlayer.hatIndex-1)))
-	playerCharacter:setAnimation("IDLE")
+	playerCharacter:setAnimation("SITIDLE")
 	playerCharacter.group.x = OFFSET_YOGOTAR.x
 	playerCharacter.group.y = OFFSET_YOGOTAR.y
 	newShip:insert(playerCharacter.group)

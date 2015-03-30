@@ -3,8 +3,30 @@ local director = require( "libs.helpers.director" )
 local players = require( "models.players" )
 
 local function goGame()
-	director.gotoScene("scenes.game.shooter", { params = { worldIndex = 1, levelIndex = 5}} )
+	director.gotoScene("scenes.game.shooter", { params = { worldIndex = 1, levelIndex = 1}} );
+end	
+
+local function goObjetives()
+	local objetives = {
+		fruit = {
+			portions = 2,
+		},
+		vegetable = {
+			portions = 2,
+		},
+		protein = {
+			portions = 2,
+		},
+		
+	}
+	director.gotoScene("scenes.overlays.objetives", { params = {objetives = objetives}} );
 end
+
+local function goTutorial()
+	local tutorialName = "enemycanoner"
+	director.gotoScene("scenes.overlays.tutorial", { params = {tutorialName = tutorialName}} );
+end
+
 local function goInfo()
 	director.gotoScene("scenes.game.infoscreen")
 end
@@ -73,6 +95,8 @@ local testActions = {
 
 	{"Go Worlds", goWorlds, {0.5,0.5,0.5}},
 	{"Go Levels", goLevels, {0.5,0.5,0.5}},
+	{"Go Objetives", goObjetives, {0.5,0.5,0.5},2},
+	{"Go Tutorial", goTutorial, {0.5,0.5,0.5},2},
 
 	{"Go Home", goHome, {0.5,0.5,0.5}},
 	{"Go Info", goInfo, {0.5,0.5,0.5},2},

@@ -12,9 +12,11 @@ local worldsData = require("data.worldsdata")
 local foodlist = require("data.foodlist")
 local enemyFactory = require("entities.enemies")
 local extramath = require( "libs.helpers.extramath" )
+local extratable = require( "libs.helpers.extratable" )
 local loseScene = require( "scenes.game.lose" )
 local winScene = require( "scenes.game.win" )
 local dataSaver = require("services.datasaver")
+local obstacles = require("entities.obstacles")
 
 --physics.setDrawMode("hybrid")
 local scene = director.newScene() 
@@ -45,6 +47,9 @@ local framecounter = 0
 local isPaused
 local distanceLines 
 local planetIndicators
+local disabledControl
+local objetives
+local isTutorial = true
 ----------------------------------------------- Background stars data
 local spaceObjects, objectDespawnX, objectSpawnX, objectDespawnY, objectSpawnY
 local spawnZoneWidth, spawnZoneHeight, halfSpawnZoneWidth, halfSpawnZoneHeight
@@ -100,6 +105,7 @@ local function createAsteroidLine(point1, point2, easingX, easingY)
 		local randomSideMultiplier = index % 2 * 2 -3
 		local randomScale = math.random(90,110) * 0.01
 		local asteroid = display.newImage("images/enviroment/asteroid"..math.random(1,3)..".png")
+		
 		asteroid.x = easingX(index, iterations, p1.x, distanceX)
 		asteroid.y = easingY(index, iterations, p1.y, distanceY)
 		asteroid:scale(randomScale, randomScale)
@@ -256,6 +262,7 @@ local function destroyGame()
 	camera:stop()
 	
 	for index = #physicsObjectList, 1, -1 do
+		camera:remove(physicsObjectList[index])
 		display.remove(physicsObjectList[index])
 		physicsObjectList[index] = nil
 	end
@@ -266,7 +273,7 @@ local function destroyGame()
 end
 
 local function retryGame()
-	director.hideScene("scenes.game.shooter");
+	director.hideScene("scenes.game.shooter")
 	director.gotoScene("scenes.game.shooter",{params = {worldIndex = worldIndex, levelIndex = levelIndex}})
 end
 
@@ -318,19 +325,22 @@ end
 local function spawnBubble(planet)
 	if not isFoodSpawned[planet.foodType] then
 		isFoodSpawned[planet.foodType] = true
-		local foodBubbleIndex = randomFoodByType(planet.foodType)
-		local foundBubble = foodBubbleGroup.bubbles[foodBubbleIndex]
+		local foodBubbleIndex = math.random(1, #foodlist[planet.foodType].food)
+		local foundBubble = foodBubbleGroup.bubbles[planet.foodType][foodBubbleIndex]
+		camera:add(foundBubble)
 
 		local showBubble = function()
 			foundBubble.x = planet.x + planet.foodOffset.x
 			foundBubble.y = planet.y + planet.foodOffset.y
 			foundBubble.alpha = 0
+			foundBubble.xScale = 0.25
+			foundBubble.yScale = 0.25
 			foundBubble.isVisible = true
 			foundBubble.isSpawned = true
 			
 			transition.to(foundBubble, {time = 400, alpha = 1, transition = easing.outQuad})
 
-			physics.addBody(foundBubble, "dynamic", {density = 0, friction = 0, bounce = 0.1, radius = 30})
+			physics.addBody(foundBubble, "dynamic", {density = 0, friction = 0, bounce = 1, radius = 30})
 			foundBubble.gravityScale = 0
 			foundBubble:applyLinearImpulse( math.random(-5,5)/100, math.random(-5,5)/100, foundBubble.x, foundBubble.y)
 		end
@@ -343,6 +353,8 @@ local function grabFruit(fruit)
 	if not fruit.isGrabbed then
 		fruit.isGrabbed = true
 		
+		local descriptionIndex = math.random(1, #fruit.description)
+		hudGroup.infoIndicator.text = fruit.description[descriptionIndex]
 		physics.removeBody(fruit)
 		local contentX, contentY = fruit:localToContent(0,0)
 		local firstX, firstY = playerCharacter:contentToLocal(contentX, contentY)
@@ -362,10 +374,10 @@ local function checkPlayerPreCollision(player, object)
 				playerCharacter.isCarringItem = true
 				playerCharacter.item = object
 				object.isSensor = true
-				local function fruitLister()
+				local function fruitListener()
 					grabFruit(object)
 				end
-				timer.performWithDelay(100, fruitLister)
+				timer.performWithDelay(100, fruitListener)
 			end
 		end
 	end
@@ -400,17 +412,29 @@ local function removeEnemyTarget(enemy, target)
 	end
 end
 
-local function checkAmounts()
-	local isComplete = true
-	for key, value in pairs(collectedFood) do
-		if value < targetAmounts[key] then
-			isComplete = false
-		end
+local function checkAmounts(foodType)
+	local isComplete = false
+	
+	local portions = objetives[foodType].portions - 1
+	portions = portions < 0 and 0 or portions
+	objetives[foodType].label.text = portions
+	objetives[foodType].portions = portions
+	
+	local collectedAll = true
+	for key, value in pairs(objetives) do		
+		collectedAll = collectedAll and (objetives[key].portions <= 0)
+	end
+	
+	if collectedAll then
+		isComplete = true
 	end
 	
 	if isComplete then
 		if not isGameover then
 			isGameover = true
+			analogX = 0
+			analogY = 0
+			disabledControl = true
 			local function onBackReleased()
 				winScene.disableButtons()
 				director.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
@@ -426,10 +450,15 @@ local function checkAmounts()
 			winScene.show(heartIndicator.currentHearts, 500, onBackReleased, onRetryReleased, onPlayReleased)
 		end
 	end
+	
+	
 end
 
 local function collectBubble(earth)
 	if playerCharacter.isCarringItem then
+		
+		hudGroup.infoIndicator.text = ""
+		
 		earth:setSequence("eat")
 		earth:play()
 		earth:addEventListener("sprite", function(event)
@@ -438,9 +467,11 @@ local function collectBubble(earth)
 				earth:play()
 			end
 		end)
+		
 		foodBubbleGroup:insert(playerCharacter.item)
 		playerCharacter.item.x = playerCharacter.x
 		playerCharacter.item.y = playerCharacter.y
+		playerCharacter.isCarringItem = false
 		playerCharacter:setAnimation("opening")
 		transition.to(playerCharacter.item, {transition = easing.outBounce, xScale = 1, yScale = 1, time = 500, onComplete = function()
 			transition.to(playerCharacter.item, {alpha = 0, xScale = 0.5, yScale = 0.5, transition = easing.outCubic, time = 1000, x = earth.x, y = earth.y, onComplete = function()
@@ -448,10 +479,8 @@ local function collectBubble(earth)
 			end})
 		end})
 		local foodType = playerCharacter.item.type
-		collectedFood[foodType] = collectedFood[foodType] + 1
-		--foodTexts[foodType].text = collectedFood[foodType].."/"..targetAmounts[foodType]
 		
-		checkAmounts()
+		checkAmounts(foodType)
 	end
 end
 
@@ -512,7 +541,37 @@ local function damagePlayer()
 		playerCharacter.isVisible = true
 		playerCharacter.alpha = 1
 	end)
+end
 
+local function suckFood(player, otherObject)
+	
+	if playerCharacter.isCarringItem then
+		local fruit = player.item
+		--camera:add(fruit)
+		
+		local rotatingGroup = display.newGroup()
+		camera:add(rotatingGroup)
+		rotatingGroup.x = otherObject.x
+		rotatingGroup.y = otherObject.y
+		
+		isFoodSpawned[playerCharacter.item.type] = false
+		playerCharacter.isCarringItem = false
+		
+		local playerX, playerY = player:localToContent(0,0)
+		local targetX, targetY = rotatingGroup:contentToLocal(playerX, playerY)
+		fruit.x = targetX
+		fruit.y = targetY
+		rotatingGroup:insert(fruit)
+		
+		transition.to(rotatingGroup, {time = 2500, rotation = 900, transition = easing.inQuad})
+		transition.to(fruit, {time = 2500, x = 0, y = 0, transition = easing.inQuad})
+		transition.to(fruit, {delay = 2000, time = 500, alpha = 0, transition = easing.outQuad, onComplete = function()
+			hideBubble()
+		end})
+		
+	end
+
+	
 end
 
 local function checkPlayerCollision(player, otherObject, element1, element2)
@@ -522,7 +581,6 @@ local function checkPlayerCollision(player, otherObject, element1, element2)
 		elseif otherObject.name == "earth" then
 			collectBubble(otherObject)
 		elseif otherObject.name == "enemy" then
-			print("enemy hit")
 			if not playerCharacter.isDamaged then
 				if element2 == 2 then
 					damagePlayer()
@@ -538,6 +596,8 @@ local function checkPlayerCollision(player, otherObject, element1, element2)
 					damagePlayer()
 				end
 			end
+		elseif otherObject.name == "blackhole" then
+			suckFood(player, otherObject)
 		end
 	end
 end
@@ -639,41 +699,71 @@ local function onReleasePause()
 end 
 
 local function testTouch(event)
-	if "began" == event.phase then
-		analogCircleBounds.x = event.x
-		analogCircleBounds.y = event.y
-		analogCircleBegan.x = event.x
-		analogCircleBegan.y = event.y
-		analogCircleMove.x = event.x
-		analogCircleMove.y = event.y
-		analogCircleBounds.isVisible = true
-		analogCircleBegan.isVisible = true
-		analogCircleMove.isVisible = true
-	elseif "moved" == event.phase then
-		analogX = (event.x - event.xStart) * 2
-		analogY = (event.y - event.yStart) * 2
-			
-		local diffx = (event.x - event.xStart)
-		local diffy = (event.y - event.yStart)
-		local distance = squareRoot((diffx * diffx) + (diffy * diffy))
-		local vx = diffx / distance
-		local vy = diffy / distance
+	if not disabledControl then
 		
-		if distance >= RADIUS_ANALOG then
-			analogCircleMove.x = event.xStart + vx * RADIUS_ANALOG
-			analogCircleMove.y = event.yStart + vy * RADIUS_ANALOG
-		else
+		if "began" == event.phase then
+			analogCircleBounds.x = event.x
+			analogCircleBounds.y = event.y
+			analogCircleBegan.x = event.x
+			analogCircleBegan.y = event.y
 			analogCircleMove.x = event.x
 			analogCircleMove.y = event.y
-		end
+		
+			analogCircleBounds.isVisible = true
+			analogCircleBegan.isVisible = true
+			analogCircleMove.isVisible = true
+			
+		elseif "moved" == event.phase then
+			
+			analogCircleBounds.isVisible = true
+			analogCircleBegan.isVisible = true
+			analogCircleMove.isVisible = true	
 
-	elseif "ended" == event.phase then
-		analogX = 0
-		analogY = 0
-		analogCircleBegan.isVisible = false
-		analogCircleMove.isVisible = false
-		analogCircleBounds.isVisible = false
-	end	
+			local diffx = (event.x - event.xStart)
+			local diffy = (event.y - event.yStart)
+			local distance = squareRoot((diffx * diffx) + (diffy * diffy))
+			local vx = diffx / distance
+			local vy = diffy / distance
+			
+			if isTutorial then
+				if distance >= 125 then
+					isTutorial = false
+					local success = display.newImage("images/infoscreen/success.png")
+					success.xScale = 0.1
+					success.yScale = 0.1
+					success.alpha = 0
+					success.x = display.contentCenterX
+					success.y = display.contentCenterY
+					
+					transition.to(success, {xScale = 1.2, transition = easing.outElastic, time = 1000})
+					transition.to(success, {yScale = 1.2, transition = easing.outSine, time = 500})
+					transition.to(success, {alpha = 1, time = 200, onComplete = function()
+						transition.to(success, {delay = 1000, alpha = 0, transition = easing.inSine})
+					end})
+					
+				end
+			end
+
+			if distance >= RADIUS_ANALOG then
+				analogX = diffx
+				analogY = diffy
+				analogCircleMove.x = event.xStart + vx * RADIUS_ANALOG
+				analogCircleMove.y = event.yStart + vy * RADIUS_ANALOG
+			else
+				analogX = diffx
+				analogY = diffy
+				analogCircleMove.x = event.x
+				analogCircleMove.y = event.y
+			end
+
+		elseif "ended" == event.phase then
+			analogX = 0
+			analogY = 0
+			analogCircleBegan.isVisible = false
+			analogCircleMove.isVisible = false
+			analogCircleBounds.isVisible = false
+		end
+	end
 end
 
 local function drawDebugGrid(levelWidth, levelHeight)
@@ -777,17 +867,19 @@ local function createPlayerCharacter()
 	addPhysicsObject(playerCharacter)
 end
 
-local function createBubble(type)
+local function createBubble(params)
 	
-	local bubble = display.newImage("images/food/bubble.png")
-	local food = display.newImage(type.asset)
 	local bubbleGroup = display.newGroup()
-
+	local bubble = display.newImage("images/food/bubble.png")
+	local food = display.newImage(params.asset)
+	food.xScale = 0.75
+	food.yScale = 0.75
+	
 	bubbleGroup.name = "food"
-	bubbleGroup.type = type.type
+	bubbleGroup.description = params.description
+	bubbleGroup.type = params.foodType
 	bubbleGroup.isSpawned = false
 	bubbleGroup.isVisible = false
-	bubbleGroup:scale(0.5, 0.5)
 
 	bubbleGroup:insert(bubble)
 	bubbleGroup:insert(food)
@@ -798,18 +890,33 @@ end
 local function createFoodBubbles()
 	foodBubbleGroup = display.newGroup()
 	foodBubbleGroup.bubbles = {}
-	local x = 100
-	for foodIndex = 1, #foodlist do
-		local currentFood = foodlist[foodIndex]
+	
+	for keyFood, valueFood in pairs(foodlist) do
 		
-		local newBubble = createBubble(currentFood)
+		local currentFoodtype = foodlist[keyFood]
 		
-		foodBubbleGroup.bubbles[foodIndex] = newBubble
+		foodBubbleGroup.bubbles[keyFood] = {}
+		for indexFood = 1, #currentFoodtype.food do
+			local currentFood = currentFoodtype.food[indexFood]
 
-		foodBubbleGroup:insert(newBubble)
-		camera:add(foodBubbleGroup)
-		addPhysicsObject(newBubble)
+			local bubbleParams = {
+				name = currentFood.name,
+				foodType = keyFood,
+				asset = currentFood.asset,
+				description = currentFood.description
+			}
+			
+			local newBubble = createBubble(bubbleParams)
+
+			foodBubbleGroup.bubbles[keyFood][indexFood] = newBubble
+
+			foodBubbleGroup:insert(newBubble)
+			camera:add(foodBubbleGroup)
+			addPhysicsObject(newBubble)
+
+		end
 	end
+
 end
 
 local function enterFrame(event)
@@ -846,7 +953,7 @@ end
 
 local function loadEarth()
 	local earthData = worldsData[worldIndex][levelIndex].earth
-	earth = display.newImage(earthData.asset)
+	--earth = display.newImage(earthData.asset)
 	
 	local sheetHappyData = {
 		width = 256,
@@ -878,7 +985,7 @@ local function loadEarth()
 	earth.y = earthData.position.y
 	earth.name = earthData.name
 	
-	physics.addBody(earth, "static", {radius = earth.contentWidth * 0.75, isSensor = true})
+	physics.addBody(earth, "static", {radius = earth.contentWidth * 0.4, isSensor = true})
 	camera:add(earth)
 	addPhysicsObject(earth)
 end
@@ -889,8 +996,10 @@ local function loadPlanets()
 	
 	for planetIndex = 1, #planetsData do
 		local currentPlanetData = planetsData[planetIndex]
-		local planet = display.newImage(currentPlanetData.asset)
-		physics.addBody(planet, "static", {density = 1, friction = 1, bounce = 1, radius = 200, isSensor = true})
+		local planetType = currentPlanetData.foodType
+		local planet = display.newImage(foodlist[planetType].asset)
+		
+		physics.addBody(planet, "static", {density = 1, friction = 1, bounce = 1, radius = planet.contentWidth * 0.6, isSensor = true})
 		planet.name = "planet"
 		planet.foodType = currentPlanetData.foodType
 		
@@ -923,7 +1032,8 @@ local function loadAsteroids()
 end
 
 local function loadObjetives()
-	
+	local objetivesData = worldsData[worldIndex][levelIndex].objetives
+	objetives = extratable.deepcopy(objetivesData)
 end
 
 local function loadEnemies()
@@ -946,12 +1056,65 @@ local function loadEnemies()
 	end
 end
 
+local function loadObstacles()
+	
+--	local blackhole = obstacles.newObstacle("lol")
+--	physics.addBody(blackhole, {isSensor = true, radius = 150})
+--	blackhole.x = -250
+--	camera:add(blackhole)
+	
+end
+
 local function loadLevel()
-	loadObjetives()
 	loadEarth()
 	loadPlanets()
 	loadAsteroids()
 	loadEnemies()
+	loadObstacles()
+	loadObjetives()
+end
+
+
+local function createObjetives()
+	
+	local objetivesGroup = display.newGroup()
+	local startY = 0
+	local OFFSET_ICONX = 10
+	local OFFSET_ICONY = 10
+	for keyObjetive, valueObjetive in pairs(objetives) do
+		local objetiveGroup = display.newGroup()
+		
+		if foodlist[keyObjetive] then
+			
+			local objetiveBackground = display.newImage("images/shooter/objetivesingle.png")
+			objetiveBackground:scale(0.5,0.5)
+			objetiveGroup:insert(objetiveBackground)
+			
+			local objetiveName = display.newText(foodlist[keyObjetive].name, 0, 0, settings.fontName, 15)
+			objetiveName.y = -objetiveBackground.contentWidth * 0.27
+			objetiveGroup:insert(objetiveName)
+			
+			local assetPath = foodlist[keyObjetive].asset
+			local objetiveImage = display.newImage(assetPath)
+			objetiveImage.x = -20
+			objetiveImage.y = OFFSET_ICONY
+			objetiveImage:scale(0.23, 0.23)
+			objetiveGroup:insert(objetiveImage)
+
+			local objetiveText = display.newText(objetives[keyObjetive].portions, 30, 0, settings.fontName, 32)
+			objetives[keyObjetive].label = objetiveText
+			objetiveText.y = OFFSET_ICONY
+			objetiveGroup:insert(objetiveText)
+
+			objetiveGroup.x = display.screenOriginX + (objetiveGroup.contentWidth * 0.4)
+			objetiveGroup.y = display.contentCenterY * 0.75 + startY
+
+			hudGroup:insert(objetiveGroup)
+			
+			startY = startY + 125
+		end
+		
+	end
 end
 
 local function createHUD(sceneView)
@@ -980,40 +1143,37 @@ local function createHUD(sceneView)
 	heartIndicatorBG.y = 0
 	heartIndicator:insert(heartIndicatorBG)
 	
-	local heartSpacing = 230
+	local heartSpacing = 67
 	
-	local heartStartX = -((NUMBER_HEARTS - 1) * heartSpacing) * 0.5
+	local heartStartX = -((NUMBER_HEARTS - 1) * heartSpacing) * 0.54
 	for index = 1, NUMBER_HEARTS do
 		local heart = display.newImage("images/shooter/heart.png")
+		heart:scale(SCALE_HEARTINDICATOR, SCALE_HEARTINDICATOR)
 		heart.x = heartStartX + (index - 1) * heartSpacing
 		heartIndicator:insert(heart)
-		
 		heartIndicator.hearts[index] = heart
 	end
 	
-	heartIndicator:scale(SCALE_HEARTINDICATOR, SCALE_HEARTINDICATOR)
-	heartIndicator.x = display.contentCenterX
+	heartIndicator:scale(0.7,0.7)
+	heartIndicator.x = display.contentCenterX * 0.50
 	heartIndicator.y = display.screenOriginY + PADDING + heartIndicatorBG.height * 0.5 * SCALE_HEARTINDICATOR
 	hudGroup:insert(heartIndicator)
 	
-	local explainTextOptions = {
-		x = display.contentCenterX,
-		y = display.contentCenterY,
-		font = settings.fontName,
-		fontSize = 45,
-		width = 550,
-		text = "Entrega las porciones adecuadas para tener una alimentación balanceada.",
-		align = "center",
-	}
-
-	local explainText = display.newText(explainTextOptions)
-	explainText.alpha = 0
-	transition.to(explainText, {delay = 700, time = 600, alpha = 1, transition = easing.outQuad, onComplete = function()
-		transition.to(explainText, {delay = 2600, time = 600, alpha = 0, transition = easing.outQuad, onComplete = function()
-			display.remove(explainText)
-		end})
-	end})
-	hudGroup:insert(explainText)
+	local portionIndicator = display.newGroup()
+	
+	local portionBG = display.newImage("images/shooter/info.png")
+	portionIndicator:insert(portionBG)
+	
+	local portionText = display.newText("", 0, 17, settings.fontName, 30)
+	hudGroup.infoIndicator = portionText
+	portionIndicator:insert(portionText)
+	
+	portionIndicator:scale(1, 1)
+	portionIndicator.x = display.contentCenterX * 1.3
+	portionIndicator.y = display.screenOriginY + PADDING + heartIndicatorBG.height * 0.1 * SCALE_HEARTINDICATOR
+	hudGroup:insert(portionIndicator)
+	
+	createObjetives()
 	
 	sceneView:insert(hudGroup)
 end
@@ -1022,6 +1182,8 @@ local function initialize(event)
 	local params = event.params or {}
 	
 	dataSaver.initialize()
+	
+	disabledControl = true
 	analogCircleBounds.isVisible = false
 	analogCircleBegan.isVisible = false
 	analogCircleMove.isVisible = false
@@ -1035,21 +1197,8 @@ local function initialize(event)
 		["protein"] = false,
 	}
 	
-	foodTexts = {}
-	targetAmounts = {
-		["fruit"] = 0,
-		["vegetable"] = 0,
-		["protein"] = 0,
-	}
-	
 	worldIndex = params.worldIndex
 	levelIndex = params.levelIndex
-	
-	collectedFood = {
-		["fruit"] = 0,
-		["vegetable"] = 0,
-		["protein"] = 0,
-	}
 	
 	cameraEdit = {x = 0, y = 0}
 	
@@ -1078,43 +1227,43 @@ local function initialize(event)
 	
 end
 
-local function updateDistanceVector()
+local function updateIndicators()
 		
 		if not isGameover then
 			for indexLine = 1, #planets do
 				display.remove(distanceLines[indexLine])
 				
-				
-				
 				local currentPlanet = planets[indexLine]
 				
-				local diffX =(-camera.scrollX + display.contentWidth * 0.48) - currentPlanet.x
-				local diffY =(-camera.scrollY + display.contentHeight * 0.48) - currentPlanet.y
+				local diffX =(-camera.scrollX + display.contentWidth * 0.50) - currentPlanet.x
+				local diffY =(-camera.scrollY + display.contentHeight * 0.50) - currentPlanet.y
 				
-				--camera:toPoint(currentPlanet.x,currentPlanet.y)
-				local limitX = display.contentWidth * 0.48
-				local limitY = display.contentHeight * 0.48				
+				local angle = extramath.getFullAngle(-diffX, -diffY)
+				planetIndicators[indexLine].rotation = angle
 				
-				--print(camera.scrollX, camera.scrollY)
+				local limitX = display.contentWidth * 0.45
+				local limitY = display.contentHeight * 0.45
+			
 				if diffX < limitX and diffX > -limitX and diffY < limitY and diffY > -limitY then
 					planetIndicators[indexLine].x = currentPlanet.x
 					planetIndicators[indexLine].y = currentPlanet.y
+					planetIndicators[indexLine].isVisible = false
 				else
-					
+					planetIndicators[indexLine].isVisible = true
 					if diffX >= limitX then
-						planetIndicators[indexLine].x = (-camera.scrollX + display.contentWidth * 0.48) - limitX
+						planetIndicators[indexLine].x = (-camera.scrollX + display.contentWidth * 0.50) - limitX
 					end
 					
 					if diffX <= -limitX then
-						planetIndicators[indexLine].x = (-camera.scrollX + display.contentWidth * 0.48) + limitX
+						planetIndicators[indexLine].x = (-camera.scrollX + display.contentWidth * 0.50) + limitX
 					end
 					
 					if diffY >= limitY then
-						planetIndicators[indexLine].y = (-camera.scrollY + display.contentHeight * 0.48) - limitY
+						planetIndicators[indexLine].y = (-camera.scrollY + display.contentHeight * 0.50) - limitY
 					end
 					
 					if diffY <= -limitY then
-						planetIndicators[indexLine].y = (-camera.scrollY + display.contentHeight * 0.48) + limitY
+						planetIndicators[indexLine].y = (-camera.scrollY + display.contentHeight * 0.50) + limitY
 					end
 
 				end
@@ -1147,13 +1296,28 @@ local function updateDistanceVector()
 	
 end
 
+local function updateBullets()
+	
+	for index = #physicsObjectList, 1, -1 do		
+		local physicsObject = physicsObjectList[index]
+		if physicsObject then
+			if physicsObject.x > (camera.contentWidth * 0.5) or physicsObject.x < (camera.contentWidth * -0.5) then
+				physicsObject.removeFromWorld = true
+			elseif physicsObject.y > (camera.contentHeight * 0.5) or physicsObject.y < (camera.contentHeight * -0.5) then
+				physicsObject.removeFromWorld = true
+			end
+		end
+	end
+end
+
 local function updateGameLoop(event)
 	if not isPaused then
 		updateParallax()
 		updateEnemies()
+		updateBullets()
 		showDebugInformation()
 		enterFrame(event)
-		updateDistanceVector()
+		updateIndicators()
 	end
 end
 
@@ -1162,10 +1326,15 @@ local function intro()
 		if planetIndex <= #planets then
 			camera:setFocus(planets[planetIndex])
 			introTimer = timer.performWithDelay(1800, function()
+				disabledControl = true
 				trackNextPlanet(planetIndex + 1)
 			end)
 		else
+			if isTutorial then
+				director.showOverlay("scenes.overlays.tutorial", {params = {tutorialName = "move"}})
+			end
 			camera.damping = 10
+			disabledControl = false
 			camera:setFocus(playerCharacter)
 			--transition.to(buttonBack, {alpha = 1, time = 500, transition = easing.outQuad})
 			scene.enableButtons()
@@ -1179,6 +1348,7 @@ local function intro()
 	end)
 	
 end
+
 ----------------------------------------------- Class functions 
 function scene.backAction()
 	robot.press(buttonPause)
@@ -1258,10 +1428,9 @@ function scene:create(event)
 	sceneGroup:insert(analogCircleMove)
 	
 	analogCircleBounds = display.newCircle(0,0, RADIUS_ANALOG)
-	analogCircleBounds.alpha = 0.8
 	analogCircleBounds.strokeWidth = 3
 	analogCircleBounds:setFillColor(0,0)
-	analogCircleBounds:setStrokeColor(1)
+	analogCircleBounds:setStrokeColor(1, 0.5)
 	analogCircleBounds.isVisible = false
 	sceneGroup:insert(analogCircleBounds)
 	
@@ -1300,15 +1469,20 @@ function scene:show( event )
 		distanceLines = {}
 		planetIndicators = {}
 		
-		for indexPlanet = 1, #planets do			
-			local circle = display.newCircle(planets[indexPlanet].x, planets[indexPlanet].y, 30)
-			planetIndicators[indexPlanet] = circle
-			circle:setFillColor(1)
-			camera:add(circle)
+		for indexPlanet = 1, #planets do		
+			local arrow = display.newImage("images/shooter/arrow.png")
+			arrow.xScale = 0.3
+			arrow.yScale = 0.3
+			transition.to(arrow, {iterations = -1, xScale = 0.5, yScale = 0.5, transition = easing.continuousLoop})
+			planetIndicators[indexPlanet] = arrow
+			camera:add(arrow)
 		end
 		
 	elseif ( phase == "did" ) then
-		intro()
+		--intro()
+		scene.enableButtons()
+		camera:setFocus(playerCharacter)
+		director.showOverlay("scenes.overlays.objetives", {isModal = true, params = {objetives = objetives}})
 	end
 end
 
@@ -1321,6 +1495,11 @@ function scene:hide( event )
 	elseif ( phase == "did" ) then
 		if introTimer then timer.cancel(introTimer) end
 		playerCharacter:analog(0, 0)
+		
+		for indexArrow = 1, #planetIndicators do
+			display.remove(planetIndicators[indexArrow])
+		end
+		
 		Runtime:removeEventListener("collision", collisionListener)
 		Runtime:removeEventListener("preCollision", preCollisionListener)
 		Runtime:removeEventListener("enterFrame", updateGameLoop)
@@ -1332,7 +1511,6 @@ end
 
 function scene:pause(pauseFlag)
 	
-	
 	if pauseFlag then
 		isPaused = true
 		physics.pause()
@@ -1341,8 +1519,10 @@ function scene:pause(pauseFlag)
 		director.hideOverlay()
 		physics.start()
 	end
-	
-	
+end
+
+function scene:introGame()
+	intro()
 end
 
 scene:addEventListener( "create" )
