@@ -12,7 +12,7 @@ local worldIndex, levelIndex
 local okButton
 
 ----------------------------Constants
-local NUMBER_TIPS = 13
+local NUMBER_TIPS = 45
 -- -------------------------------------------------------------------------------
 
 local function closeOverlay(event)
@@ -22,6 +22,24 @@ local function closeOverlay(event)
 	end})
 end
 
+local function showTip()
+	local randomTip = math.random(NUMBER_TIPS)
+		
+	while randomTip == previousTip do 
+		randomTip = math.random(NUMBER_TIPS)
+	end
+
+	previousTip = randomTip
+
+	tip = display.newImage("images/tips/tipsphase1/".. randomTip ..".png")
+
+	okButton:setEnabled(true)
+	tip.height = display.contentHeight
+	tip.x = display.contentCenterX
+	tip.y = display.contentCenterY
+
+	tipGroup:insert(tip)
+end
 ------------------------------Module functions
 function scene:create( event )
 
@@ -58,22 +76,7 @@ function scene:show( event )
 	
     if ( phase == "will" ) then
 		
-		local randomTip = math.random(1, NUMBER_TIPS)
-		
-		if randomTip == previousTip then 
-			randomTip = math.random(1, NUMBER_TIPS)
-		end
-		
-		previousTip = randomTip
-		
-		tip = display.newImage("images/tips/tips-".. randomTip ..".png")
-		
-		okButton:setEnabled(true)
-		tip.height = display.contentHeight
-		tip.x = display.contentCenterX
-		tip.y = display.contentCenterY
-
-		tipGroup:insert(tip)
+		showTip()
 	elseif ( phase == "did" ) then
 	
     end
