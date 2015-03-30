@@ -303,7 +303,7 @@ local function createMapAssets(sceneGroup)
 	local backgroundScale = display.viewableContentHeight / HEIGHT_BACKGROUND
 	sizeScroll = 0
 	for index = 1, NUM_BACKGROUNDS do
-		local background = display.newImage("images/levels/world" .. worldIndex .. "/background0"..index..".png")
+		local background = display.newImage("images/levels/world" .. worldIndex .. "/firstplane/fondo" ..index.. ".png")
 		sizeScroll = sizeScroll + background.contentWidth
 		background.anchorX = 0
 		background.x = ((index - 1) * WIDTH_BACKGROUND) * backgroundScale
@@ -314,7 +314,7 @@ local function createMapAssets(sceneGroup)
 	end
 	
 	for index = 1, NUM_BACKGROUNDS do
-		local background = display.newImage("images/levels/secondPlane/fondo"..index..".png")
+		local background = display.newImage("images/levels/world" .. worldIndex .. "/secondplane/fondo"..index..".png")
 		background.anchorX = 0
 		background.x = ((index - 1) * WIDTH_BACKGROUND) * backgroundScale
 		background.y = scrollView.height * 0.5
@@ -324,7 +324,7 @@ local function createMapAssets(sceneGroup)
 	end
 	
 	for index = 1, NUM_BACKGROUNDS do
-		local background = display.newImage("images/levels/thirdPlane/fondo"..index..".png")
+		local background = display.newImage("images/levels/world" .. worldIndex .. "/thirdplane/fondo"..index..".png")
 		background.anchorX = 0
 		background.x = ((index - 1) * WIDTH_BACKGROUND) * backgroundScale
 		background.y = scrollView.height * 0.5
@@ -377,7 +377,7 @@ function scene:show( event )
     local phase = event.phase
 	
 	local params = event.params or {}
-	worldIndex = params.worldIndex or 1
+	worldIndex = params.worldIndex or 3
 
     if ( phase == "will" ) then
 		physics.start()

@@ -8,7 +8,7 @@ local questionlist =
 			[2] = "110g", 
 			[3] = "1", 
 		}}, 
-		[2] = {text = "¿Cuántas porciones por paquete tiene el paquete de galletas",
+		[2] = {text = "¿Cuántas porciones por paquete tiene el paquete de galletas?",
 		answerid = 2,
 		answers = {
 			[1] = "1", 
