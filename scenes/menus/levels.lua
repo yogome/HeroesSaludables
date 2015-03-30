@@ -16,11 +16,10 @@ local spaceships = require( "entities.spaceships" )
 
 ----------------------------------------------- Variables
 local buttonBack
-local titleGroup, title, language
+local language
 local buttonsEnabled
 local currentPlayer
 local scrollView, secondPlane, thirdPlane
-local scrollViewButtonGroup
 local levelsGroup
 local worldIndex
 local prevLastUnlockedLevel, lastUnlockedLevel
@@ -97,9 +96,11 @@ local function levelIconTapped(event)
 	end
 end
 
-local function removeLevels()
-	display.remove(levelsGroup)
-	levelsGroup = nil
+local function removeAsset(assets)
+	for i=1, #assets do
+		display.remove(assets[i])
+		assets[i] = nil
+	end
 end
 
 local function createSpaceShip()
@@ -282,26 +283,7 @@ local function loadLevelData()
 	coinText.text = totalCoins
 	starText.text = totalStars
 end
-
------------------------------------------------ Class functions 
-function scene.enableButtons()
-	buttonBack:setEnabled(true)
-	buttonsEnabled = true
-end
-
-function scene.disableButtons()
-	buttonBack:setEnabled(false)
-	buttonsEnabled = false
-end
-
-function scene.backAction()
-	robot.press(buttonBack)
-	return true
-end 
-
-function scene:create(event)
-	local sceneGroup = self.view
-	
+local function createMapAssets(sceneGroup)
 	secondPlane = display.newGroup()
 	thirdPlane = display.newGroup()
 	
@@ -321,7 +303,7 @@ function scene:create(event)
 	local backgroundScale = display.viewableContentHeight / HEIGHT_BACKGROUND
 	sizeScroll = 0
 	for index = 1, NUM_BACKGROUNDS do
-		local background = display.newImage("images/levels/background0"..index..".png")
+		local background = display.newImage("images/levels/world" .. worldIndex .. "/background0"..index..".png")
 		sizeScroll = sizeScroll + background.contentWidth
 		background.anchorX = 0
 		background.x = ((index - 1) * WIDTH_BACKGROUND) * backgroundScale
@@ -354,9 +336,25 @@ function scene:create(event)
 	sceneGroup:insert(scrollView)
 	sceneGroup:insert(thirdPlane)
 	sceneGroup:insert(secondPlane)
-			
-	scrollViewButtonGroup = display.newGroup()
-	scrollView:insert(scrollViewButtonGroup)
+end
+----------------------------------------------- Class functions 
+function scene.enableButtons()
+	buttonBack:setEnabled(true)
+	buttonsEnabled = true
+end
+
+function scene.disableButtons()
+	buttonBack:setEnabled(false)
+	buttonsEnabled = false
+end
+
+function scene.backAction()
+	robot.press(buttonBack)
+	return true
+end 
+
+function scene:create(event)
+	local sceneGroup = self.view
 	
 	titleGroup = display.newGroup()
 	sceneGroup:insert(titleGroup)
@@ -384,6 +382,7 @@ function scene:show( event )
     if ( phase == "will" ) then
 		physics.start()
 		language = database.config("language") or "en"
+		createMapAssets(sceneGroup)
 		currentPlayer = players.getCurrent()
 		createLevels(sceneGroup)
 		loadLevelData()
@@ -407,7 +406,7 @@ function scene:hide( event )
 		spaceships.stop()
 		Runtime:removeEventListener("enterFrame", updateGameLoop)
 	elseif ( phase == "did" ) then
-		removeLevels()
+		removeAsset({levelsGroup,secondPlane,scrollView,thirdPlane})
 	end
 end
 
