@@ -62,10 +62,10 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 1300, y = 100}},
-			objectives = {
-				fruit = 0,
-				vegetable = 0,
-				protein = 3,
+			objetives = {
+				protein = {
+					portions = 2,
+				},
 			},
 			enemySpawnData = {
 				{
@@ -133,10 +133,10 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 1400, y =  300}},
-			objectives = {
-				fruit = 0,
-				vegetable = 0,
-				protein = 3,
+			objetives = {
+				protein = {
+					portions = 3,
+				},
 			},
 			enemySpawnData = {
 				{
@@ -178,10 +178,10 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 900, y = 100}},
-			objectives = {
-				fruit = 2,
-				vegetable = 0,
-				protein = 0,
+			objetives = {
+				fruit = {
+					portions = 3,
+				},
 			},
 			enemySpawnData = {
 				{
@@ -257,10 +257,10 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 700, y = 250}},
-			objectives = {
-				fruit = 0,
-				vegetable = 3,
-				protein = 0,
+			objetives = {
+				vegetable = {
+					portions = 3
+				},
 			},
 			enemySpawnData = {
 				{
@@ -313,10 +313,8 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = -1300, y = -500}},
-			objectives = {
-				fruit = 3,
-				vegetable = 0,
-				protein = 0,
+			objetives = {
+				fruit = {portions = 3},
 			},
 			enemySpawnData = {
 				{
@@ -365,10 +363,8 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = -1100, y = -600}},
-			objectives = {
-				fruit = 3,
-				vegetable = 0,
-				protein = 0,
+			objetives = {
+				fruit = {portions = 3},
 			},
 			enemySpawnData = {
 				{
@@ -423,10 +419,8 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 1200, y = 400}},
-			objectives = {
-				fruit = 0,
-				vegetable = 0,
-				protein = 3,
+			objetives = {
+				protein = {portions = 3},
 			},
 			enemySpawnData = {
 				{
@@ -471,10 +465,8 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 1300, y = 400}},
-			objectives = {
-				fruit = 0,
-				vegetable = 3,
-				protein = 0,
+			objetives = {
+				vegetable = { portions = 3},
 			},
 			enemySpawnData = {
 				{
@@ -536,10 +528,8 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 1300, y = 500}},
-			objectives = {
-				fruit = 3,
-				vegetable = 0,
-				protein = 0,
+			objetives = {
+				fruit = { portions = 3 },
 			},
 			enemySpawnData = {
 				{
@@ -581,10 +571,10 @@ local worldsData = {
 			levelWidth = 4000,
 			levelHeight = 2000,
 			ship = {position = {x = 1600, y = 600}},
-			objectives = {
-				fruit = 1,
-				vegetable = 1,
-				protein = 1,
+			objetives = {
+				fruit = { portions = 1},
+				vegetable = { portions = 1},
+				protein = { portions = 1},
 			},
 			enemySpawnData = {
 				{
@@ -650,10 +640,9 @@ local worldsData = {
 			levelWidth = 4000,
 			levelHeight = 2000,
 			ship = {position = {x = 1900, y = -900}},
-			objectives = {
-				fruit = 2,
-				vegetable = 1,
-				protein = 0,
+			objetives = {
+				fruit = { portions = 2 },
+				vegetable = { portions = 1 },
 			},
 			enemySpawnData = {
 				{
@@ -726,10 +715,10 @@ local worldsData = {
 			levelWidth = 4000,
 			levelHeight = 2000,
 			ship = {position = {x = 1600, y = 600}},
-			objectives = {
-				fruit = 1,
-				vegetable = 1,
-				protein = 1,
+			objetives = {
+				fruit = { portions = 1 },
+				vegetable = { portions = 1 },
+				protein = { portions = 1 },
 			},
 			enemySpawnData = {
 				{
@@ -822,10 +811,9 @@ local worldsData = {
 			levelWidth = 4000,
 			levelHeight = 2000,
 			ship = {position = {x = -1900, y = -500}},
-			objectives = {
-				fruit = 1,
-				vegetable = 0,
-				protein = 1,
+			objetives = {
+				fruit = { portions = 1 },
+				protein = { portions = 1 },
 			},
 			enemySpawnData = {
 				{
@@ -895,10 +883,10 @@ local worldsData = {
 			levelWidth = 4000,
 			levelHeight = 2000,
 			ship = {position = {x = -1700, y = 200}},
-			objectives = {
-				fruit = 1,
-				vegetable = 1,
-				protein = 1,
+			objetives = {
+				fruit = { portions = 1 },
+				vegetable = { portions = 1 },
+				protein = { portions = 1 },
 			},
 			enemySpawnData = {
 				{
@@ -1011,7 +999,7 @@ local worldsData = {
 --			levelWidth = 3000,
 --			levelHeight = 1500,
 --			ship = {position = {x = 1300, y = 100}},
---			objectives = {
+--			objetives = {
 --				fruit = 0,
 --				vegetable = 0,
 --				protein = 3,
@@ -1087,7 +1075,7 @@ local worldsData = {
 --			levelWidth = 3000,
 --			levelHeight = 1500,
 --			ship = {position = {x = 1400, y =  300}},
---			objectives = {
+--			objetives = {
 --				fruit = 0,
 --				vegetable = 0,
 --				protein = 3,
@@ -1140,7 +1128,7 @@ local worldsData = {
 --			levelWidth = 3000,
 --			levelHeight = 1500,
 --			ship = {position = {x = 900, y = 100}},
---			objectives = {
+--			objetives = {
 --				fruit = 2,
 --				vegetable = 0,
 --				protein = 0,
@@ -1219,7 +1207,7 @@ local worldsData = {
 --			levelWidth = 3000,
 --			levelHeight = 1500,
 --			ship = {position = {x = 700, y = 250}},
---			objectives = {
+--			objetives = {
 --				fruit = 0,
 --				vegetable = 3,
 --				protein = 0,
@@ -1275,7 +1263,7 @@ local worldsData = {
 --			levelWidth = 3000,
 --			levelHeight = 1500,
 --			ship = {position = {x = 1300, y = -500}},
---			objectives = {
+--			objetives = {
 --				fruit = 3,
 --				vegetable = 0,
 --				protein = 0,
@@ -1337,7 +1325,7 @@ local worldsData = {
 --			levelWidth = 3000,
 --			levelHeight = 1500,
 --			ship = {position = {x = -1100, y = 600}},
---			objectives = {
+--			objetives = {
 --				fruit = 3,
 --				vegetable = 0,
 --				protein = 0,
@@ -1395,7 +1383,7 @@ local worldsData = {
 --			levelWidth = 3000,
 --			levelHeight = 1500,
 --			ship = {position = {x = -1200, y = 400}},
---			objectives = {
+--			objetives = {
 --				fruit = 0,
 --				vegetable = 0,
 --				protein = 3,
@@ -1443,7 +1431,7 @@ local worldsData = {
 --			levelWidth = 3000,
 --			levelHeight = 1500,
 --			ship = {position = {x = 1300, y = 400}},
---			objectives = {
+--			objetives = {
 --				fruit = 0,
 --				vegetable = 3,
 --				protein = 0,
@@ -1503,7 +1491,7 @@ local worldsData = {
 --			levelWidth = 3000,
 --			levelHeight = 1500,
 --			ship = {position = {x = 1300, y = 500}},
---			objectives = {
+--			objetives = {
 --				fruit = 3,
 --				vegetable = 0,
 --				protein = 0,
@@ -1548,7 +1536,7 @@ local worldsData = {
 --			levelWidth = 4000,
 --			levelHeight = 2000,
 --			ship = {position = {x = 1600, y = 600}},
---			objectives = {
+--			objetives = {
 --				fruit = 1,
 --				vegetable = 1,
 --				protein = 1,
@@ -1617,7 +1605,7 @@ local worldsData = {
 --			levelWidth = 4000,
 --			levelHeight = 2000,
 --			ship = {position = {x = 1900, y = -900}},
---			objectives = {
+--			objetives = {
 --				fruit = 2,
 --				vegetable = 1,
 --				protein = 0,
@@ -1706,7 +1694,7 @@ local worldsData = {
 --			levelWidth = 4000,
 --			levelHeight = 2000,
 --			ship = {position = {x = 1600, y = 600}},
---			objectives = {
+--			objetives = {
 --				fruit = 1,
 --				vegetable = 1,
 --				protein = 1,
@@ -1802,7 +1790,7 @@ local worldsData = {
 --			levelWidth = 4000,
 --			levelHeight = 2000,
 --			ship = {position = {x = -1900, y = -500}},
---			objectives = {
+--			objetives = {
 --				fruit = 1,
 --				vegetable = 0,
 --				protein = 1,
@@ -1911,7 +1899,7 @@ local worldsData = {
 --			levelWidth = 4000,
 --			levelHeight = 2000,
 --			ship = {position = {x = -1700, y = 200}},
---			objectives = {
+--			objetives = {
 --				fruit = 1,
 --				vegetable = 1,
 --				protein = 1,
@@ -2042,7 +2030,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500 ,
 			ship = {position = {x = 1100, y = 600}},
-			objectives = {
+			objetives = {
 				fruit = 3,
 				vegetable = 0,
 				protein = 0,
@@ -2084,7 +2072,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 1300, y = 100}},
-			objectives = {
+			objetives = {
 				fruit = 0,
 				vegetable = 0,
 				protein = 3,
@@ -2155,7 +2143,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 1400, y =  300}},
-			objectives = {
+			objetives = {
 				fruit = 0,
 				vegetable = 0,
 				protein = 3,
@@ -2200,7 +2188,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 900, y = 100}},
-			objectives = {
+			objetives = {
 				fruit = 2,
 				vegetable = 0,
 				protein = 0,
@@ -2279,7 +2267,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 700, y = 250}},
-			objectives = {
+			objetives = {
 				fruit = 0,
 				vegetable = 3,
 				protein = 0,
@@ -2335,7 +2323,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = -1300, y = -500}},
-			objectives = {
+			objetives = {
 				fruit = 3,
 				vegetable = 0,
 				protein = 0,
@@ -2387,7 +2375,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = -1100, y = -600}},
-			objectives = {
+			objetives = {
 				fruit = 3,
 				vegetable = 0,
 				protein = 0,
@@ -2445,7 +2433,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 1200, y = 400}},
-			objectives = {
+			objetives = {
 				fruit = 0,
 				vegetable = 0,
 				protein = 3,
@@ -2493,7 +2481,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 1300, y = 400}},
-			objectives = {
+			objetives = {
 				fruit = 0,
 				vegetable = 3,
 				protein = 0,
@@ -2558,7 +2546,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 1300, y = 500}},
-			objectives = {
+			objetives = {
 				fruit = 3,
 				vegetable = 0,
 				protein = 0,
@@ -2603,7 +2591,7 @@ local worldsData = {
 			levelWidth = 4000,
 			levelHeight = 2000,
 			ship = {position = {x = 1600, y = 600}},
-			objectives = {
+			objetives = {
 				fruit = 1,
 				vegetable = 1,
 				protein = 1,
@@ -2672,7 +2660,7 @@ local worldsData = {
 			levelWidth = 4000,
 			levelHeight = 2000,
 			ship = {position = {x = 1900, y = -900}},
-			objectives = {
+			objetives = {
 				fruit = 2,
 				vegetable = 1,
 				protein = 0,
@@ -2748,7 +2736,7 @@ local worldsData = {
 			levelWidth = 4000,
 			levelHeight = 2000,
 			ship = {position = {x = 1600, y = 600}},
-			objectives = {
+			objetives = {
 				fruit = 1,
 				vegetable = 1,
 				protein = 1,
@@ -2844,7 +2832,7 @@ local worldsData = {
 			levelWidth = 4000,
 			levelHeight = 2000,
 			ship = {position = {x = -1900, y = -500}},
-			objectives = {
+			objetives = {
 				fruit = 1,
 				vegetable = 0,
 				protein = 1,
@@ -2917,7 +2905,7 @@ local worldsData = {
 			levelWidth = 4000,
 			levelHeight = 2000,
 			ship = {position = {x = -1700, y = 200}},
-			objectives = {
+			objetives = {
 				fruit = 1,
 				vegetable = 1,
 				protein = 1,
@@ -3037,7 +3025,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500 ,
 			ship = {position = {x = 1100, y = 600}},
-			objectives = {
+			objetives = {
 				fruit = 3,
 				vegetable = 0,
 				protein = 0,
@@ -3079,7 +3067,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 1300, y = 100}},
-			objectives = {
+			objetives = {
 				fruit = 0,
 				vegetable = 0,
 				protein = 3,
@@ -3150,7 +3138,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 1400, y =  300}},
-			objectives = {
+			objetives = {
 				fruit = 0,
 				vegetable = 0,
 				protein = 3,
@@ -3195,7 +3183,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 900, y = 100}},
-			objectives = {
+			objetives = {
 				fruit = 2,
 				vegetable = 0,
 				protein = 0,
@@ -3274,7 +3262,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 700, y = 250}},
-			objectives = {
+			objetives = {
 				fruit = 0,
 				vegetable = 3,
 				protein = 0,
@@ -3330,7 +3318,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = -1300, y = -500}},
-			objectives = {
+			objetives = {
 				fruit = 3,
 				vegetable = 0,
 				protein = 0,
@@ -3382,7 +3370,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = -1100, y = -600}},
-			objectives = {
+			objetives = {
 				fruit = 3,
 				vegetable = 0,
 				protein = 0,
@@ -3440,7 +3428,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 1200, y = 400}},
-			objectives = {
+			objetives = {
 				fruit = 0,
 				vegetable = 0,
 				protein = 3,
@@ -3488,7 +3476,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 1300, y = 400}},
-			objectives = {
+			objetives = {
 				fruit = 0,
 				vegetable = 3,
 				protein = 0,
@@ -3553,7 +3541,7 @@ local worldsData = {
 			levelWidth = 3000,
 			levelHeight = 1500,
 			ship = {position = {x = 1300, y = 500}},
-			objectives = {
+			objetives = {
 				fruit = 3,
 				vegetable = 0,
 				protein = 0,
@@ -3598,7 +3586,7 @@ local worldsData = {
 			levelWidth = 4000,
 			levelHeight = 2000,
 			ship = {position = {x = 1600, y = 600}},
-			objectives = {
+			objetives = {
 				fruit = 1,
 				vegetable = 1,
 				protein = 1,
@@ -3667,7 +3655,7 @@ local worldsData = {
 			levelWidth = 4000,
 			levelHeight = 2000,
 			ship = {position = {x = 1900, y = -900}},
-			objectives = {
+			objetives = {
 				fruit = 2,
 				vegetable = 1,
 				protein = 0,
@@ -3743,7 +3731,7 @@ local worldsData = {
 			levelWidth = 4000,
 			levelHeight = 2000,
 			ship = {position = {x = 1600, y = 600}},
-			objectives = {
+			objetives = {
 				fruit = 1,
 				vegetable = 1,
 				protein = 1,
@@ -3839,7 +3827,7 @@ local worldsData = {
 			levelWidth = 4000,
 			levelHeight = 2000,
 			ship = {position = {x = -1900, y = -500}},
-			objectives = {
+			objetives = {
 				fruit = 1,
 				vegetable = 0,
 				protein = 1,
@@ -3912,7 +3900,7 @@ local worldsData = {
 			levelWidth = 4000,
 			levelHeight = 2000,
 			ship = {position = {x = -1700, y = 200}},
-			objectives = {
+			objetives = {
 				fruit = 1,
 				vegetable = 1,
 				protein = 1,
