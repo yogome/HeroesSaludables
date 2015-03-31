@@ -30,12 +30,9 @@ end
 local function goInfo()
 	director.gotoScene("scenes.game.infoscreen")
 end
-local function goInfo()
-	director.gotoScene("scenes.game.operationquiz")
-end
 
 local function goLabelQuiz()
-	director.gotoScene("scenes.game.operationquiz")
+	director.gotoScene("scenes.game.labelquiz")
 end
 
 local function goWorlds()
@@ -51,7 +48,7 @@ local function goSelector()
 end
 
 local function goLabel()
-	director.gotoScene("scenes.game.labelquiz")
+	director.gotoScene("scenes.game.labelpuzzle")
 end
 
 local function goQuestion()
@@ -65,6 +62,10 @@ end
 
 local function goHome()
 	director.gotoScene("scenes.menus.home")
+end
+
+local function goOperations()
+	director.gotoScene("scenes.game.operationquiz")
 end
 local function goEditor()
 	require("libs.helpers.editor")
