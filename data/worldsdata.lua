@@ -1018,7 +1018,7 @@ local worldsData = {
 			levelDescription = "Recolecta las porciones necesarias",
 			objetives = {
 				fruit = {
-					portions = 2,
+					 portions = 2,
 				},
 			},
 			obstacle = {
