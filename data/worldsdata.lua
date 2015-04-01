@@ -1584,7 +1584,7 @@ local worldsData = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
 			levelHeight = 2000,
-			ship = {position = {x = -1900, y = -600}},
+			ship = {position = {x = -1800, y = -600}},
 			objetives = {
 				vegetable = { portions = 3,},
 				fruit = { portions = 3,},
@@ -1602,22 +1602,22 @@ local worldsData = {
 			},
 			enemySpawnData = {
 				{
-					type = "shooter",
-					spawnPoint = { x = -1900, y = 0},
-					angle = 270
-				},
-				{
-					type = "shooter",
-					spawnPoint = { x = 0, y = 1900},
-					angle = 180	
-				},
-				{
 					type = "follower",
 					spawnPoint = { x = -600, y = 800},
 					patrolPath = {
 						[1] = { x = -1200, y = 400},
 						[2] = {x = -600, y = 800},
 					}
+				},
+				{
+					type = "shooter",
+					spawnPoint = { x = 0, y = 900},
+					angle = 180
+				},
+				{
+					type = "shooter",
+					spawnPoint = { x = -1900, y = 0},
+					angle = 270
 				},
 			},
 			earth = {
@@ -1669,42 +1669,91 @@ local worldsData = {
 			x = scale * .6,
 			y = -130,
 			background = "images/backgrounds/space.png",
-			levelWidth = 3000,
-			levelHeight = 1500,
-			ship = {position = {x = 1300, y = 500}},
+			levelWidth = 4000,
+			levelHeight = 2000,
+			ship = {position = {x = -1800, y = -600}},
 			objetives = {
 				fruit = { portions = 3,},
+				vegetable = { portions = 3,},
+				protein = { portions = 3,},
 			},
 			enemySpawnData = {
 				{
-					type = "canoner",
-					spawnPoint = { x = 0, y = 0},
+					type = "follower",
+					spawnPoint = { x = 1200, y = 300},
 					patrolPath = {
-						[1] = { x = -600, y = 400},
-						[2] = {x = 600, y = -400},
+						[1] = { x = 1200, y = -300},
+						[2] = {x = 1200, y = 300},
 					}
+				},
+				{
+					type = "follower",
+					spawnPoint = { x = -1200, y = 300},
+					patrolPath = {
+						[1] = { x = -1200, y = -300},
+						[2] = {x = -1200, y = 300},
+					}
+				},
+				{
+					type = "follower",
+					spawnPoint = { x = 300, y = -800},
+					patrolPath = {
+						[1] = { x = -300, y = -800},
+						[2] = {x = 300, y = -800},
+					}
+				},
+				{
+					type = "follower",
+					spawnPoint = { x = 300, y = 800},
+					patrolPath = {
+						[1] = { x = -300, y = 800},
+						[2] = {x = 300, y = 800},
+					}
+				},
+			},
+			obstacle = {
+				[1] = {
+				 type = "blackhole",
+				 position = { x = -500, y = -400},
+				},
+				[2] = {
+				 type = "blackhole",
+				 position = { x = 500, y = -400},
+				},
+				[3] = {
+				 type = "blackhole",
+				 position = { x = -500, y = 400},
+				},
+				[4] = {
+				 type = "blackhole",
+				 position = { x = 500, y = 400},
 				},
 			},
 			earth = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
-				position = {x = 1300, y = 0},
+				position = {x = 0, y = 0},
 				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
 					foodType = "fruit",
 					asset = "images/planets/fruits_1.png",
-					position = {x = -1300, y = 0}
+					position = {x = -1800, y = -800}
 				},
+				[2] = {
+					foodType = "protein",
+					asset = "images/planets/proteins_1.png",
+					position = {x = 1800, y = -800}
+				},
+				[3] = {
+					foodType = "vegetable",
+					asset = "images/planets/vegetables_1.png",
+					position = {x = 1800, y = 800}
+				}
 			},
 			asteroids = {
-				[1] = {
-					lineStart = {x = 200, y = 500},
-					lineEnd = {x = 1000, y = -500},
-					easingX = easing.inSine,
-					easingY = easing.outSine,
-				},
+
 			},
 		},
 		--Level 11
@@ -1714,7 +1763,7 @@ local worldsData = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
 			levelHeight = 2000,
-			ship = {position = {x = 1600, y = 600}},
+			ship = {position = {x = -1800, y = -600}},
 			objetives = {
 				fruit = { portions = 1,},
 				vegetable = { portions = 1,},
@@ -1723,130 +1772,208 @@ local worldsData = {
 			enemySpawnData = {
 				{
 					type = "follower",
-					spawnPoint = { x = 0, y = 300},
+					spawnPoint = { x = 1100, y = -400},
 					patrolPath = {
-						[1] = { x = -1000, y = 100},
-						[2] = {x = 1000, y = 700},
+						[1] = { x = 1300, y = 100},
+						[2] = {x = 1100, y = -400},
 					}
 				},
 				{
-					type = "canoner",
-					spawnPoint = { x = 800, y = -800},
+					type = "follower",
+					spawnPoint = { x = -200, y = 400},
 					patrolPath = {
-						[1] = { x = -800, y = -200},
-						[2] = {x = 800, y = -800},
+						[1] = { x = -800, y = 100},
+						[2] = {x = -200, y = 400},
 					}
 				},
 			},
 			earth = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
-				position = {x = -1800, y = -800},
+				position = {x = 0, y = 0},
 				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
 					foodType = "fruit",
 					asset = "images/planets/fruits_1.png",
-					position = {x = 1800, y = -800}
+					position = {x = -1800, y = -800}
 				},
 				[2] = {
 					foodType = "protein",
 					asset = "images/planets/proteins_1.png",
-					position = {x = 1800, y = 800}
+					position = {x = -1800, y = 800}
 				},
 				[3] = {
 					foodType = "vegetable",
 					asset = "images/planets/vegetables_1.png",
-					position = {x = -1800, y = 800}
+					position = {x = 1800, y = 800}
 				}
 			},
 			asteroids = {
 				[1] = {
-					lineStart = {x = 400, y = -200},
-					lineEnd = {x = 1500, y = -750},
-					easingX = easing.inSine,
-					easingY = easing.outSine,
+					lineStart = {x = 800, y = -300},
+					lineEnd = {x = 0, y = -800},
 				},
 				[2] = {
-					lineStart = {x = -1700, y = 200},
-					lineEnd = {x = -400, y = 800},
-					easingX = easing.inSine,
-					easingY = easing.outSine,
+					lineStart = {x = 0, y = -800},
+					lineEnd = {x = -1200, y = -100},
+				},
+				[3] = {
+					lineStart = {x = -1200, y = -100},
+					lineEnd = {x = 0, y = 700},
+				},
+				[4] = {
+					lineStart = {x = 0, y = 700},
+					lineEnd = {x = 1000, y = 0},
+				},
+				[5] = {
+					lineStart = {x = 600, y = -100},
+					lineEnd = {x = 0, y = -450},
+				},
+				[6] = {
+					lineStart = {x = 0, y = -450},
+					lineEnd = {x = -600, y = -100},
+				},
+				[7] = {
+					lineStart = {x = 600, y = -100},
+					lineEnd = {x = 0, y = 300},
+				},
+				[8] = {
+					lineStart = {x = 0, y = 300},
+					lineEnd = {x = -300, y = 150},
 				},
 			},
 		},
 		--Level 12
 		[12] = {
-			x = scale * .72,
-			y = -80,
+			x = scale * .6,
+			y = -130,
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
 			levelHeight = 2000,
-			ship = {position = {x = 1900, y = -900}},
+			ship = {position = {x = -1800, y = -600}},
 			objetives = {
-				fruit = { portions = 1,},
-				vegetable = { portions = 1,},
-				protein = { portions = 1,},
+				fruit = { portions = 3,},
+				vegetable = { portions = 3,},
+				protein = { portions = 3,},
 			},
 			enemySpawnData = {
 				{
 					type = "follower",
-					spawnPoint = { x = -1000, y = -500},
+					spawnPoint = { x = 1200, y = 300},
 					patrolPath = {
-						[1] = { x = -1800, y = -300},
-						[2] = {x = -500, y = -500},
-						[3] = {x = -800, y = -800},
-						[4] = {x = -500, y = -500},
+						[1] = { x = 1200, y = -300},
+						[2] = {x = 1200, y = 300},
 					}
 				},
 				{
 					type = "follower",
-					spawnPoint = { x = -400, y = -400},
+					spawnPoint = { x = -1200, y = 300},
 					patrolPath = {
-						[1] = { x = -1800, y = -100},
-						[2] = {x = -300, y = -200},
-						[3] = {x = -200, y = -800},
-						[4] = {x = -300, y = -200},
+						[1] = { x = -1200, y = -300},
+						[2] = {x = -1200, y = 300},
 					}
 				},
-
 				{
 					type = "follower",
-					spawnPoint = { x = 0, y = 0},
+					spawnPoint = { x = 300, y = -800},
 					patrolPath = {
-						[1] = { x = -1800, y = 400},
-						[2] = {x = -100, y = 100},
-						[3] = {x = 400, y = -800},
-						[4] = {x = -100, y = 100},
+						[1] = { x = -300, y = -800},
+						[2] = {x = 300, y = -800},
 					}
 				},
 				{
-					type = "canoner",
-					spawnPoint = { x = -800 , y = -800},
+					type = "follower",
+					spawnPoint = { x = 300, y = 800},
 					patrolPath = {
-						[1] = { x = -100, y = 800 },
-						[2] = {x = 900, y = -400},
+						[1] = { x = -300, y = 800},
+						[2] = {x = 300, y = 800},
 					}
+				},
+				{
+					type = "shooter",
+					spawnPoint = { x = 0, y = 900},
+					angle = 180
+				},
+				{
+					type = "shooter",
+					spawnPoint = { x = -1900, y = 0},
+					angle = 270
+				},
+			},
+			obstacle = {
+				[1] = {
+				 type = "blackhole",
+				 position = { x = -200, y = -200},
+				},
+				[2] = {
+				 type = "blackhole",
+				 position = { x = -500, y = -400},
+				},
+				[3] = {
+				 type = "blackhole",
+				 position = { x = -800, y = -600},
+				},
+				[4] = {
+				 type = "blackhole",
+				 position = { x = 200, y = -200},
+				},
+				[5] = {
+				 type = "blackhole",
+				 position = { x = 500, y = -400},
+				},
+				[6] = {
+				 type = "blackhole",
+				 position = { x = 800, y = -600},
+				},
+				[7] = {
+				 type = "blackhole",
+				 position = { x = -200, y = 200},
+				},
+				[8] = {
+				 type = "blackhole",
+				 position = { x = -500, y = 400},
+				},
+				[9] = {
+				 type = "blackhole",
+				 position = { x = -800, y = 600},
+				},
+				[10] = {
+				 type = "blackhole",
+				 position = { x = 200, y = 200},
+				},
+				[11] = {
+				 type = "blackhole",
+				 position = { x = 500, y = 400},
+				},
+				[12] = {
+				 type = "blackhole",
+				 position = { x = 800, y = 600},
 				},
 			},
 			earth = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
-				position = {x = -1800, y = -700},
+				position = {x = 0, y = 0},
 				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
 					foodType = "fruit",
 					asset = "images/planets/fruits_1.png",
-					position = {x = 1800, y = -500}
+					position = {x = -1800, y = -800}
 				},
 				[2] = {
 					foodType = "protein",
 					asset = "images/planets/proteins_1.png",
-					position = {x = 1700, y = 600}
+					position = {x = 1800, y = -800}
 				},
+				[3] = {
+					foodType = "vegetable",
+					asset = "images/planets/vegetables_1.png",
+					position = {x = 1800, y = 800}
+				}
 			},
 			asteroids = {
 
@@ -1859,76 +1986,58 @@ local worldsData = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
 			levelHeight = 2000,
-			ship = {position = {x = 1600, y = 600}},
+			ship = {position = {x = -1900, y = -600}},
 			objetives = {
 				fruit = { portions = 1,},
 				vegetable = { portions = 1,},
 				protein = { portions = 1,},
 			},
+			obstacle = {
+
+			},
 			enemySpawnData = {
 				{
-					type = "follower",
-					spawnPoint = { x = -500, y = 0},
-					patrolPath = {
-						[1] = { x = -500, y = 0},
-						[2] = {x = 0, y = 500}
-					}
-				},
-				{
-					type = "canoner",
-					spawnPoint = { x = -690, y = -900},
-					patrolPath = {
-						[1] = { x = -700, y = -900},
-						[2] = { x = -500, y = -600},
-						[3] = {x = -600, y = -400},
-						[4] = {x = -1100, y = -100},
-						[5] = {x = -1700, y = -400},
-						[6] = {x = -1100, y = -100},
-						[7] = {x = -600, y = -400},
-						[8] = { x = -500, y = -600},
-					}
-				},
-				{
-					type = "canoner",
-					spawnPoint = { x = 600, y = -100},
-					patrolPath = {
-						[1] = { x = 610, y = -100},
-						[2] = { x = 700, y = 200},
-						[3] = {x = 700, y = 500},
-						[4] = {x = 400, y = 700},
-						[5] = {x = -100, y = 500},
-						[6] = {x = 400, y = 700},
-						[7] = {x = 700, y = 500},
-						[8] = { x = 610, y = -100},
-					}
+					type = "shooter",
+					spawnPoint = { x = -150, y = 400},
+					angle = 315
 				},
 				{
 					type = "shooter",
-					spawnPoint = { x = -1800, y = 200},
-					angle = 0
+					spawnPoint = { x = -1100, y = 0},
+					angle = 315
 				},
 				{
 					type = "shooter",
-					spawnPoint = { x = -800, y = 900},
-					angle = 90
+					spawnPoint = { x = 500, y = -50},
+					angle = 315
 				},
 				{
 					type = "shooter",
-					spawnPoint = { x = 600, y = -900},
-					angle = 270
+					spawnPoint = { x = 1000, y = -300},
+					angle = 315
+				},
+				{
+					type = "shooter",
+					spawnPoint = { x = -100, y = 100},
+					angle = 135
+				},
+				{
+					type = "shooter",
+					spawnPoint = { x = 600, y = 420},
+					angle = 135
 				},
 			},
 			earth = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
-				position = {x = -1400, y = -500},
+				position = {x = -1400, y = 500},
 				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
 					foodType = "fruit",
 					asset = "images/planets/fruits_1.png",
-					position = {x = 1800, y = -800}
+					position = {x = 1800, y = -400}
 				},
 				[2] = {
 					foodType = "protein",
@@ -1938,13 +2047,21 @@ local worldsData = {
 				[3] = {
 					foodType = "vegetable",
 					asset = "images/planets/vegetables_1.png",
-					position = {x = -1800, y = 800}
+					position = {x = -1800, y = -800}
 				}
 			},
 			asteroids = {
 				[1] = {
-					lineStart = {x = -1000, y = 500},
-					lineEnd = {x = 1000, y = -500},
+					lineStart = {x = -2000, y = 400},
+					lineEnd = {x = -100, y = -700},
+				},
+				[2] = {
+					lineStart = {x = 1700, y = -1000},
+					lineEnd = {x = -400, y = 500},
+				},
+				[3] = {
+					lineStart = {x = -200, y = 1000},
+					lineEnd = {x = 1300, y = 100},
 				},
 			},
 		},
@@ -1955,69 +2072,99 @@ local worldsData = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
 			levelHeight = 2000,
-			ship = {position = {x = -1900, y = -500}},
+			ship = {position = {x = 1800, y = 800}},
 			objetives = {
 				fruit = { portions = 1,},
+				vegetable = { portions = 1,},
 				protein = { portions = 1,},
 			},
 			enemySpawnData = {
 				{
 					type = "shooter",
-					spawnPoint = { x = -600, y = 0},
-					angle = 180
+					spawnPoint = { x = 500, y = 450},
+					angle = 270
 				},
 				{
 					type = "shooter",
-					spawnPoint = { x = 600, y = 0},
-					angle = 0
-				},
-				{
-					type = "shooter",
-					spawnPoint = { x = 0, y = -600},
+					spawnPoint = { x = 300, y = 900},
 					angle = 90
 				},
 				{
 					type = "shooter",
-					spawnPoint = { x = 0, y = 600},
-					angle = 270
+					spawnPoint = { x = 700, y = 900},
+					angle = 90
 				},
 				{
-					type = "canoner",
-					spawnPoint = { x = 800, y = -100},
-					patrolPath = {
-						[1] = { x = 1000, y = -100},
-						[2] = { x = 200, y = -700},
-					}
+					type = "shooter",
+					spawnPoint = { x = -1900, y = -100},
+					angle = 0
 				},
 				{
-					type = "canoner",
-					spawnPoint = { x = -800, y = -100},
-					patrolPath = {
-						[1] = { x = -1000, y = 100},
-						[2] = { x = -200, y = 700},
-					}
+					type = "shooter",
+					spawnPoint = { x = -1900, y = -500},
+					angle = 0
+				},
+				{
+					type = "shooter",
+					spawnPoint = { x = 1900, y = -400},
+					angle = 180
+				},
+				{
+					type = "shooter",
+					spawnPoint = { x = 1900, y = -800},
+					angle = 180
+				},
+			},
+			obstacle = {
+				[1] = {
+				 type = "blackhole",
+				 position = { x = 250, y = -200},
+				},
+				[2] = {
+				 type = "blackhole",
+				 position = { x = -250, y = -200},
+				},
+				[3] = {
+				 type = "blackhole",
+				 position = { x = 400, y = -700},
+				},
+				[4] = {
+				 type = "blackhole",
+				 position = { x = -400, y = -700},
 				},
 			},
 			earth = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
-				position = {x = 0, y = 0},
+				position = {x = -1200, y = 800},
 				scaleFactor = 1.2
 			},
 			planets = {
 				[1] = {
 					foodType = "fruit",
 					asset = "images/planets/fruits_1.png",
-					position = {x = -1700, y = -700}
+					position = {x = 1100, y = 700}
 				},
 				[2] = {
 					foodType = "protein",
 					asset = "images/planets/proteins_1.png",
-					position = {x = 1700, y = -700}
+					position = {x = 0, y = -200}
 				},
+				[3] = {
+					foodType = "vegetable",
+					asset = "images/planets/vegetables_1.png",
+					position = {x = 0, y = -700}
+				}
 			},
 			asteroids = {
-				
+				[1] = {
+					lineStart = {x = -2000, y = 400},
+					lineEnd = {x = -200, y = 400},
+				},
+				[2] = {
+					lineStart = {x = 2000, y = 400},
+					lineEnd = {x = 200, y = 400},
+				},
 			},
 		},
 		--Level 15
@@ -2027,7 +2174,7 @@ local worldsData = {
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
 			levelHeight = 2000,
-			ship = {position = {x = -1700, y = 200}},
+			ship = {position = {x = -1900, y = -800}},
 			objetives = {
 				fruit = { portions = 1,},
 				vegetable = { portions = 1,},
@@ -2035,30 +2182,122 @@ local worldsData = {
 			},
 			enemySpawnData = {
 				{
-					type = "shooter",
-					spawnPoint = { x = -1200, y = 400},
-					angle = 315
-				},
-				{
-					type = "shooter",
-					spawnPoint = { x = -1200, y = -400},
-					angle = 45
-				},
-				{
-					type = "canoner",
-					spawnPoint = { x = 1600, y = -800},
+					type = "follower",
+					spawnPoint = { x = 1200, y = 300},
 					patrolPath = {
-						[1] = { x = 1700, y = -100},
-						[2] = {x = 1600, y = -800}
+						[1] = { x = 1200, y = -300},
+						[2] = {x = 1200, y = 300},
 					}
 				},
-				{
-					type = "canoner",
-					spawnPoint = { x = 1600, y = 300},
-					patrolPath = {
-						[1] = { x = 1100, y = 800},
-						[2] = {x = 1600, y = 300}
-					}
+			},
+			obstacle = {
+				[1] = {
+				 type = "blackhole",
+				 position = { x = 1000, y = -400},
+				},
+				[2] = {
+				 type = "blackhole",
+				 position = { x = 800, y = -500},
+				},
+				[3] = {
+				 type = "blackhole",
+				 position = { x = 600, y = -600},
+				},
+				[4] = {
+				 type = "blackhole",
+				 position = { x = 400, y = -700},
+				},
+				[5] = {
+				 type = "blackhole",
+				 position = { x = 100, y = -800},
+				},
+				[6] = {
+				 type = "blackhole",
+				 position = { x = -200, y = -700},
+				},
+				[7] = {
+				 type = "blackhole",
+				 position = { x = -400, y = -600},
+				},
+				[8] = {
+				 type = "blackhole",
+				 position = { x = -600, y = -500},
+				},
+				[9] = {
+				 type = "blackhole",
+				 position = { x = -800, y = -400},
+				},
+				[10] = {
+				 type = "blackhole",
+				 position = { x = -1000, y = -300},
+				},
+				[12] = {
+				 type = "blackhole",
+				 position = { x = -1200, y = -100},
+				},
+				[13] = {
+				 type = "blackhole",
+				 position = { x = -1200, y = 200},
+				},
+				[14] = {
+				 type = "blackhole",
+				 position = { x = -1000, y = 300},
+				},
+				[15] = {
+				 type = "blackhole",
+				 position = { x = -800, y = 400},
+				},
+				[16] = {
+				 type = "blackhole",
+				 position = { x = -600, y = 500},
+				},
+				[17] = {
+				 type = "blackhole",
+				 position = { x = -400, y = 600},
+				},
+				[18] = {
+				 type = "blackhole",
+				 position = { x = -200, y = 700},
+				},
+				[19] = {
+				 type = "blackhole",
+				 position = { x = 0, y = 800},
+				},
+				[20] = {
+				 type = "blackhole",
+				 position = { x = 200, y = 700},
+				},
+				[21] = {
+				 type = "blackhole",
+				 position = { x = 400, y = 600},
+				},
+				[22] = {
+				 type = "blackhole",
+				 position = { x = 600, y = 300},
+				},
+				[23] = {
+				 type = "blackhole",
+				 position = { x = -800, y = 400},
+				},
+				[24] = {
+				 type = "blackhole",
+				 position = { x = -600, y = 500},
+				},
+				[25] = {
+				 type = "blackhole",
+				 position = { x = -400, y = 600},
+				},
+				[26] = {
+				 type = "blackhole",
+				 position = { x = -200, y = 700},
+				},
+				[27] = {
+				 type = "blackhole",
+				 position = { x = -600, y = 500},
+				},
+				[28] = {
+				 type = "blackhole",
+				 position = { x = -400, y = 600},
 				},
 			},
 			earth = {
@@ -2071,68 +2310,21 @@ local worldsData = {
 				[1] = {
 					foodType = "fruit",
 					asset = "images/planets/fruits_1.png",
-					position = {x = 0, y = -700}
+					position = {x = 1800, y = 800}
 				},
 				[2] = {
 					foodType = "protein",
 					asset = "images/planets/proteins_1.png",
-					position = {x = 0, y = 700}
+					position = {x = -1800, y = 800}
 				},
 				[3] = {
 					foodType = "vegetable",
 					asset = "images/planets/vegetables_1.png",
-					position = {x = -1300, y = 0}
+					position = {x = -1700, y = -600}
 				}
 			},
 			asteroids = {
-				[1] = {
-					lineStart = {x = -1700, y = -400},
-					lineEnd = {x = -800, y = 0},
-					easingX = easing.inSine,
-					easingY = easing.outSine,
-				},
-				[2] = {
-					lineStart = {x = -800, y = 0},
-					lineEnd = {x = -1700, y = 400},
-					easingX = easing.outSine,
-					easingY = easing.inSine,
-				},
-				[3] = {
-					lineStart = {x = -600, y = -900},
-					lineEnd = {x = 0, y = -300},
-					easingX = easing.outSine,
-					easingY = easing.inSine,
-				},
-				[4] = {
-					lineStart = {x = 0, y = -300},
-					lineEnd = {x = 500, y = -600},
-					easingX = easing.inSine,
-					easingY = easing.outSine,
-				},
-				[5] = {
-					lineStart = {x = -600, y = 900},
-					lineEnd = {x = 0, y = 300},
-					easingX = easing.outSine,
-					easingY = easing.inSine,
-				},
-				[6] = {
-					lineStart = {x = 0, y = 300},
-					lineEnd = {x = 500, y = 600},
-					easingX = easing.inSine,
-					easingY = easing.outSine,
-				},
-				[7] = {
-					lineStart = {x = 900, y = -600},
-					lineEnd = {x = 1100, y = 0},
-					easingX = easing.inSine,
-					easingY = easing.outSine,
-				},
-				[8] = {
-					lineStart = {x = 1100, y = 0},
-					lineEnd = {x = 700, y = 400},
-					easingX = easing.outSine,
-					easingY = easing.inSine,
-				},
+				
 			},
 		},
 	},

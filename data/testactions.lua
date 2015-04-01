@@ -3,7 +3,7 @@ local director = require( "libs.helpers.director" )
 local players = require( "models.players" )
 
 local function goGame()
-	director.gotoScene("scenes.game.shooter", { params = { worldIndex = 2, levelIndex = 9}} );
+	director.gotoScene("scenes.game.shooter", { params = { worldIndex = 2, levelIndex = 14}} );
 end	
 
 local function goObjetives()
