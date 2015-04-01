@@ -2183,10 +2183,18 @@ local worldsData = {
 			enemySpawnData = {
 				{
 					type = "follower",
-					spawnPoint = { x = 1200, y = 300},
+					spawnPoint = { x = 1400, y = 200},
 					patrolPath = {
-						[1] = { x = 1200, y = -300},
-						[2] = {x = 1200, y = 300},
+						[1] = { x = 1300, y = -400},
+						[2] = {x = 1400, y = 200},
+					}
+				},
+				{
+					type = "follower",
+					spawnPoint = { x = -900, y = 100},
+					patrolPath = {
+						[1] = { x = -400, y = 400},
+						[2] = {x = -900, y = 100},
 					}
 				},
 			},
@@ -2273,31 +2281,47 @@ local worldsData = {
 				},
 				[22] = {
 				 type = "blackhole",
-				 position = { x = 600, y = 300},
+				 position = { x = 600, y = 500},
 				},
 				[23] = {
 				 type = "blackhole",
-				 position = { x = -800, y = 400},
+				 position = { x = 800, y = 400},
 				},
 				[24] = {
 				 type = "blackhole",
-				 position = { x = -600, y = 500},
+				 position = { x = 1000, y = 300},
 				},
 				[25] = {
 				 type = "blackhole",
-				 position = { x = -400, y = 600},
+				 position = { x = 700, y = -100},
 				},
 				[26] = {
 				 type = "blackhole",
-				 position = { x = -200, y = 700},
+				 position = { x = 500, y = -300},
 				},
 				[27] = {
 				 type = "blackhole",
-				 position = { x = -600, y = 500},
+				 position = { x = 300, y = -500},
 				},
 				[28] = {
 				 type = "blackhole",
-				 position = { x = -400, y = 600},
+				 position = { x = -100, y = -400},
+				},
+				[29] = {
+				 type = "blackhole",
+				 position = { x = -300, y = -200},
+				},
+				[30] = {
+				 type = "blackhole",
+				 position = { x = 600, y = 100},
+				},
+				[31] = {
+				 type = "blackhole",
+				 position = { x = 400, y = 200},
+				},
+				[32] = {
+				 type = "blackhole",
+				 position = { x = 200, y = 300},
 				},
 			},
 			earth = {
