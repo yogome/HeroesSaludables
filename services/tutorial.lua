@@ -1,87 +1,82 @@
 local settings = require( "settings" )
 local widget = require("widget")
 local buttonList = require("data.buttonlist")
+local tutorialData = require("data.tutorialdata")
+local director = require("libs.helpers.director")
+local extratable = require("libs.helpers.extratable")
 
 local tutorial={}
 
-function tutorial.showTip(textToDisplay)
-    local group_tutorial_tip=display.newGroup()
-
-    local tuto_tip=display.newImage("images/tutorial_ui/bar_01.png")
-    tuto_tip:scale(0.7,0.7)
-    group_tutorial_tip:insert(tuto_tip)
-
-    local tuto_master=display.newImage("images/tutorial_ui/t-master.png")
-    tuto_master:scale(0.6,0.6)
-    group_tutorial_tip:insert(tuto_master)
-    tuto_master.x=0-tuto_tip.width/3
-
-    --[[local buttonOk=buttonList.ok
-    buttonOk.onRelease=function()
-	display.remove(group_tutorial_tip)
-    end
-    local tuto_ok=widget.newButton(buttonOk)
-    tuto_ok:scale(0.7,0.7)
-    tuto_ok.x=tuto_tip.width/3
-    group_tutorial_tip:insert(tuto_ok)]]--
-
-	local textInfo = {
-		text = textToDisplay,
-		font = settings.fontName,
-		fontSize = 32,
-		align = "left",
-		x = -tuto_tip.width/4,
-		y = 0,
-		width = tuto_tip.width * 0.80
-	}
-
-    local tuto_text=display.newText(textInfo)
-    tuto_text:setFillColor(1)
-    tuto_text.anchorX=0
-    group_tutorial_tip:insert(tuto_text)
-    
-    --group_tutorial_tip.anchorChildren=true; group_tutorial_tip.anchorY=1
-    --group_tutorial_tip.x=display.contentCenterX ; group_tutorial_tip.y=display.contentHeight
-    
-    return group_tutorial_tip
+local function getTutorialTable(tutorialList)
+	
+	local tutorialType = {}
+	for indexData = 1, #tutorialData do
+		local currentTutorialName = tutorialData[indexData].id
+		for indexList = 1, #tutorialList do
+			if currentTutorialName == tutorialList[indexList] then
+				tutorialType[#tutorialType + 1] = extratable.deepcopy(tutorialData[indexData])
+			end
+		end
+	end
+	
+	return tutorialType
 end
 
-function tutorial.showHighlightTip(displayObject, message, messagex, messagey, handx, handy)
+function tutorial.initializeTutorials(tutorialList)
+	local tutorialTracker = {}
+	tutorialTracker.hasTutorial = false
+	tutorialTracker.isTutorialComplete = false
+	if tutorialList and #tutorialList > 0 then
+		
+		tutorialTracker.hasTutorial = true
+		tutorialTracker.isTutorialOnScreen = false
+		tutorialTracker.tutorialTable = getTutorialTable(tutorialList)
+		
+		for indexData = 1, #tutorialTracker.tutorialTable do
+			local currentData = tutorialTracker.tutorialTable[indexData]
+			currentData.page = 1
+			currentData.isComplete = false
+			currentData.onSucess = nil
+			currentData.isShown = false
+		end
+		
+		function tutorialTracker.success(tutorialName)
+			for indexTutorial = 1, #tutorialTracker.tutorialTable do
+				local currentTutorial = tutorialTracker.tutorialTable[indexTutorial]
+				if tutorialName == currentTutorial.id then
+					if not currentTutorial.isComplete and currentTutorial.isShown then
+						currentTutorial.isComplete = true
+						if currentTutorial.onSuccess then
+							currentTutorial.onSuccess()
+						end
+						print("success " .. tutorialName )
+					end
+				end
+			end
+		end
+
+		function tutorialTracker.show(tutorialName, params) 	
+			params.onSuccess = params.onSuccess or nil
+			params.onStart = params.onStart or nil
+			params.delay = params.delay or 0
+			
+			for indexTutorial = 1, #tutorialTracker.tutorialTable do
+				local currentTutorial = tutorialTracker.tutorialTable[indexTutorial]
+				if tutorialName == currentTutorial.id then
+					if not currentTutorial.isShown then
+						currentTutorial.onSuccess = params.onSuccess
+						timer.performWithDelay(params.delay, function()
+							currentTutorial.isShown = true
+							params.onStart(currentTutorial)
+						end)
+					end
+				end
+			end
+		end
+		
+	end
 	
-	local tutorialGroup = display.newGroup()
-	
-	local spriteData = {width=256, height=256, numFrames=6, sheetContentWidth=1024, sheetContentHeight=512}
-	local handSprite = graphics.newImageSheet("images/manoTuto.png",spriteData)
-	
-	local handData = {
-		start=1,
-		count=2,
-		time=1000,
-		loopCount=0,
-	}
-	
-	local hand = display.newSprite(handSprite, handData)
-	hand.xScale=0.5
-	hand.yScale=0.5
-	
-	hand:play()
-	
-	local blackOverlay = display.newRect(display.contentCenterX, display.contentCenterY, display.contentWidth, display.contentHeight)
-	blackOverlay:setFillColor(0, 0.5)
-	tutorialGroup:insert(blackOverlay)
-	
-	local messageBox = tutorial.showTip(message)
-	messageBox.x = messagex
-	messageBox.y = messagey 
-	tutorialGroup:insert(messageBox)
-	
-	tutorialGroup:insert(displayObject)
-	
-	hand.x = handx --displayObject.x + displayObject.contentWidth * 0.5
-	hand.y = handy --displayObject.y
-	tutorialGroup:insert(hand)
-	
-	return tutorialGroup
+	return tutorialTracker
 end
 
 return tutorial

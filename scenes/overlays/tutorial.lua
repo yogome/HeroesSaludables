@@ -16,6 +16,7 @@ local NUMBER_TIPS = 13
 
 local function closeOverlay(event, parent)
 	event.target:setEnabled(false)
+	parent:pause(false)
 	transition.to(scene.view, {alpha = 0, time = 500, onComplete = function()
 		director.hideOverlay()
 	end})
@@ -35,14 +36,23 @@ local function searchTutorialName(tutorialName)
 	return searchIndex
 end
 
-local function createTutorialScreen(tutorialName)
+local function createTutorialScreen(data, parent)
 	
-	local indexTutorial = searchTutorialName(tutorialName)
-	local tutorialTitle = tutorialData[indexTutorial].name
-	local tutorialDescription = tutorialData[indexTutorial].description[1]
+	local tutorialTitle = data.name
+	local tutorialDescription = data.description[1]
 		
 	panelGroup.title.text = tutorialTitle
 	panelGroup.description.text = tutorialDescription
+	
+	buttonList.ok.onRelease = function(event)
+		closeOverlay(event, parent)
+	end
+	
+	okButton = widget.newButton(buttonList.ok)
+	okButton.x = 0
+	okButton.y = panelGroup.contentHeight * 0.4
+	
+	panelGroup:insert(okButton)
 	
 end
 
@@ -93,16 +103,6 @@ function scene:create( event )
 	panelGroup.x = display.contentCenterX
 	panelGroup.y = display.contentCenterY
 	sceneGroup:insert(panelGroup)
-	
-	buttonList.ok.onRelease = function(event)
-		closeOverlay(event, parent)
-	end
-		
-	okButton = widget.newButton(buttonList.ok)
-	okButton.x = 0
-	okButton.y = panelGroup.contentHeight * 0.4
-	
-	panelGroup:insert(okButton)
 end
 
 
@@ -110,14 +110,16 @@ function scene:show( event )
     local sceneGroup = self.view
     local phase = event.phase
 	
+	local parent = event.parent
 	local params = event.params or {}
 	
     if ( phase == "will" ) then
-
+		
 	elseif ( phase == "did" ) then
-		okButton:setEnabled(true)
-		local tutorialToShow = params.tutorialName
-		createTutorialScreen(tutorialToShow)
+		local data = params.data
+		sceneGroup.alpha = 0
+		createTutorialScreen(data, parent)
+		transition.to(sceneGroup, {alpha = 1, time = 200})
     end
 end
 
@@ -134,6 +136,7 @@ end
 
 
 function scene:destroy( event )
+	
 
     local sceneGroup = self.view
 end

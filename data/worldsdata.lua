@@ -18,36 +18,37 @@ local worldsData = {
 			x = scale * .067,
 			y = 100,
 			background = "images/backgrounds/space.png",
-			levelWidth = 3000,
-			levelHeight = 1500 ,
-			ship = {position = {x = 1100, y = 0}},
+			levelWidth = 4000,
+			levelHeight = 1000 ,
+			ship = {position = {x = 0, y = 0}},
 			levelDescription = "Recolecta las porciones necesarias",
+			tutorial = {"moveOutCircle", "moveToBase", "baseTutorial", "collectPortion", "finishLevel"},
 			objetives = {
 				fruit = {
 					portions = 2,
 				},
 			},
 			enemySpawnData = {
-				{
-					type = "follower",
-					spawnPoint = { x = -310, y = 500},
-					patrolPath = {
-						[1] = { x = -300 , y = 600},
-						[2] = {x = -300, y = -600}
-					}
-				},
+--				{
+--					type = "follower",         
+--					spawnPoint = { x = -310, y = 500},
+--					patrolPath = {
+--						[1] = { x = -300 , y = 600},
+--						[2] = {x = -300, y = -600}
+--					}
+--				},
 			},
 			earth = {
 				name = "earth",
 				assetPath = "images/planets/earth/",
-				position = {x =	-900, y = 0},
+				position = {x =	-1250, y = 0},
 				scaleFactor = 1.5
 			},
 			planets = {
 				[1] = {
 					foodType = "fruit",
 					foodOffset = {x = 0, y = -100},
-					position = {x = 900, y = 0}
+					position = {x = 1250, y = 0}
 				},
 			},
 			asteroids = {

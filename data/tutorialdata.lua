@@ -1,77 +1,42 @@
 local tutorialdata = {
 	---How to category
 	[1] = {
-		id = "move",
+		id = "moveOutCircle",
 		name = "Control",
 		pages = 1,
 		description = {
-			[1] = "Intenta moverte por el mapa tocando sobre cualquier parte de la pantalla y moviendo en la dirección que deseas avanzar",
+			[1] = "Intenta moverte por el mapa tocando el control de la izquierda, intenta salir del circulo",
 		},
-		animation = {1,2,3},
+		--animation = {1,2,3},
 	},
 	[2] = {
-		id = "collect",
-		name = "Recolección de porciones",
+		id = "moveToBase",
+		name = "Bases",
 		description = {
-			[1] = "Para moverte por el mapa, presiona sobre cualquier parte de la pantalla y desliza hacia donde deseat mover la nave.",
+			[1] = "Muy bien, ahora muevete a la base de la derecha",
 		}
 	},
 	[3] = {
-		id = "planetfeed",
-		name = "Alimenta a los planetas",
+		id = "baseTutorial",
+		name = "Bases de porciones",
 		description = {
-			[1] = "Lleva las porciones que recolectas hacia el planeta enfermo",
+			[1] = "Cuando te acercas a una base, esta soltara una porción, recoje la porción que acaba de salir",
 		}
 	},
 	[4] = {
-		id = "enemyfollower",
+		id = "collectPortion",
 		name = "Merodeador",
 		description = {
-			[1] = "¡Cuidado!\nEste enemigo te seguira si entras en su rango",
+			[1] = "¡Muy bien!, ahora lleva la porcion al planeta de la izquierda",
 		}
 	},
 	[5] = {
-		id = "enemycanoner",
+		id = "finishLevel",
 		name = "Canoner",
 		description = {
-			[1] = "Ten cuidado con este enemigo, te disparará al entrar en su rango",
+			[1] = "¡Excelente!, ahora ya sabes como entregar porciones, entrega la porción restante para terminar el nivel",
 		}
 	},
-	[6] = {
-		id = "enemyshooter",
-		name = "Plasma Shooter",
-		description = {
-			[1] = "Este tipo de enemigos disparan en una sola dirección, ten precaución",
-		}
-	},
-	[7] = {
-		id = "enemyshooter",
-		name = "Cañonero",
-		description = {
-			[1] = "Este tipo de enemigos disparan en una sola dirección, ten precaución",
-		}
-	},
-	[8] = {
-		id = "blackhole",
-		name = "Agujero negro",
-		description = {
-			[1] = "Los agujeros negros se llevan tus porciones, es mejor si te mantienes alejado",
-		}
-	},
-	[9] = {
-		id = "health",
-		name = "Vitalidad",
-		description = {
-			[1] = "Estos indicadores te muestran cuantas porciones faltan por llevar al planeta",
-		}
-	},
-	[10] = {
-		id = "portions",
-		name = "Porciones",
-		description = {
-			[1] = "Acercate a las bases de comida para obtener la porcion necesaria para llevar al planeta",
-		}
-	}
 }
 
 return tutorialdata

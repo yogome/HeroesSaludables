@@ -17,6 +17,7 @@ local loseScene = require( "scenes.game.lose" )
 local winScene = require( "scenes.game.win" )
 local dataSaver = require("services.datasaver")
 local obstacles = require("entities.obstacles")
+local tutorial = require("services.tutorial")
 
 --physics.setDrawMode("hybrid")
 local scene = director.newScene() 
@@ -29,6 +30,7 @@ local analogX, analogY
 local analogCircleBegan
 local analogCircleMove
 local analogCircleBounds
+local controlGroup
 local heartIndicator
 local worldIndex, levelIndex
 local hudGroup
@@ -46,10 +48,11 @@ local editorPreviewGroup, editorPreviewLine
 local framecounter = 0
 local isPaused
 local distanceLines 
-local planetIndicators
+local indicator
+local earthIndicator
 local disabledControl
 local objetives
-local isTutorial = true
+local currentTutorials
 ----------------------------------------------- Background stars data
 local spaceObjects, objectDespawnX, objectSpawnX, objectDespawnY, objectSpawnY
 local spawnZoneWidth, spawnZoneHeight, halfSpawnZoneWidth, halfSpawnZoneHeight
@@ -60,18 +63,20 @@ local foodBubbleGroup
 local enemies
 local isFoodSpawned
 local collectedFood
+local gradientGroup
 -----------------------------------------------Vars used by level loader
 local debugText
 ----------------------------------------------- Caches
 local squareRoot = math.sqrt 
 ----------------------------------------------- Constants
 local PADDING = 16
+local RADIUS_TUTORIAL = 180
 local SCALE_HEARTINDICATOR = 0.3
 local SIZE_BACKGROUND = 1024
 local OBJECTS_TOLERANCE_X = 100
 local OBJECTS_TOLERANCE_Y = 100
 local STARS_LAYER_DEPTH_RATIO = 0.08
-local STARS_PER_LAYER = 20
+local STARS_PER_LAYER = 30
 local STARS_LAYERS = 3
 local SCALE_BUTTON_BACK = 0.9
 local NUMBER_HEARTS = 3
@@ -80,8 +85,18 @@ local SIZE_FOOD_CONTAINER = {width = 140, height = 260}
 local OFFSET_GRABFRUIT = {x = -62, y = 17}
 local SCALE_EXPLOSION = 0.75
 local SPEED_CAMERA = 100
-local RADIUS_ANALOG = 150
+local RADIUS_ANALOG = 300
 ----------------------------------------------- Functions
+
+local function startTutorial(data)
+	analogX = 0
+	analogY = 0
+	analogCircleMove.x = 0
+	analogCircleMove.y = 0
+	director.showOverlay("scenes.overlays.tutorial", {isModal = true, effect = "flip", params = {data = data}})
+	scene:pause(true)
+end
+
 local function addPhysicsObject(object)
 	physicsObjectList[#physicsObjectList + 1] = object
 end 
@@ -136,6 +151,42 @@ local function createAsteroidLine(point1, point2, easingX, easingY)
 	addPhysicsObject(asteroidLineBody)
 	
 	return asteroidLineBody
+end
+
+local function successTutorial()
+	local success = display.newImage("images/infoscreen/success.png")
+	success.xScale = 0.1
+	success.yScale = 0.1
+	success.alpha = 0
+	success.x = display.contentCenterX
+	success.y = display.contentCenterY
+
+	transition.to(success, {xScale = 1.2, transition = easing.outElastic, time = 1000})
+	transition.to(success, {yScale = 1.2, transition = easing.outSine, time = 500})
+	transition.to(success, {alpha = 1, time = 200, onComplete = function()
+		transition.to(success, {delay = 500, alpha = 0, transition = easing.inSine, onComplete = function()
+			display.remove(success)
+		end})
+	end})
+end
+
+local function updateTutorial()
+	
+	if currentTutorials and currentTutorials.hasTutorial then
+		local shipPosition = worldsData[worldIndex][levelIndex].ship.position
+		local diffShipX = shipPosition.x - playerCharacter.x
+		local diffShipY = shipPosition.y - playerCharacter.y
+		local distance = (diffShipX * diffShipX) + (diffShipY * diffShipY)
+		distance = squareRoot(distance)
+		if distance >= RADIUS_TUTORIAL then
+			if currentTutorials.hasTutorial then
+				currentTutorials.success("moveOutCircle")
+				currentTutorials.show("moveToBase", {onSuccess = successTutorial, onStart = startTutorial, delay = 1000})
+			end
+		end
+	end
+	
+	
 end
 
 local function createPreviewLine()
@@ -254,24 +305,6 @@ local function onKeyEvent( event )
 	return handled
 end 
 
-local function destroyGame()
-	system.deactivate("multitouch")
-	physics.pause()
-	sound.stopPitch()
-	Runtime:removeEventListener("touch", testTouch)
-	camera:stop()
-	
-	for index = #physicsObjectList, 1, -1 do
-		camera:remove(physicsObjectList[index])
-		display.remove(physicsObjectList[index])
-		physicsObjectList[index] = nil
-	end
-	physicsObjectList = nil
-	
-	spaceships.stop()
-	physics.stop()
-end
-
 local function retryGame()
 	director.hideScene("scenes.game.shooter")
 	director.gotoScene("scenes.game.shooter",{params = {worldIndex = worldIndex, levelIndex = levelIndex}})
@@ -323,6 +356,11 @@ local function randomFoodByType(foodType)
 end
 
 local function spawnBubble(planet)
+	
+	if currentTutorials.hasTutorial then
+		currentTutorials.show("baseTutorial", {onSuccess = successTutorial, onStart = startTutorial, delay = 0})
+	end
+	
 	if not isFoodSpawned[planet.foodType] then
 		isFoodSpawned[planet.foodType] = true
 		local foodBubbleIndex = math.random(1, #foodlist[planet.foodType].food)
@@ -352,6 +390,11 @@ end
 local function grabFruit(fruit)
 	if not fruit.isGrabbed then
 		fruit.isGrabbed = true
+		
+		if currentTutorials.hasTutorial then
+			currentTutorials.success("baseTutorial")
+			currentTutorials.show("collectPortion", {onSuccess = successTutorial, onStart = startTutorial, delay = 1500})
+		end
 		
 		local descriptionIndex = math.random(1, #fruit.description)
 		hudGroup.infoIndicator.text = fruit.description[descriptionIndex]
@@ -459,6 +502,11 @@ local function collectBubble(earth)
 		
 		hudGroup.infoIndicator.text = ""
 		
+		if currentTutorials.hasTutorial then
+			currentTutorials.success("collectPortion")
+			currentTutorials.show("finishLevel", {onSuccess = successTutorial, onStart = startTutorial, delay = 1000})
+		end
+		
 		earth:setSequence("eat")
 		earth:play()
 		earth:addEventListener("sprite", function(event)
@@ -548,6 +596,12 @@ local function suckFood(player, otherObject)
 	if playerCharacter.isCarringItem then
 		local fruit = player.item
 		--camera:add(fruit)
+		
+		for indexIndicator = 1, #indicator do
+			indicator[indexIndicator].isVisible = true
+		end
+		
+		earthIndicator.isVisible = false
 		
 		local rotatingGroup = display.newGroup()
 		camera:add(rotatingGroup)
@@ -661,20 +715,34 @@ local function createBackground(sceneGroup)
 	halfSpawnZoneWidth = spawnZoneWidth * 0.5
 	halfSpawnZoneHeight = spawnZoneHeight * 0.5
 	
+	local elementsTable = {
+		--"images/backgrounds/star01.png",
+		--"images/backgrounds/star02.png",
+		--"images/backgrounds/element1.png",
+		--"images/backgrounds/element2.png",
+		--"images/backgrounds/element3.png",
+		--"images/backgrounds/element4.png",
+		--"images/backgrounds/element5.png",
+		"images/backgrounds/element6.png",
+		"images/backgrounds/element7.png",
+		--"images/backgrounds/element8.png",
+		"images/backgrounds/element9.png",
+		--"images/backgrounds/element10.png",
+	}
+	
 	for layerIndex = 1, STARS_LAYERS do
 		local starLayer = display.newGroup()
 		backgroundContainer:insert(starLayer)
 		for starsIndex = 1, STARS_PER_LAYER do
-			local scale =  0.05 + layerIndex * 0.04
+			local scale =  0.05 + layerIndex * 0.05
 			
-			local randomStarIndex = math.random(1,3)
+			local randomStarIndex = math.random(1, 1000)
 			local star
-			if randomStarIndex == 1 then
+			if randomStarIndex >= 1 and randomStarIndex < 900 then
 				star = display.newCircle(500, 0, 20)
-			elseif randomStarIndex == 2 then
-				star = display.newImage("images/backgrounds/star01.png")
-			elseif randomStarIndex == 3 then
-				star = display.newImage("images/backgrounds/star02.png")
+			elseif randomStarIndex >= 500 then
+				local randomIndex = math.random(1, #elementsTable)
+				star = display.newImage(elementsTable[randomIndex])
 			end
 			
 			star.xOffset = math.random(objectSpawnX, objectDespawnX)
@@ -701,67 +769,55 @@ end
 local function testTouch(event)
 	if not disabledControl then
 		
-		if "began" == event.phase then
-			analogCircleBounds.x = event.x
-			analogCircleBounds.y = event.y
-			analogCircleBegan.x = event.x
-			analogCircleBegan.y = event.y
-			analogCircleMove.x = event.x
-			analogCircleMove.y = event.y
-		
-			analogCircleBounds.isVisible = true
-			analogCircleBegan.isVisible = true
-			analogCircleMove.isVisible = true
+		if "began" == event.phase or "moved" == event.phase then
+			display.getCurrentStage():setFocus(controlGroup)
 			
-		elseif "moved" == event.phase then
+			controlGroup.alpha = 0.5
+			analogCircleMove.x = event.x - controlGroup.x 
+			analogCircleMove.y = event.y - controlGroup.y
 			
-			analogCircleBounds.isVisible = true
-			analogCircleBegan.isVisible = true
-			analogCircleMove.isVisible = true	
-
-			local diffx = (event.x - event.xStart)
-			local diffy = (event.y - event.yStart)
+			local eventX = event.x - controlGroup.x
+			local eventY = event.y - controlGroup.y
+			
+			local startX = 0
+			local startY = 0
+			
+			local diffx = (eventX - startX)
+			local diffy = (eventY - startY)
 			local distance = squareRoot((diffx * diffx) + (diffy * diffy))
 			local vx = diffx / distance
 			local vy = diffy / distance
-			
-			if isTutorial then
-				if distance >= 125 then
-					isTutorial = false
-					local success = display.newImage("images/infoscreen/success.png")
-					success.xScale = 0.1
-					success.yScale = 0.1
-					success.alpha = 0
-					success.x = display.contentCenterX
-					success.y = display.contentCenterY
-					
-					transition.to(success, {xScale = 1.2, transition = easing.outElastic, time = 1000})
-					transition.to(success, {yScale = 1.2, transition = easing.outSine, time = 500})
-					transition.to(success, {alpha = 1, time = 200, onComplete = function()
-						transition.to(success, {delay = 1000, alpha = 0, transition = easing.inSine})
-					end})
-					
-				end
-			end
 
 			if distance >= RADIUS_ANALOG then
-				analogX = diffx
-				analogY = diffy
-				analogCircleMove.x = event.xStart + vx * RADIUS_ANALOG
-				analogCircleMove.y = event.yStart + vy * RADIUS_ANALOG
+				--analogX = diffx
+				--analogY = diffy
+				
+				display.getCurrentStage():setFocus(nil)
+				controlGroup.alpha = 1
+				
+				analogX = 0
+				analogY = 0
+				
+				analogCircleMove.x =  0
+				analogCircleMove.y =  0
 			else
 				analogX = diffx
 				analogY = diffy
-				analogCircleMove.x = event.x
-				analogCircleMove.y = event.y
+				
+				analogCircleMove.x =  diffx
+				analogCircleMove.y =  diffy
+				display.getCurrentStage():setFocus(nil)
 			end
+			
+			print(distance)
 
 		elseif "ended" == event.phase then
 			analogX = 0
 			analogY = 0
-			analogCircleBegan.isVisible = false
-			analogCircleMove.isVisible = false
-			analogCircleBounds.isVisible = false
+			
+			controlGroup.alpha = 1
+			analogCircleMove.x = 0
+			analogCircleMove.y = 0
 		end
 	end
 end
@@ -1058,11 +1114,11 @@ end
 
 local function loadObstacles()
 	
-	local blackhole = obstacles.newObstacle("blackhole")
-	physics.addBody(blackhole, {isSensor = true, radius = 150})
-	blackhole.x = -250
-	camera:add(blackhole)
-	
+--	local blackhole = obstacles.newObstacle("blackhole")
+--	physics.addBody(blackhole, {isSensor = true, radius = 150})
+--	blackhole.x = -250
+--	camera:add(blackhole)
+--	
 end
 
 local function loadLevel()
@@ -1183,10 +1239,9 @@ local function initialize(event)
 	
 	dataSaver.initialize()
 	
+	
 	disabledControl = true
-	analogCircleBounds.isVisible = false
-	analogCircleBegan.isVisible = false
-	analogCircleMove.isVisible = false
+	
 	
 	isPaused = false
 	
@@ -1227,73 +1282,53 @@ local function initialize(event)
 	
 end
 
+local function setIndicator(target, indicator)
+	
+	local currentIndicator = target--planets[indexLine]
+				
+	local diffX =(-camera.scrollX + display.contentWidth * 0.50) - currentIndicator.x
+	local diffY =(-camera.scrollY + display.contentHeight * 0.50) - currentIndicator.y
+
+	local angle = extramath.getFullAngle(-diffX, -diffY)
+	indicator.rotation = angle
+
+	local limitX = display.contentWidth * 0.45
+	local limitY = display.contentHeight * 0.45
+
+	if diffX < limitX and diffX > -limitX and diffY < limitY and diffY > -limitY then
+		indicator.x = currentIndicator.x
+		indicator.y = currentIndicator.y
+		indicator.isVisible = false
+	else
+		indicator.isVisible = true
+		if diffX >= limitX then
+			indicator.x = (-camera.scrollX + display.contentWidth * 0.50) - limitX
+		end
+
+		if diffX <= -limitX then
+			indicator.x = (-camera.scrollX + display.contentWidth * 0.50) + limitX
+		end
+
+		if diffY >= limitY then
+			indicator.y = (-camera.scrollY + display.contentHeight * 0.50) - limitY
+		end
+
+		if diffY <= -limitY then
+			indicator.y = (-camera.scrollY + display.contentHeight * 0.50) + limitY
+		end
+		
+	end
+	
+end
+
 local function updateIndicators()
 		
 		if not isGameover then
 			for indexLine = 1, #planets do
-				display.remove(distanceLines[indexLine])
-				
-				local currentPlanet = planets[indexLine]
-				
-				local diffX =(-camera.scrollX + display.contentWidth * 0.50) - currentPlanet.x
-				local diffY =(-camera.scrollY + display.contentHeight * 0.50) - currentPlanet.y
-				
-				local angle = extramath.getFullAngle(-diffX, -diffY)
-				planetIndicators[indexLine].rotation = angle
-				
-				local limitX = display.contentWidth * 0.45
-				local limitY = display.contentHeight * 0.45
-			
-				if diffX < limitX and diffX > -limitX and diffY < limitY and diffY > -limitY then
-					planetIndicators[indexLine].x = currentPlanet.x
-					planetIndicators[indexLine].y = currentPlanet.y
-					planetIndicators[indexLine].isVisible = false
-				else
-					planetIndicators[indexLine].isVisible = true
-					if diffX >= limitX then
-						planetIndicators[indexLine].x = (-camera.scrollX + display.contentWidth * 0.50) - limitX
-					end
-					
-					if diffX <= -limitX then
-						planetIndicators[indexLine].x = (-camera.scrollX + display.contentWidth * 0.50) + limitX
-					end
-					
-					if diffY >= limitY then
-						planetIndicators[indexLine].y = (-camera.scrollY + display.contentHeight * 0.50) - limitY
-					end
-					
-					if diffY <= -limitY then
-						planetIndicators[indexLine].y = (-camera.scrollY + display.contentHeight * 0.50) + limitY
-					end
-
-				end
-				
-				
---				if diffX <= limitX then
---					planetIndicators[indexLine].x = (-camera.scrollX + display.contentWidth * 0.5) + limitX
---				end
---				
---				if diffX >= -limitX then
---					planetIndicators[indexLine].x = -((-camera.scrollX + display.contentWidth * 0.5) + limitX)
---				end
-											
-				--planetIndicators[indexLine].x = currentPlanet.x
-				--planetIndicators[indexLine].y = currentPlanet.y
-				
-				
-				
-				
-				local distance = (diffX * diffX) + (diffY * diffY)
-				local distance = squareRoot(distance)
-				
---				local line = display.newLine(-camera.scrollX + display.contentWidth * 0.5, -camera.scrollY + display.contentHeight * 0.5, currentPlanet.x, currentPlanet.y)
---				line.strokeWidth = 3
---				distanceLines[indexLine] = line
---				camera:add(line)
+				setIndicator(planets[indexLine], indicator[indexLine])
 			end
+			setIndicator(earth, earthIndicator)
 		end
-	
-	
 end
 
 local function updateBullets()
@@ -1318,6 +1353,7 @@ local function updateGameLoop(event)
 		showDebugInformation()
 		enterFrame(event)
 		updateIndicators()
+		updateTutorial()
 	end
 end
 
@@ -1330,23 +1366,35 @@ local function intro()
 				trackNextPlanet(planetIndex + 1)
 			end)
 		else
-			if isTutorial then
-				director.showOverlay("scenes.overlays.tutorial", {params = {tutorialName = "move"}})
-			end
 			camera.damping = 10
 			disabledControl = false
 			camera:setFocus(playerCharacter)
+			if currentTutorials.hasTutorial then
+				currentTutorials.show("moveOutCircle", {onSuccess = successTutorial, onStart = startTutorial, delay = 250})
+			end
 			--transition.to(buttonBack, {alpha = 1, time = 500, transition = easing.outQuad})
 			scene.enableButtons()
 		end
 	end
-		
-	camera.damping = 35
+	
+	camera.damping = 10
 	camera:setFocus(earth)
 	introTimer = timer.performWithDelay(1500, function()
 		trackNextPlanet(1)
 	end)
+end
+
+local function createGradients(sceneGroup)
 	
+	gradientGroup = display.newGroup()
+	
+	local gradient = display.newImage("images/shooter/gradient_radial.png")
+	gradient.alpha = 0.3
+	gradient.x = display.contentCenterX
+	gradient.y = display.contentCenterY
+	gradientGroup:insert(gradient)
+
+	sceneGroup:insert(gradientGroup)	
 end
 
 ----------------------------------------------- Class functions 
@@ -1386,10 +1434,30 @@ local function createGame()
 	camera:toPoint(0,0)
 	camera:start()
 	
-	Runtime:addEventListener("touch", testTouch)
+	controlGroup:addEventListener("touch", testTouch)
 	Runtime:addEventListener("collision", collisionListener)
 	Runtime:addEventListener("preCollision", preCollisionListener)
 end
+
+local function destroyGame()
+	system.deactivate("multitouch")
+	physics.pause()
+	sound.stopPitch()
+	controlGroup:removeEventListener("touch", testTouch)
+	camera:stop()
+	
+	for index = #physicsObjectList, 1, -1 do
+		camera:remove(physicsObjectList[index])
+		display.remove(physicsObjectList[index])
+		physicsObjectList[index] = nil
+	end
+	physicsObjectList = nil
+	
+	spaceships.stop()
+	physics.stop()
+end
+
+-------------------------
 
 function scene:create(event)
 	local sceneGroup = self.view
@@ -1397,7 +1465,10 @@ function scene:create(event)
 	createBackground(sceneGroup)
 	sceneGroup:insert(backgroundGroup)
 	
+	createGradients(sceneGroup)
+	
 	camera = perspective.newCamera()
+	camera.damping = 0
 	sceneGroup:insert(camera)
 	
 	asteroidGroup = display.newGroup()
@@ -1417,22 +1488,27 @@ function scene:create(event)
 	buttonPause.y = display.screenOriginY + buttonPause.contentHeight * 0.5
 	sceneGroup:insert(buttonPause)
 	
-	analogCircleBegan = display.newCircle(0, 0, 30)
-	analogCircleBegan.alpha = 0.2
-	analogCircleBegan.isVisible = false
-	sceneGroup:insert(analogCircleBegan)
+	controlGroup = display.newGroup()
+	
+	--analogCircleBegan = display.newCircle(0, 0, 30)
+	analogCircleBegan = display.newImage("images/general/dpad.png")
+	--analogCircleBegan.alpha = 0.7
+	controlGroup:insert(analogCircleBegan)
 	
 	analogCircleMove = display.newCircle(0, 0, 30)
 	analogCircleMove.alpha = 0.2
-	analogCircleMove.isVisible = false
-	sceneGroup:insert(analogCircleMove)
+	controlGroup:insert(analogCircleMove)
 	
 	analogCircleBounds = display.newCircle(0,0, RADIUS_ANALOG)
-	analogCircleBounds.strokeWidth = 3
+	analogCircleBounds.strokeWidth = 0
 	analogCircleBounds:setFillColor(0,0)
 	analogCircleBounds:setStrokeColor(1, 0.5)
-	analogCircleBounds.isVisible = false
-	sceneGroup:insert(analogCircleBounds)
+	controlGroup:insert(analogCircleBounds)
+	
+	sceneGroup:insert(controlGroup)
+	
+	controlGroup.x = display.screenOriginX + controlGroup.contentWidth * 0.30
+	controlGroup.y = display.contentHeight - controlGroup.contentHeight * 0.30
 	
 	local debugTextOptions = {
 		x = display.contentWidth - 100,
@@ -1442,6 +1518,8 @@ function scene:create(event)
 		width = 400,
 		text = "",
 	}
+	
+
 	
 	debugText = display.newText(debugTextOptions)
 	debugText.anchorY = 0
@@ -1466,20 +1544,44 @@ function scene:show( event )
 		Runtime:addEventListener( "key", onKeyEvent )
 		self.disableButtons()
 		
+		currentTutorials = tutorial.initializeTutorials(worldsData[worldIndex][levelIndex].tutorial)
+		if currentTutorials.hasTutorial then
+			
+			local circleGroup = display.newGroup()
+			local radian = (math.pi / 180) * 50
+			for indexDegree = 1, 50 do
+				local x = math.sin(radian * indexDegree - 1) * 180
+				local y = math.cos(radian * indexDegree - 1) * 180
+				local circle = display.newCircle(x, y, 2)
+				circle:setFillColor(1, 1)
+				circleGroup:insert(circle)
+			end
+
+			camera:add(circleGroup)
+			transition.to(circleGroup, {rotation = 360, iterations = -1, time = 8000})
+		end
+		
 		distanceLines = {}
-		planetIndicators = {}
+		indicator = {}
 		
 		for indexPlanet = 1, #planets do		
 			local arrow = display.newImage("images/shooter/arrow.png")
 			arrow.xScale = 0.3
 			arrow.yScale = 0.3
 			transition.to(arrow, {iterations = -1, xScale = 0.5, yScale = 0.5, transition = easing.continuousLoop})
-			planetIndicators[indexPlanet] = arrow
+			indicator[indexPlanet] = arrow
 			camera:add(arrow)
 		end
 		
+		earthIndicator = display.newImage("images/shooter/arrow.png")
+		earthIndicator.isVisible = false
+		earthIndicator.xScale = 0.4
+		earthIndicator.yScale = 0.4
+		transition.to(earthIndicator, {iterations = -1, xScale = 0.9, yScale = 0.9, transition = easing.continuousLoop})
+		camera:add(earthIndicator)
+		
 	elseif ( phase == "did" ) then
-		--intro()
+		--intro()		
 		scene.enableButtons()
 		camera:setFocus(playerCharacter)
 		director.showOverlay("scenes.overlays.objetives", {isModal = true, params = {objetives = objetives}})
@@ -1496,8 +1598,8 @@ function scene:hide( event )
 		if introTimer then timer.cancel(introTimer) end
 		playerCharacter:analog(0, 0)
 		
-		for indexArrow = 1, #planetIndicators do
-			display.remove(planetIndicators[indexArrow])
+		for indexArrow = 1, #indicator do
+			display.remove(indicator[indexArrow])
 		end
 		
 		Runtime:removeEventListener("collision", collisionListener)
@@ -1507,6 +1609,10 @@ function scene:hide( event )
 		director.hideOverlay()
 		destroyGame()
 	end
+end
+
+function scene:introGame()
+	intro()
 end
 
 function scene:pause(pauseFlag)
@@ -1519,10 +1625,6 @@ function scene:pause(pauseFlag)
 		director.hideOverlay()
 		physics.start()
 	end
-end
-
-function scene:introGame()
-	intro()
 end
 
 scene:addEventListener( "create" )
