@@ -356,9 +356,6 @@ end
 function scene:create(event)
 	local sceneGroup = self.view
 	
-	titleGroup = display.newGroup()
-	sceneGroup:insert(titleGroup)
-	
 	buttonlist.back.onRelease = onReleasedBack
 	buttonBack = widget.newButton(buttonlist.back)
 	buttonBack.x = display.screenOriginX + buttonBack.width * 0.5 + MARGIN
