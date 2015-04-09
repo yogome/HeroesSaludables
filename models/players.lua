@@ -32,24 +32,10 @@ players.default = {
 			watchedStart = false,
 			levels = {
 				[1] = {unlocked = true, stars = 0},
-				[2] = {unlocked = true, stars = 0},
-				[3] = {unlocked = true, stars = 0},
-				[4] = {unlocked = true, stars = 0},
-				[5] = {unlocked = true, stars = 0},
-				[6] = {unlocked = true, stars = 0},
-				[7] = {unlocked = true, stars = 0},
-				[8] = {unlocked = true, stars = 0},
-				[9] = {unlocked = true, stars = 0},
-				[10] = {unlocked = true, stars = 0},
-				[11] = {unlocked = true, stars = 0},
-				[12] = {unlocked = true, stars = 0},
-				[13] = {unlocked = true, stars = 0},
-				[14] = {unlocked = true, stars = 0},
-				[15] = {unlocked = true, stars = 0},		
 			},
 		},
 		[2] = {
-			unlocked = true,
+			unlocked = false,
 			watchedEnd = false,
 			watchedStart = false,
 			levels = {
@@ -71,7 +57,7 @@ players.default = {
 			},
 		},
 		[3] = {
-			unlocked = true,
+			unlocked = false,
 			watchedEnd = false,
 			watchedStart = false,
 			levels = {

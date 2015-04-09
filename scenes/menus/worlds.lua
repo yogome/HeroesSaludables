@@ -9,7 +9,7 @@ local players = require( "models.players" )
 local robot = require( "libs.helpers.robot" )
 local database = require( "libs.helpers.database" )
 local settings = require("settings")
-local worldsdata = require( "data.worldsdata" )
+local worldsData = require( "data.worldsdata" )
 
 local scene = director.newScene() 
 ----------------------------------------------- Variables
@@ -20,6 +20,7 @@ local spawnZoneWidth, halfSpawnZoneWidth
 local titleGroup, title, language
 local selectedWorldIndex, movingMenu
 local currentPlayer
+local items
 ----------------------------------------------- Constants
 local DATA_TITLE = {x = display.contentCenterX, y = display.screenOriginY + 100, scale = 0.7} 
 local COLOR_BACKGROUND = {47/255,190/255,196/255}
@@ -59,7 +60,7 @@ local function onReleasedNext()
 	if not movingMenu then
 		movingMenu = true
 		selectedWorldIndex = selectedWorldIndex + 1
-		if selectedWorldIndex >= #worldsdata then
+		if selectedWorldIndex >= #worldsData then
 			selectedWorldIndex = 0
 		end
 		menu:scrollToPosition({time = 400, x = selectedWorldIndex * -SIZE_WORLD_ITEM, onComplete = function()
@@ -73,7 +74,7 @@ local function onReleasedPrevious()
 		movingMenu = true
 		selectedWorldIndex = selectedWorldIndex - 1
 		if selectedWorldIndex < 0 then
-			selectedWorldIndex = #worldsdata - 1
+			selectedWorldIndex = #worldsData - 1
 		end
 		menu:scrollToPosition({time = 400, x = selectedWorldIndex * -SIZE_WORLD_ITEM, onComplete = function()
 			movingMenu = false
@@ -119,6 +120,32 @@ local function updateWorlds()
 	end
 end
 
+local function fillWorldData()
+	
+	for indexWorld = 1, #items do
+		local currentWorld = currentPlayer.unlockedWorlds[indexWorld]
+		local totalStars = 0
+		
+		for indexLevel = 1, #worldsData[indexWorld] do
+			totalStars = totalStars + MAX_STARS_PER_LEVEL
+		end
+		
+		local playerStars = 0
+		
+		for indexLevel = 1, #currentWorld.levels do
+			if currentWorld.levels[indexLevel] then
+				if currentWorld.levels[indexLevel].unlocked then
+					playerStars = playerStars + currentWorld.levels[indexLevel].stars
+				end
+			end
+		end
+		
+		local currentItem = items[indexWorld]
+		currentItem.unlockedGroup.completionText.text = playerStars.."/"..totalStars
+	end
+	
+end
+
 ----------------------------------------------- Class functions 
 function scene.enableButtons()
 	menu:setEnabled(true)
@@ -147,10 +174,10 @@ function scene:create(event)
 	
 	createBackground(sceneGroup)
 	
-	local items = {}
-	for index = 1, #worldsdata do
+	items = {}
+	for index = 1, #worldsData do
 		local unlockedGroup = display.newGroup()
-		local image = display.newImage(worldsdata[index].icon, true)
+		local image = display.newImage(worldsData[index].icon, true)
 		unlockedGroup:insert(image)
 		unlockedGroup.image = image
 		
@@ -164,7 +191,7 @@ function scene:create(event)
 			y = OFFSET_COMPLETION_TEXT.y,
 			align = "center",
 			font = settings.fontName,
-			text = "0/20",
+			text = "{COLLECTED/TOTAL}",
 			fontSize = 50,
 		}
 
@@ -230,6 +257,7 @@ function scene:show( event )
     if ( phase == "will" ) then
 		language = database.config("language") or "en"
 		currentPlayer = players.getCurrent()
+		fillWorldData()
 		Runtime:addEventListener("enterFrame", updateWorlds)
 		self.disableButtons()
 		enableMenu()

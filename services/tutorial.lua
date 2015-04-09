@@ -65,8 +65,8 @@ function tutorial.initializeTutorials(tutorialList)
 				if tutorialName == currentTutorial.id then
 					if not currentTutorial.isShown then
 						currentTutorial.onSuccess = params.onSuccess
+						currentTutorial.isShown = true
 						timer.performWithDelay(params.delay, function()
-							currentTutorial.isShown = true
 							params.onStart(currentTutorial)
 						end)
 					end

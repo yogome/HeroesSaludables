@@ -18,6 +18,7 @@ local winScene = require( "scenes.game.win" )
 local dataSaver = require("services.datasaver")
 local obstacles = require("entities.obstacles")
 local tutorial = require("services.tutorial")
+local music = require("libs.helpers.music")
 
 --physics.setDrawMode("hybrid")
 local scene = director.newScene() 
@@ -86,13 +87,18 @@ local OFFSET_GRABFRUIT = {x = -62, y = 17}
 local SCALE_EXPLOSION = 0.75
 local SPEED_CAMERA = 100
 local RADIUS_ANALOG = 300
+local CONTROL = {
+	DPAD = false,
+	ANALOG = false,
+	DRAG = true,
+}
 ----------------------------------------------- Functions
 
 local function startTutorial(data)
 	analogX = 0
 	analogY = 0
-	analogCircleMove.x = 0
-	analogCircleMove.y = 0
+	--analogCircleMove.x = 0
+	--analogCircleMove.y = 0
 	director.showOverlay("scenes.overlays.tutorial", {isModal = true, effect = "flip", params = {data = data}})
 	scene:pause(true)
 end
@@ -378,7 +384,7 @@ local function spawnBubble(planet)
 			
 			transition.to(foundBubble, {time = 400, alpha = 1, transition = easing.outQuad})
 
-			physics.addBody(foundBubble, "dynamic", {density = 0, friction = 0, bounce = 1, radius = 30})
+			physics.addBody(foundBubble, "dynamic", {density = 0, friction = 0, bounce = 1, radius = 60})
 			foundBubble.gravityScale = 0
 			foundBubble:applyLinearImpulse( math.random(-5,5)/100, math.random(-5,5)/100, foundBubble.x, foundBubble.y)
 		end
@@ -488,9 +494,13 @@ local function checkAmounts(foodType)
 			end
 			local function onPlayReleased()
 				winScene.disableButtons()
+				if levelIndex + 1 <= #worldsData[worldIndex] then
+					dataSaver:unlockLevel(worldIndex, levelIndex+1)
+				end
+				dataSaver:setStars(worldIndex, levelIndex, heartIndicator.currentHearts)
 				director.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
 			end
-			winScene.show(heartIndicator.currentHearts, 500, onBackReleased, onRetryReleased, onPlayReleased)
+			winScene.show(heartIndicator.currentHearts, 200, onBackReleased, onRetryReleased, onPlayReleased)
 		end
 	end
 	
@@ -766,58 +776,91 @@ local function onReleasePause()
 	director.showOverlay("scenes.menus.youWin",{params = { effect="fromRight", time=500, screen = "pause", worldIndex=worldIndex, levelIndex=levelIndex}})
 end 
 
-local function testTouch(event)
-	if not disabledControl then
-		
-		if "began" == event.phase or "moved" == event.phase then
-			display.getCurrentStage():setFocus(controlGroup)
-			
-			controlGroup.alpha = 0.5
-			analogCircleMove.x = event.x - controlGroup.x 
-			analogCircleMove.y = event.y - controlGroup.y
-			
-			local eventX = event.x - controlGroup.x
-			local eventY = event.y - controlGroup.y
-			
-			local startX = 0
-			local startY = 0
-			
-			local diffx = (eventX - startX)
-			local diffy = (eventY - startY)
-			local distance = squareRoot((diffx * diffx) + (diffy * diffy))
-			local vx = diffx / distance
-			local vy = diffy / distance
+local function controlDpad(event)
+	
+	if "began" == event.phase or "moved" == event.phase then
+		display.getCurrentStage():setFocus(controlGroup)
 
-			if distance >= RADIUS_ANALOG then
-				--analogX = diffx
-				--analogY = diffy
-				
-				display.getCurrentStage():setFocus(nil)
-				controlGroup.alpha = 1
-				
-				analogX = 0
-				analogY = 0
-				
-				analogCircleMove.x =  0
-				analogCircleMove.y =  0
-			else
-				analogX = diffx
-				analogY = diffy
-				
-				analogCircleMove.x =  diffx
-				analogCircleMove.y =  diffy
-				display.getCurrentStage():setFocus(nil)
-			end
-			
-			print(distance)
+		controlGroup.alpha = 0.5
+		analogCircleMove.x = event.x - controlGroup.x 
+		analogCircleMove.y = event.y - controlGroup.y
 
-		elseif "ended" == event.phase then
+		local eventX = event.x - controlGroup.x
+		local eventY = event.y - controlGroup.y
+
+		local startX = 0
+		local startY = 0
+
+		local diffx = (eventX - startX)
+		local diffy = (eventY - startY)
+		local distance = squareRoot((diffx * diffx) + (diffy * diffy))
+		local vx = diffx / distance
+		local vy = diffy / distance
+
+		if distance >= RADIUS_ANALOG then
+			--analogX = diffx
+			--analogY = diffy
+
+			display.getCurrentStage():setFocus(nil)
+			controlGroup.alpha = 1
+
 			analogX = 0
 			analogY = 0
-			
-			controlGroup.alpha = 1
-			analogCircleMove.x = 0
-			analogCircleMove.y = 0
+
+			analogCircleMove.x =  0
+			analogCircleMove.y =  0
+		else
+			analogX = diffx
+			analogY = diffy
+
+			analogCircleMove.x =  diffx
+			analogCircleMove.y =  diffy
+			display.getCurrentStage():setFocus(nil)
+		end
+
+	elseif "ended" == event.phase then
+		analogX = 0
+		analogY = 0
+
+		controlGroup.alpha = 1
+		analogCircleMove.x = 0
+		analogCircleMove.y = 0
+	end
+end
+
+local function controlDrag(event)
+	
+	if ("moved" == event.phase or "began" == event.phase) then
+		
+		local touchPositionX = -camera.scrollX + event.x
+		local touchPositionY = -camera.scrollY + event.y
+		
+		controlGroup.x = touchPositionX
+		controlGroup.y = touchPositionY
+		
+		local diffX = playerCharacter.x - controlGroup.x
+		local diffY = playerCharacter.y - controlGroup.y
+		
+		analogX = -diffX
+		analogY = -diffY
+	elseif "ended" == event.phase then
+		
+		analogX = 0
+		analogY = 0
+		
+		controlGroup.x = playerCharacter.x
+		controlGroup.y = playerCharacter.y
+	end
+	
+end
+
+local function testTouch(event)
+	if not disabledControl then
+		if CONTROL.DPAD then
+			controlDpad(event)
+			print(camera.scrollX, camera.scrollY)
+		elseif CONTROL.DRAG then
+			controlDrag(event)
 		end
 	end
 end
@@ -969,13 +1012,13 @@ local function createFoodBubbles()
 			foodBubbleGroup:insert(newBubble)
 			camera:add(foodBubbleGroup)
 			addPhysicsObject(newBubble)
-
 		end
 	end
 
 end
 
 local function enterFrame(event)
+	
 	if playerCharacter and not playerCharacter.removeFromWorld then
 		local velocityX, velocityY = playerCharacter:getLinearVelocity()
 		if analogX and analogY then
@@ -1163,7 +1206,7 @@ local function createObjetives()
 			objetiveGroup:insert(objetiveText)
 
 			objetiveGroup.x = display.screenOriginX + (objetiveGroup.contentWidth * 0.4)
-			objetiveGroup.y = display.contentCenterY * 0.75 + startY
+			objetiveGroup.y = display.contentHeight * 0.25 + startY
 
 			hudGroup:insert(objetiveGroup)
 			
@@ -1333,20 +1376,21 @@ end
 
 local function updateBullets()
 	
-	for index = #physicsObjectList, 1, -1 do		
-		local physicsObject = physicsObjectList[index]
-		if physicsObject then
-			if physicsObject.x > (camera.contentWidth * 0.5) or physicsObject.x < (camera.contentWidth * -0.5) then
-				physicsObject.removeFromWorld = true
-			elseif physicsObject.y > (camera.contentHeight * 0.5) or physicsObject.y < (camera.contentHeight * -0.5) then
-				physicsObject.removeFromWorld = true
+		for index = #physicsObjectList, 1, -1 do		
+			local physicsObject = physicsObjectList[index]
+			if physicsObject then
+				if physicsObject.x > (camera.contentWidth * 0.5) or physicsObject.x < (camera.contentWidth * -0.5) then
+					physicsObject.removeFromWorld = true
+				end
+				if physicsObject.y > (camera.contentHeight * 0.5) or physicsObject.y < (camera.contentHeight * -0.5) then
+					physicsObject.removeFromWorld = true
+				end
 			end
 		end
-	end
 end
 
 local function updateGameLoop(event)
-	if not isPaused then
+	if not isPaused and not isGameover then
 		updateParallax()
 		updateEnemies()
 		updateBullets()
@@ -1434,7 +1478,13 @@ local function createGame()
 	camera:toPoint(0,0)
 	camera:start()
 	
-	controlGroup:addEventListener("touch", testTouch)
+	if CONTROL.DPAD then
+		controlGroup:addEventListener("touch", testTouch)
+	elseif CONTROL.DRAG then
+		controlGroup.alpha = 0
+		Runtime:addEventListener("touch", testTouch)
+	end
+	
 	Runtime:addEventListener("collision", collisionListener)
 	Runtime:addEventListener("preCollision", preCollisionListener)
 end
@@ -1490,25 +1540,35 @@ function scene:create(event)
 	
 	controlGroup = display.newGroup()
 	
-	--analogCircleBegan = display.newCircle(0, 0, 30)
-	analogCircleBegan = display.newImage("images/general/dpad.png")
-	--analogCircleBegan.alpha = 0.7
-	controlGroup:insert(analogCircleBegan)
+	local circleControl = display.newCircle(0,0,60)
+	circleControl:setFillColor(1)
+	controlGroup:insert(circleControl)
+	camera:add(controlGroup)
 	
-	analogCircleMove = display.newCircle(0, 0, 30)
-	analogCircleMove.alpha = 0.2
-	controlGroup:insert(analogCircleMove)
-	
-	analogCircleBounds = display.newCircle(0,0, RADIUS_ANALOG)
-	analogCircleBounds.strokeWidth = 0
-	analogCircleBounds:setFillColor(0,0)
-	analogCircleBounds:setStrokeColor(1, 0.5)
-	controlGroup:insert(analogCircleBounds)
-	
-	sceneGroup:insert(controlGroup)
-	
-	controlGroup.x = display.screenOriginX + controlGroup.contentWidth * 0.30
-	controlGroup.y = display.contentHeight - controlGroup.contentHeight * 0.30
+	if CONTROL.DPAD or CONTROL.ANALOG then
+		
+		--analogCircleBegan = display.newCircle(0, 0, 30)
+		analogCircleBegan = display.newImage("images/general/dpad.png")
+		--analogCircleBegan.alpha = 0.7
+		controlGroup:insert(analogCircleBegan)
+
+		analogCircleMove = display.newCircle(0, 0, 30)
+		analogCircleMove.alpha = 0.2
+		controlGroup:insert(analogCircleMove)
+
+		analogCircleBounds = display.newCircle(0,0, RADIUS_ANALOG)
+		analogCircleBounds.strokeWidth = 0
+		analogCircleBounds:setFillColor(0,0)
+		analogCircleBounds:setStrokeColor(1, 0.5)
+		controlGroup:insert(analogCircleBounds)
+
+		sceneGroup:insert(controlGroup)
+
+		controlGroup.x = display.screenOriginX + controlGroup.contentWidth * 0.30
+		controlGroup.y = display.contentHeight - controlGroup.contentHeight * 0.30
+		
+	end
+
 	
 	local debugTextOptions = {
 		x = display.contentWidth - 100,
@@ -1518,8 +1578,6 @@ function scene:create(event)
 		width = 400,
 		text = "",
 	}
-	
-
 	
 	debugText = display.newText(debugTextOptions)
 	debugText.anchorY = 0
@@ -1582,6 +1640,7 @@ function scene:show( event )
 		
 	elseif ( phase == "did" ) then
 		--intro()		
+		music.playTrack(3)
 		scene.enableButtons()
 		camera:setFocus(playerCharacter)
 		director.showOverlay("scenes.overlays.objetives", {isModal = true, params = {objetives = objetives}})
@@ -1601,6 +1660,8 @@ function scene:hide( event )
 		for indexArrow = 1, #indicator do
 			display.remove(indicator[indexArrow])
 		end
+		
+		display.remove(earthIndicator)
 		
 		Runtime:removeEventListener("collision", collisionListener)
 		Runtime:removeEventListener("preCollision", preCollisionListener)

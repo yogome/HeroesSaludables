@@ -69,16 +69,6 @@ function dataSaver:getPowercubes()
     
 end
 
-function dataSaver:setKeys(keys)
-    self.currentPlayer.keys = keys
-    players.save(self.currentPlayer)
-end
-
-function dataSaver:addKeys(keys)
-    self.currentPlayer.keys = self.currentPlayer.keys + keys
-    players.save(self.currentPlayer)
-end
-
 function dataSaver:getKeys()
     return self.currentPlayer.keys
 end
@@ -172,16 +162,31 @@ function dataSaver:getUnlockedHats()
 end
 
 function dataSaver:unlockLevel(world, level)
-    local unlockedLevels = self.currentPlayer.unlockedLevels
-    
+    local unlockedLevels = self.currentPlayer.unlockedWorlds
     if unlockedLevels[world] then
-        if not searchValueOnTable(level, unlockedLevels[world]) then
-            table.insert(self.currentPlayer.unlockedLevels[world], level)
-        end
-    else
-        self.currentPlayer.unlockedLevels[world] = {}
-        table.insert(self.currentPlayer.unlockedLevels[world], level)
-    end
+		if unlockedLevels[world].unlocked then
+			if not unlockedLevels[world].levels[level] then
+				unlockedLevels[world].levels[level] = {unlocked = true, stars = 0}
+			end
+		end
+	end
+    players.save(self.currentPlayer)
+end
+
+function dataSaver:setStars(world, level, stars)
+	local unlockedLevels = self.currentPlayer.unlockedWorlds
+	
+    if unlockedLevels[world] then
+		if unlockedLevels[world].unlocked then
+			if unlockedLevels[world].levels[level] then
+				local currentStars = unlockedLevels[world].levels[level].stars
+				if (stars > 0) and (stars > currentStars) and (stars <= 3) then
+					unlockedLevels[world].levels[level].stars = stars
+				end
+			end
+		end
+	end
+	
     players.save(self.currentPlayer)
 end
 

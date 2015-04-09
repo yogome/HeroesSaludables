@@ -25,16 +25,16 @@ local tutorialdata = {
 	},
 	[4] = {
 		id = "collectPortion",
-		name = "Merodeador",
+		name = "¡Muy bien!",
 		description = {
-			[1] = "¡Muy bien!, ahora lleva la porcion al planeta de la izquierda",
+			[1] = "Ahora lleva la porcion al planeta de la izquierda",
 		}
 	},
 	[5] = {
 		id = "finishLevel",
-		name = "Canoner",
+		name = "¡Excelente!",
 		description = {
-			[1] = "¡Excelente!, ahora ya sabes como entregar porciones, entrega la porción restante para terminar el nivel",
+			[1] = "Ahora ya sabes como entregar porciones, entrega la porción restante para terminar el nivel",
 		}
 	},
 }
