@@ -101,17 +101,15 @@ local testActions = {
 	{"Go Levels", goLevels, {0.5,0.5,0.5}},
 	{"Go Objetives", goObjetives, {0.5,0.5,0.5},2},
 	{"Go Tutorial", goTutorial, {0.5,0.5,0.5},2},
-
+	{"Go Label", goLabel, {0.5,0.5,0.5}},
 	{"Go Home", goHome, {0.5,0.5,0.5}},
 	{"Go Info", goInfo, {0.5,0.5,0.5},2},
 	{"Go Operations", goOperations, {0.5,0.5,0.5},2},
 	{"Go Hero", goHero, {0.5,0.5,0.5}},
 	{"Go Game", goGame, {0.5,0.5,0.5}},
-	{"Go Label", goLabel, {0.5,0.5,0.5}},
 	{"Go Label Quiz", goLabelQuiz, {0.5,0.5,0.5} , 2},
 	{"Go Question Quiz", goQuestion, {0.5,0.5,0.5}},
 	{"Clear queue", clearQueue, {0.5,0.6,0.3}},
-	
 	{"Give Coins", giveCoins,{0.2,0.8,0.2}},
 	{"Toggle FPS", toggleFPS,{0.3,0.3,0.8}},
 	{"Reset player", resetPlayer,{0.8,0.2,0.2}},
