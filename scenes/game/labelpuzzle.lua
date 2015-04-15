@@ -11,16 +11,16 @@ local scene = director.newScene()
 -- -----------------------------------------------------------------------------------------------------------------
 	-- All code outside of the listener functions will only be executed ONCE unless "director.removeScene()" is called.
 -- -----------------------------------------------------------------------------------------------------------------
+----------------------------------------------- Variables
 
--- local forward references should go here
-local puzzleContainer, largePanelGroup, smallPanel, secondsTimer, isCounting, timeRect,transitionTimer, rectGroup, screenRatio
+local puzzleContainer, pzzlCntnr, largePanelGroup, smallPanel, secondsTimer, isCounting, timeRect,transitionTimer, rectGroup, screenRatio
 local piecesGroup, pieceBackScale, piecesPhaseTwo, marks, piecesPhaseThree, correctPositionsToUse, labelPosToUse
 local panelText, titleText, productName
 local okButton, puzzlePieces, puzzleToUse
 local bgShine
 local worldIndex, levelIndex, puzzleIndex, pieceEndScl, pieceScale, gamePhase
 
------------------Constants
+-----------------------------------------------Constants
 local centerX = display.contentCenterX
 local centerY = display.contentCenterY
 local screenLeft = display.screenOriginX
@@ -30,23 +30,21 @@ local screenTop = display.screenOriginY
 local screenHeight = display.viewableContentHeight - screenTop * 2
 local screenBottom = screenTop + screenHeight 
 local mRandom = math.random  
-local SIZE_BACKGROUND = 1024
 local NUMBER_PIECES = 5
 local puzzlesNumber = 13
 local puzzlePanels, iconGroup, panelsThird, panelsToUse
 local productNames = {"","Leche sabor chocolate","Leche Natural","Yoghurt","Jugo Natural","Frituras de Queso","Jugo de Manzana","Pastelito de chocolate","Cereal azucarado","Galletas con chispas","Refresco de Cola","Pastelito de chocolate","Frituras de queso"}
 
-
-----------------------Cached functions
+-----------------------------------------------Cached functions
 local mathSqrt = math.sqrt 
--- -------------------------------------------------------------------------------
+
+-----------------------------------------------Local Functions
 
 local function updateGameLoop()
 	bgShine.rotation = bgShine.rotation + 1
 end
 
 local function onCorrect()
-	
 	if gamePhase == 2 then
 		transition.cancel(transitionTimer)
 	end
@@ -78,7 +76,6 @@ local function onTouchPiece(event)
 	local parent = label.parent
 	
 	if "began" == phase then
-		
 		parent:insert( label )
 		display.getCurrentStage():setFocus( label )
 
@@ -92,17 +89,11 @@ local function onTouchPiece(event)
 		
 		label.x0 = event.x - label.x
 		label.y0 = event.y - label.y
-		
-		-------Coordinates Dumper
-		--local labelX, labelY = label:localToContent(0,0)
-		--local stageX, stageY = puzzlePanel:contentToLocal(labelX, labelY)
-		--print(string.format("{x = %d, y = %d},", stageX, stageY))
-		
+
 	elseif label.isFocus then
 		if "moved" == phase then
 			label.x = event.x - label.x0
 			label.y = event.y - label.y0
-	
 		elseif "ended" == phase or "cancelled" == phase then
 			display.getCurrentStage():setFocus( nil )
 			label.isFocus = false
@@ -140,7 +131,6 @@ local function onTouchPiece(event)
 end
 
 local function createBackground(group)
-	
     local background = display.newImage("images/label/labelBackground.png")
 	background.x = centerX
 	background.y = centerY
@@ -189,92 +179,7 @@ local function hideScreen()
 	rectGroup.alpha = 0
 	okButton.alpha = 0
 end
-local function gotoNextScreen()
-	
-	okButton:setEnabled(false)
-	if puzzleIndex > 1 then
-		transition.to(iconGroup[puzzleIndex-1],{delay = 200, alpha = 0, time = 500})
-	end
-	transition.to(productName,{delay = 300, alpha = 0, time = 500})
-	transition.to(bgShine, {alpha = 0, time = 500})
-	transition.to(puzzleToUse[puzzleIndex], {alpha = 0, time = 500})
-	transition.to(panelText, {alpha = 0, time = 500})
-	transition.to(rectGroup, {alpha = 0, time = 500})
-	transition.to(panelsToUse[puzzleIndex], {delay = 600, transition = easing.inBack, x = screenLeft - panelsToUse[puzzleIndex].width, time=1000})
-	transition.to(puzzleContainer, {delay = 600, transition = easing.inBack, x = display.screenOriginX - puzzleContainer.width, time=1000})
-	transition.to(titleText, {delay = 600, transition = easing.inBack, y = screenTop - screenTop, time=1000})
-	transition.to(iconGroup[puzzleIndex],{ alpha = 0, time = 500, delay = 100})
-	transition.to(okButton, {delay = 600, transition = easing.inBack, y = display.viewableContentHeight + okButton.width, time = 1000, onComplete = function()
-		--director.gotoScene("scenes.game.labelquiz")
-		director.showOverlay("scenes.overlays.tips", {params = {nextScene = "scenes.game.shooter", worldIndex = worldIndex, levelIndex = levelIndex}})
-	end})
 
-end
-
-local function initScreenElements()
-	
-	panelsToUse[puzzleIndex].x = screenLeft - 300
-	panelsToUse[puzzleIndex].y = centerY 
-	panelsToUse[puzzleIndex].xScale = 1.1
-	panelsToUse[puzzleIndex].yScale = 1.1
-	
-	bgShine.isVisible = false
-	bgShine.alpha = 0
-	bgShine.x = centerX - 350
-	bgShine.y = display.contentCenterY * 1.15
-	bgShine.rotation = 0
-	
-	puzzleContainer.x = screenRight + 300
-	puzzleContainer.y = centerY + 100
-	
-	okButton.isVisible = false
-	okButton.alpha = 0
-	okButton:setEnabled(false)
-	okButton.x = screenRight - 150
-	okButton.y = screenBottom - 100
-	
-	pieceScale = 1
-	pieceBackScale = 0.91
-	if puzzleIndex > 11 then
-		pieceScale = 0.8
-	end
-	screenRatio = screenWidth / screenHeight
-	if screenRatio <= 1.6  and puzzleIndex <= 11 then
-		pieceScale = 0.8
-		pieceBackScale = 0.73
-	end
---	print ( " screenRatio is " .. screenRatio .. " ")
-	if gamePhase == 3 then
-		pieceBackScale = 1.7
-		pieceScale = 1.4
-	end
-	print("puzzle index pieces" .. puzzleIndex)
-	for indexPiece = 1, #puzzleToUse[puzzleIndex].pieces do
-		local xPs = labelPosToUse[puzzleIndex][indexPiece].x
-		local yPs = labelPosToUse[puzzleIndex][indexPiece].y
-		if pieceBackScale == 0.73 then
-			if xPs == -220 then
-				xPs = xPs + 95
-			else
-				xPs = xPs + 25
-			end
-		end
-		local currentPiece = puzzleToUse[puzzleIndex].pieces[indexPiece]
-		currentPiece.x = xPs
-		currentPiece.y = yPs
-		currentPiece.xScale = pieceScale
-		currentPiece.yScale = pieceScale
-		currentPiece.isCorrect = false
-		currentPiece.scaledUp = false
-		currentPiece:addEventListener("touch", onTouchPiece)
-	end
-	
-	puzzleToUse[puzzleIndex].isVisible = false
-	puzzleToUse[puzzleIndex].alpha = 0
-	
-	marks.correct.isVisible = false
-	marks.wrong.isVisible = false
-end
 local function createMark(group)
 	
 	local markData = {[1] = {name = "correct", spritesheet = "images/label/correctSpriteSheet.png"},
@@ -306,9 +211,203 @@ local function createMark(group)
 		
 	end
 end
----------------------------------------------------------------------------------
-function scene:create( event )
 
+local function startTimer()
+	secondsTimer = secondsTimer + 1
+	if isCounting then
+		timer.performWithDelay(1000,startTimer)
+	end
+end
+
+local function createPanelText(grp)
+	local width = 350
+	local xPos = screenRight - 300
+	local yPos = centerY
+	local size = 28
+	if puzzleIndex > 11 then
+		width = 650
+		xPos = centerX
+		yPos = screenBottom - 140
+		size = 24
+	end
+	local textData = {
+		text = "Una etiqueta nutricional es aquella información que nos indica el valor energético y contenido del alimento en cuanto a proteínas, hidratos de carbono, grasas, fibra alimentaria, sodio, vitaminas y minerales. Debe expresarse por 100 gramos o 100 miligramos.",
+		width = width,
+		font = settings.fontName,   
+		fontSize = size,
+		align = "center"
+	}
+	
+	panelText = display.newText(textData)
+	panelText.alpha = 0
+	panelText.x = xPos
+	panelText.y = yPos
+	grp:insert(panelText)
+end
+
+local function gotoNextScreen()
+	okButton:setEnabled(false)
+	if puzzleIndex > 1 then
+		transition.to(iconGroup[puzzleIndex-1],{delay = 200, alpha = 0, time = 500})
+	end
+	transition.to(productName,{delay = 300, alpha = 0, time = 500})
+	transition.to(bgShine, {alpha = 0, time = 500})
+	transition.to(puzzleToUse[puzzleIndex], {alpha = 0, time = 500})
+	transition.to(panelText, {alpha = 0, time = 500})
+	transition.to(rectGroup, {alpha = 0, time = 500})
+	transition.to(panelsToUse[puzzleIndex], {delay = 600, transition = easing.inBack, x = screenLeft - panelsToUse[puzzleIndex].width, time=1000})
+	transition.to(puzzleContainer, {delay = 600, transition = easing.inBack, x = display.screenOriginX - puzzleContainer.width, time=1000})
+	transition.to(titleText, {delay = 600, transition = easing.inBack, y = screenTop - screenTop, time=1000})
+	transition.to(iconGroup[puzzleIndex],{ alpha = 0, time = 500, delay = 100})
+	transition.to(okButton, {delay = 600, transition = easing.inBack, y = display.viewableContentHeight + okButton.width, time = 1000, onComplete = function()
+		director.showOverlay("scenes.overlays.tips", {params = {nextScene = "scenes.game.shooter", worldIndex = worldIndex, levelIndex = levelIndex}})
+	end})
+end
+
+local function initScreenElements()
+	panelsToUse[puzzleIndex].x = screenLeft - 300
+	panelsToUse[puzzleIndex].y = centerY 
+	panelsToUse[puzzleIndex].xScale = 1.1
+	panelsToUse[puzzleIndex].yScale = 1.1
+	
+	bgShine.isVisible = false
+	bgShine.alpha = 0
+	bgShine.x = centerX - 350
+	bgShine.y = display.contentCenterY * 1.15
+	bgShine.rotation = 0
+	
+	puzzleContainer.x = screenRight + 300
+	puzzleContainer.y = centerY + 100
+	
+	pzzlCntnr.x = screenLeft - 300
+	pzzlCntnr.y = centerY
+	
+	okButton.isVisible = false
+	okButton.alpha = 0
+	okButton:setEnabled(false)
+	okButton.x = screenRight - 150
+	okButton.y = screenBottom - 100
+	
+	pieceScale = 1
+	pieceBackScale = 0.91
+	if puzzleIndex > 11 then
+		pieceScale = 0.8
+	end
+	screenRatio = screenWidth / screenHeight
+	if screenRatio <= 1.6  and puzzleIndex <= 11 then
+		pieceScale = 0.8
+		pieceBackScale = 0.73
+	end
+	
+	if gamePhase == 3 then
+		pieceBackScale = 1.7
+		pieceScale = 1.4
+	end
+	print("puzzle index pieces" .. puzzleIndex)
+	for indexPiece = 1, #puzzleToUse[puzzleIndex].pieces do
+		local xPs = labelPosToUse[puzzleIndex][indexPiece].x
+		local yPs = labelPosToUse[puzzleIndex][indexPiece].y
+		if pieceBackScale == 0.73 then
+			if xPs == -220 then
+				xPs = xPs + 95
+			else
+				xPs = xPs + 25
+			end
+		end
+		local currentPiece = puzzleToUse[puzzleIndex].pieces[indexPiece]
+		currentPiece.x = xPs
+		currentPiece.y = yPs
+		currentPiece.xScale = pieceScale
+		currentPiece.yScale = pieceScale
+		currentPiece.isCorrect = false
+		currentPiece.scaledUp = false
+		currentPiece:addEventListener("touch", onTouchPiece)
+	end
+	
+	puzzleToUse[puzzleIndex].isVisible = false
+	puzzleToUse[puzzleIndex].alpha = 0
+	
+	marks.correct.isVisible = false
+	marks.wrong.isVisible = false
+end
+
+local function setScreen()
+	panelsToUse[puzzleIndex].alpha = 1
+	if puzzleIndex > 1 then
+		iconGroup[puzzleIndex-1].alpha = 1
+		transition.from(iconGroup[puzzleIndex - 1],{alpha = 0, delay = 600, time = 300})
+	end
+	productName.alpha = 0
+	productName.text = productNames[puzzleIndex]
+	transition.to(productName,{ alpha = 1, delay = 400, time = 500})
+	titleText.x = screenRight - 300
+	titleText.y = screenTop + 160
+	titleText.alpha = 0
+	if puzzleIndex > 1 then
+		iconGroup[puzzleIndex-1].x = screenRight - 300
+		iconGroup[puzzleIndex-1].y = screenBottom - 100
+		iconGroup[puzzleIndex-1].xScale = 0.45
+		iconGroup[puzzleIndex-1].yScale = 0.45
+	end
+	pieceEndScl = 1.1
+	bgShine.x = centerX - 350
+	local movePos = screenLeft + 180
+	productName.x = centerX  
+	productName.y = screenBottom - 80
+	productName.size = 36
+	rectGroup.y = screenTop + 20
+	rectGroup.x = screenLeft 
+	if puzzleIndex > 11 then
+		rectGroup.y = screenTop + 120
+		rectGroup.x = screenLeft - 30
+		titleText.x = centerX
+		titleText.y = centerY - 150
+		if screenRatio < 1.6 then
+			titleText.y = titleText.y - 30
+			rectGroup.y = rectGroup.y + 50
+		end
+		pzzlCntnr.alpha=0
+		bgShine.x = centerX - 100
+		pieceEndScl = 1
+		movePos = centerX
+		productName.size = 45
+		productName.x = centerX 
+		productName.y = screenTop + 75
+		iconGroup[puzzleIndex-1].x = centerX + 300
+		iconGroup[puzzleIndex-1].y = screenTop + 120
+		iconGroup[puzzleIndex-1].xScale = 0.7
+		iconGroup[puzzleIndex-1].yScale = 0.7
+	end
+	if gamePhase == 3 then
+		pieceEndScl = 0.745
+		if puzzleIndex == 8 then
+			pieceEndScl = 1.14
+		end
+	end
+	transition.to(panelsToUse[puzzleIndex], {delay = 300, transition = easing.outBounce, x = movePos, time=500})
+end
+
+local function setTimer(timer)
+	timeRect.xScale = 1
+	timeRect:setFillColor(0,1,0)
+	timer = timer * 1000
+	okButton.isVisible = true
+	transitionTimer = transition.to(timeRect,{ r = 1, g = 0, b =0 ,xScale = 0, time = timer, onComplete = function()
+		transition.to(okButton, {alpha = 1, onComplete = function()
+			okButton:setEnabled(true)
+			isCounting = false
+			marks.wrong.isVisible = true
+			marks.wrong:play()
+			titleText.text = "No lo haz conseguido ..."
+			for indexPiece = 1, #puzzleToUse[puzzleIndex].pieces do
+				puzzleToUse[puzzleIndex].pieces[indexPiece]:removeEventListener("touch", onTouchPiece)
+			end
+	end})
+	end})
+end
+
+-----------------------------------------------module functions
+function scene:create( event )
     local sceneGroup = self.view
 	createBackground(sceneGroup)
 	puzzlePanels = display.newGroup()
@@ -344,6 +443,10 @@ function scene:create( event )
 		panelsThird:insert(puzzlePanel)
 	end
 	
+	pzzlCntnr = display.newImage("images/label/panel_etiquetas.png")
+	pzzlCntnr.alpha = 1
+	sceneGroup:insert(pzzlCntnr)
+	
 	sceneGroup:insert(iconGroup)
 	sceneGroup:insert(puzzlePanels)
 	sceneGroup:insert(panelsThird)
@@ -351,8 +454,7 @@ function scene:create( event )
 	puzzleContainer = display.newImage("images/label/panel_01.png")
 	puzzleContainer.alpha = 0
 	sceneGroup:insert(puzzleContainer)
-	
---	titleText =  display.newText("Arma la etiqueta nutricional", 0, 0, settings.fontName, 28)
+
 	titleText = display.newEmbossedText({
 		  text    = "Ordena la etiqueta nutrimental",  
 		  x        = screenRight - 300,
@@ -381,11 +483,9 @@ function scene:create( event )
 	timeRect = display.newRect(screenLeft + 200, screenTop + 80, 280, 25)
 	timeRect.anchorX = 0
 	colors.addColorTransition(timeRect)
---	timeRect:setFillColor(0,1,0)
-	rectGroup:insert(timeRect)
 	
---	local recti = display.newRect(screenLeft + 320, screenTop + 80, 300, 40)
---	recti:setFillColor(0.2,0.2,0.2)
+	rectGroup:insert(timeRect)
+
 	local recti = display.newImage("images/label/timebar.png")
 	recti.xScale = 0.6
 	recti.yScale = 0.6
@@ -400,131 +500,22 @@ function scene:create( event )
 	createPuzzlePieces(sceneGroup,3,piecesPhaseThree)
 	createMark(sceneGroup)
 end
-local function startTimer()
-	secondsTimer = secondsTimer + 1
-	if isCounting then
-		timer.performWithDelay(1000,startTimer)
-	end
-end
-local function createPanelText(grp)
-	local width = 350
-	local xPos = screenRight - 300
-	local yPos = centerY
-	local size = 28
-	if puzzleIndex > 11 then
-		width = 650
-		xPos = centerX
-		yPos = screenBottom - 140
-		size = 24
-	end
-	local textData = {
-		text = "Una etiqueta nutricional es aquella información que nos indica el valor energético y contenido del alimento en cuanto a proteínas, hidratos de carbono, grasas, fibra alimentaria, sodio, vitaminas y minerales. Debe expresarse por 100 gramos o 100 miligramos.",
-		width = width,
-		font = settings.fontName,   
-		fontSize = size,
-		align = "center"
-	}
-	
-	panelText = display.newText(textData)
-	panelText.alpha = 0
-	panelText.x = xPos
-	panelText.y = yPos
-	grp:insert(panelText)
-end
 
-local function setScreen()
-	panelsToUse[puzzleIndex].alpha = 1
-	if puzzleIndex > 1 then
-		iconGroup[puzzleIndex-1].alpha = 1
-		transition.from(iconGroup[puzzleIndex - 1],{alpha = 0, delay = 600, time = 300})
-	end
-	productName.alpha = 0
-	productName.text = productNames[puzzleIndex]
-	transition.to(productName,{ alpha = 1, delay = 400, time = 500})
-	titleText.x = screenRight - 300
-	titleText.y = screenTop + 160
-	titleText.alpha = 0
-	if puzzleIndex > 1 then
-		iconGroup[puzzleIndex-1].x = screenRight - 300
-		iconGroup[puzzleIndex-1].y = screenBottom - 100
-		iconGroup[puzzleIndex-1].xScale = 0.45
-		iconGroup[puzzleIndex-1].yScale = 0.45
-	end
-	pieceEndScl = 1.1
-	bgShine.x = centerX - 350
-	local movePos = screenWidth * 0.25
-	productName.x = centerX  
-	productName.y = screenBottom - 80
-	productName.size = 36
-	rectGroup.y = screenTop + 20
-	rectGroup.x = screenLeft 
-	if puzzleIndex > 11 then
-		rectGroup.y = screenTop + 120
-		rectGroup.x = screenLeft - 30
-		titleText.x = centerX
-		titleText.y = centerY - 150
-		if screenRatio < 1.6 then
-			titleText.y = titleText.y - 30
-			rectGroup.y = rectGroup.y + 50
-		end
-		bgShine.x = centerX - 100
-		pieceEndScl = 1
-		movePos = screenLeft + 460
-		productName.size = 45
-		productName.x = centerX 
-		productName.y = screenTop + 75
-		iconGroup[puzzleIndex-1].x = centerX + 300
-		iconGroup[puzzleIndex-1].y = screenTop + 120
-		iconGroup[puzzleIndex-1].xScale = 0.7
-		iconGroup[puzzleIndex-1].yScale = 0.7
-	end
-	if gamePhase == 3 then
-		pieceEndScl = 0.745
-		if puzzleIndex == 8 then
-			pieceEndScl = 1.14
-		end
-	end
-	transition.to(panelsToUse[puzzleIndex], {delay = 300, transition = easing.outBounce, x = movePos, time=1000})
-end
-local function setTimer(timer)
-	timeRect.xScale = 1
-	timeRect:setFillColor(0,1,0)
-	timer = timer * 1000
-	okButton.isVisible = true
-	transitionTimer = transition.to(timeRect,{ r = 1, g = 0, b =0 ,xScale = 0, time = timer, onComplete = function()
-		transition.to(okButton, {alpha = 1, onComplete = function()
-			okButton:setEnabled(true)
-			isCounting = false
-			marks.wrong.isVisible = true
-			marks.wrong:play()
-			titleText.text = "No lo haz conseguido ..."
-			for indexPiece = 1, #puzzleToUse[puzzleIndex].pieces do
-				puzzleToUse[puzzleIndex].pieces[indexPiece]:removeEventListener("touch", onTouchPiece)
-			end
-	end})
-	end})
-end
-local function checkPhase()
-	if gamePhase == 2 then
-		gamePhase = mRandom(2,3)
-	end
-end
 function scene:show( event )
-
     local sceneGroup = self.view
     local phase = event.phase
 	
 	local params = event.params or {}
 	worldIndex = params.worldIndex
 	levelIndex = params.levelIndex
-	gamePhase = params.gamePhase or 3
+	gamePhase = params.gamePhase or 1
 	
     if ( phase == "will" ) then
---		checkPhase()
 		puzzlesNumber = 13
 		panelsToUse = puzzlePanels
 		labelPosToUse = puzzlepositions.labelpositions
 		correctPositionsToUse = puzzlepositions.correctPositions
+		
 		if gamePhase == 1 then
 			puzzleToUse = puzzlePieces
 		elseif gamePhase == 2 then
@@ -538,14 +529,16 @@ function scene:show( event )
 			puzzlesNumber = 11
 			titleText.text = "Completa los espacios de la etiqueta"
 		end
+		
 		puzzleIndex = mRandom(2,puzzlesNumber)
---		puzzleIndex = 11
 		print( "Toca el rompecabezas número " .. puzzleIndex .. " ")
+		
 		secondsTimer = 0
 		isCounting = true
 		timer.performWithDelay(1000,startTimer)
 		initScreenElements()
 		Runtime:addEventListener("enterFrame", updateGameLoop)
+		
 	elseif ( phase == "did" ) then
 		if gamePhase == 2 then
 			setTimer(15)
@@ -553,8 +546,10 @@ function scene:show( event )
 		end
 		createPanelText(sceneGroup)
 		setScreen()
+		pzzlCntnr.isVisible = true
+		transition.to(pzzlCntnr, {delay = 300, transition = easing.outBounce, x = screenLeft + 213, time=500})------------
 		transition.to(puzzleContainer, {delay = 300, transition = easing.outBounce, x = screenRight - 350, time=1000, onComplete = function()
-			puzzleToUse[puzzleIndex].isVisible = true;
+			puzzleToUse[puzzleIndex].isVisible = true
 			puzzleToUse[puzzleIndex].x = puzzleContainer.x
 			puzzleToUse[puzzleIndex].y = puzzleContainer.y
 			transition.to(puzzleToUse[puzzleIndex], {time = 500, alpha = 1})
@@ -587,28 +582,15 @@ function scene:hide( event )
     end
 end
 
-
--- "scene:destroy()"
 function scene:destroy( event )
 
     local sceneGroup = self.view
-
-    -- Called prior to the removal of scene's view ("sceneGroup").
-    -- Insert code here to clean up the scene.
-    -- Example: remove display objects, save state, etc.
 end
 
-
--- -------------------------------------------------------------------------------
-
--- Listener setup
+----------------------------------------------- Execution
 scene:addEventListener( "create", scene )
 scene:addEventListener( "show", scene )
 scene:addEventListener( "hide", scene )
 scene:addEventListener( "destroy", scene )
 
--- -------------------------------------------------------------------------------
-
 return scene
-
-
