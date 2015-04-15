@@ -1038,8 +1038,8 @@ local worldsData = {
 		},
 		--Level 2
 		[2] = {
-			x = scale * .3,
-			y = 100,
+			x = scale * 0.125,
+			y = -100,
 			background = "images/backgrounds/space.png",
 			levelWidth = 3000,
 			levelHeight = 1500,
@@ -1848,7 +1848,7 @@ local worldsData = {
 		},
 		--Level 12
 		[12] = {
-			x = scale * .6,
+			x = scale * 0.73,
 			y = -130,
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
@@ -1982,7 +1982,7 @@ local worldsData = {
 		},
 		--Level 13
 		[13] = {
-			x = scale * .78 ,
+			x = scale * 0.79,
 			y = 70,
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
@@ -2068,7 +2068,7 @@ local worldsData = {
 		},
 		--Level 14
 		[14] = {
-			x = scale * .86,
+			x = scale * .85,
 			y = -80,
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
@@ -2240,87 +2240,87 @@ local worldsData = {
 				 type = "blackhole",
 				 position = { x = -1000, y = -300},
 				},
-				[12] = {
+				[11] = {
 				 type = "blackhole",
 				 position = { x = -1200, y = -100},
 				},
-				[13] = {
+				[12] = {
 				 type = "blackhole",
 				 position = { x = -1200, y = 200},
 				},
-				[14] = {
+				[13] = {
 				 type = "blackhole",
 				 position = { x = -1000, y = 300},
 				},
-				[15] = {
+				[14] = {
 				 type = "blackhole",
 				 position = { x = -800, y = 400},
 				},
-				[16] = {
+				[15] = {
 				 type = "blackhole",
 				 position = { x = -600, y = 500},
 				},
-				[17] = {
+				[16] = {
 				 type = "blackhole",
 				 position = { x = -400, y = 600},
 				},
-				[18] = {
+				[17] = {
 				 type = "blackhole",
 				 position = { x = -200, y = 700},
 				},
-				[19] = {
+				[18] = {
 				 type = "blackhole",
 				 position = { x = 0, y = 800},
 				},
-				[20] = {
+				[19] = {
 				 type = "blackhole",
 				 position = { x = 200, y = 700},
 				},
-				[21] = {
+				[20] = {
 				 type = "blackhole",
 				 position = { x = 400, y = 600},
 				},
-				[22] = {
+				[21] = {
 				 type = "blackhole",
 				 position = { x = 600, y = 500},
 				},
-				[23] = {
+				[22] = {
 				 type = "blackhole",
 				 position = { x = 800, y = 400},
 				},
-				[24] = {
+				[23] = {
 				 type = "blackhole",
 				 position = { x = 1000, y = 300},
 				},
-				[25] = {
+				[24] = {
 				 type = "blackhole",
 				 position = { x = 700, y = -100},
 				},
-				[26] = {
+				[25] = {
 				 type = "blackhole",
 				 position = { x = 500, y = -300},
 				},
-				[27] = {
+				[26] = {
 				 type = "blackhole",
 				 position = { x = 300, y = -500},
 				},
-				[28] = {
+				[27] = {
 				 type = "blackhole",
 				 position = { x = -100, y = -400},
 				},
-				[29] = {
+				[28] = {
 				 type = "blackhole",
 				 position = { x = -300, y = -200},
 				},
-				[30] = {
+				[29] = {
 				 type = "blackhole",
 				 position = { x = 600, y = 100},
 				},
-				[31] = {
+				[30] = {
 				 type = "blackhole",
 				 position = { x = 400, y = 200},
 				},
-				[32] = {
+				[31] = {
 				 type = "blackhole",
 				 position = { x = 200, y = 300},
 				},

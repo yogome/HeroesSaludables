@@ -22,7 +22,7 @@ local buttonlist = {
 	gobattle = { width = 256, height = 154, defaultFile = "images/selecthero/new/toBattle_es_01.png", onPress = playSound},
 	powercubes = { width = 256, height = 137, defaultFile = "images/selecthero/new/morePowercubes_1.png", overFile = "images/selecthero/new/morePowercubes_2.png", onPress = playSound},
 	pause = { width = 128, height = 128, defaultFile = "images/buttons/pause_1.png", overFile = "images/buttons/pause_2.png", onPress = playSound},
-	comenzar = { defaultFile = "images/buttons/comenzar_01.png",overFile = "images/buttons/comenzar_02.png",onPress = playSound}
+	minigamestart = { width = 256, height = 70, defaultFile = "images/buttons/comenzar_01.png", overFile = "images/buttons/comenzar_02.png", onPress = playSound},
 }
 
 return buttonlist

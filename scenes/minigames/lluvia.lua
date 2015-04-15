@@ -99,7 +99,7 @@ local function createButton(event)
 		end
 	end
 	
-	local buttonData = buttonList.comenzar
+	local buttonData = buttonList.minigamestart
 	buttonData.onRelease = comenzarBtn
 	okButton = widget.newButton(buttonData)
 end

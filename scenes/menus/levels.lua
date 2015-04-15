@@ -111,18 +111,17 @@ local function createSpaceShip()
 	if prevLastUnlockedLevel then
 		playerCharacter.x = prevLastUnlockedLevel.x + OFFSET_X_PLAYER
 		playerCharacter.y = prevLastUnlockedLevel.y + OFFSET_Y_PLAYER
-		
-		if -playerCharacter.x >= (sizeScroll / 8) * 7 then
-			
-		end
-		
 
-		local position = playerCharacter.x
-		if playerCharacter.x >= sizeScroll - ((sizeScroll / 8) * 7) then
-			position = sizeScroll - 1536
+		local position = 0
+		if playerCharacter.x >= display.contentWidth * 0.5 then
+			position = -playerCharacter.x
 		end
 		
-		scrollView:scrollToPosition({x = -position, time = 1000})
+		if playerCharacter.x >= (4096 - (display.contentWidth)) then
+			position = (lastUnlockedLevel.x - (display.contentWidth * 0.8)) * -1
+		end
+		
+		scrollView:scrollToPosition({x = position, time = 1000})
 		transition.to(playerCharacter, {delay = 100, time = FLY_TIME,x = lastUnlockedLevel.x, onStart = function()
 			timer.performWithDelay(1100, function()
 				--sound.play("breakSound")
@@ -295,7 +294,6 @@ local function createMapAssets(sceneGroup)
 		hideBackground = false,
 		verticalScrollDisabled = true,
 		isBounceEnabled = false,
-
 	}
 	
 	scrollView = widget.newScrollView(scrollViewOptions)

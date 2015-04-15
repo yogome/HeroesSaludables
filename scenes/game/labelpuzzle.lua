@@ -8,6 +8,9 @@ local sound = require("libs.helpers.sound")
 local colors = require( "libs.helpers.colors" )
 local scene = director.newScene()
 
+-- -----------------------------------------------------------------------------------------------------------------
+	-- All code outside of the listener functions will only be executed ONCE unless "director.removeScene()" is called.
+-- -----------------------------------------------------------------------------------------------------------------
 ----------------------------------------------- Variables
 
 local puzzleContainer, pzzlCntnr, largePanelGroup, smallPanel, secondsTimer, isCounting, timeRect,transitionTimer, rectGroup, screenRatio
