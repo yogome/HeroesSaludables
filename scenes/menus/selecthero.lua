@@ -928,13 +928,14 @@ local function animateScene(params)
 		sound.play("yogotarBrake")
 	end)	
     local transitionOffset = 0
-    for indexLayer = 1, 1 do
-        local randomSign = (math.random(1,2) * 2) - 3
-        local currentBackground = backgroundGroup.backgrounds[indexLayer]
-        transition.from(currentBackground, {time =  250, alpha = 0, transition = easing.inSine, delay = transitionOffset, x = display.contentCenterX + (currentBackground.contentWidth * randomSign)})
-        transitionOffset = transitionOffset + 200
-    end
-	
+	--Uncomment this code to add animation to backgrounds
+--    for indexLayer = 1, 1 do
+--        local randomSign = (math.random(1,2) * 2) - 3
+--        local currentBackground = backgroundGroup.backgrounds[indexLayer]
+--        transition.from(currentBackground, {time =  250, alpha = 0, transition = easing.inSine, delay = transitionOffset, x = display.contentCenterX + (currentBackground.contentWidth * randomSign)})
+--        transitionOffset = transitionOffset + 200
+--    end
+--	
 	timer.performWithDelay(transitionOffset, function()
 		yogotar.group.isVisible = true
 		
@@ -1168,8 +1169,8 @@ end
 
 local function animateShip()
 	
-	transition.to(shipGroup, {time = 1000, y = shipGroup.y + 25, transition = easing.inOutQuad, onComplete = function()
-		transition.to(shipGroup, {time = 1000, y = shipGroup.y - 25, transition = easing.inOutQuad, onComplete = function()
+	transition.to(shipGroup, {tag = "SHIP", time = 1000, y = shipGroup.y + 25, transition = easing.inOutQuad, onComplete = function()
+		transition.to(shipGroup, {tag = "SHIP", time = 1000, y = shipGroup.y - 25, transition = easing.inOutQuad, onComplete = function()
 			animateShip()
 		end})
 	end})
@@ -1288,6 +1289,8 @@ function scene:hide( event )
 		dataSaver:setYogotarType(currentYogotarType)
 		dataSaver:setCurrentYogotar(currentSelectedYogotar)
 		dataSaver:setCurrentHat(currentHat)
+		
+		transition.cancel("SHIP")
 		
 		uiGroup:insert(buttonPowercubesGroup)
 		display.remove(tutorialGroup)
