@@ -31,7 +31,7 @@ local analogX, analogY
 local analogCircleBegan
 local analogCircleMove
 local analogCircleBounds
-local controlGroup
+local controlGroup, objetivesGroup
 local heartIndicator
 local worldIndex, levelIndex
 local hudGroup
@@ -54,6 +54,8 @@ local earthIndicator
 local disabledControl
 local objetives
 local currentTutorials
+local circleGroup
+local obstacleList
 ----------------------------------------------- Background stars data
 local spaceObjects, objectDespawnX, objectSpawnX, objectDespawnY, objectSpawnY
 local spawnZoneWidth, spawnZoneHeight, halfSpawnZoneWidth, halfSpawnZoneHeight
@@ -185,10 +187,8 @@ local function updateTutorial()
 		local distance = (diffShipX * diffShipX) + (diffShipY * diffShipY)
 		distance = squareRoot(distance)
 		if distance >= RADIUS_TUTORIAL then
-			if currentTutorials.hasTutorial then
 				currentTutorials.success("moveOutCircle")
 				currentTutorials.show("moveToBase", {onSuccess = successTutorial, onStart = startTutorial, delay = 1000})
-			end
 		end
 	end
 	
@@ -367,7 +367,7 @@ local function spawnBubble(planet)
 		currentTutorials.show("baseTutorial", {onSuccess = successTutorial, onStart = startTutorial, delay = 0})
 	end
 	
-	if not isFoodSpawned[planet.foodType] then
+	if not isFoodSpawned[planet.foodType] and not planet.isDisabled then
 		isFoodSpawned[planet.foodType] = true
 		local foodBubbleIndex = math.random(1, #foodlist[planet.foodType].food)
 		local foundBubble = foodBubbleGroup.bubbles[planet.foodType][foodBubbleIndex]
@@ -465,12 +465,36 @@ local function checkAmounts(foodType)
 	local isComplete = false
 	
 	local portions = objetives[foodType].portions - 1
-	portions = portions < 0 and 0 or portions
+	if portions <= 0 then
+		portions = 0
+		objetives[foodType].label.isVisible = false
+		
+		local mark = objetives[foodType].mark
+		mark.isVisible = true
+		transition.from(mark, {alpha = 0, xScale = 2, yScale = 2, transition = easing.outBounce})
+		
+		for indexIndicator = 1, #indicator do
+			print(indicator[indexIndicator].type)
+			print(foodType)
+			if indicator[indexIndicator].type == foodType then
+				indicator[indexIndicator].disabled = true
+			end
+		end
+		
+		for indexPlanet = 1, #planets do
+			local currentPlanet = planets[indexPlanet]
+			if currentPlanet.foodType == foodType then
+				currentPlanet.isDisabled = true
+				currentPlanet.alpha = 0.5
+			end
+		end
+	end
+	
 	objetives[foodType].label.text = portions
 	objetives[foodType].portions = portions
 	
 	local collectedAll = true
-	for key, value in pairs(objetives) do		
+	for key, value in pairs(objetives) do
 		collectedAll = collectedAll and (objetives[key].portions <= 0)
 	end
 	
@@ -486,7 +510,7 @@ local function checkAmounts(foodType)
 			disabledControl = true
 			local function onBackReleased()
 				winScene.disableButtons()
-				director.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
+				director.gotoScene("scenes.menus.levels", {params = {worldIndex = worldIndex}, effect = "fade", time = 500})
 			end
 			local function onRetryReleased()
 				winScene.disableButtons()
@@ -498,7 +522,7 @@ local function checkAmounts(foodType)
 					dataSaver:unlockLevel(worldIndex, levelIndex+1)
 				end
 				dataSaver:setStars(worldIndex, levelIndex, heartIndicator.currentHearts)
-				director.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
+				director.gotoScene("scenes.menus.levels", {params = {worldIndex = worldIndex}, effect = "fade", time = 500})
 			end
 			winScene.show(heartIndicator.currentHearts, 200, onBackReleased, onRetryReleased, onPlayReleased)
 		end
@@ -663,6 +687,35 @@ local function checkPlayerCollision(player, otherObject, element1, element2)
 		elseif otherObject.name == "blackhole" then
 			suckFood(player, otherObject)
 		end
+		
+	elseif player.name == "bullet" then
+		if otherObject.name == "asteroid" then
+			
+			local explosionData = { width = 128, height = 128, numFrames = 16 }
+			local explosionSheet = graphics.newImageSheet( "images/enemies/explosion.png", explosionData )
+
+			local sequenceData = {
+				{name = "explosion", sheet = explosionSheet, start = 1, count = 16, 1200, loopCount = 1},
+			}
+
+			local explosionSprite = display.newSprite( explosionSheet, sequenceData )
+			explosionSprite:scale(SCALE_EXPLOSION, SCALE_EXPLOSION)
+			explosionSprite:setSequence("explosion")
+			explosionSprite.x = player.x
+			explosionSprite.y = player.y
+			explosionSprite:play()
+			player.parent:insert(explosionSprite)
+			player.removeFromWorld = true
+
+			explosionSprite:addEventListener("sprite", function(event)
+				if event.phase == "ended" then
+					if explosionSprite.sequence == "closing" then
+						display.remove(explosionSprite)
+					end
+				end
+			end)
+			
+		end
 	end
 end
 	
@@ -733,7 +786,7 @@ local function createBackground(sceneGroup)
 		--"images/backgrounds/element3.png",
 		--"images/backgrounds/element4.png",
 		--"images/backgrounds/element5.png",
-		"images/backgrounds/element6.png",
+		--"images/backgrounds/element6.png",
 		"images/backgrounds/element7.png",
 		--"images/backgrounds/element8.png",
 		"images/backgrounds/element9.png",
@@ -858,7 +911,6 @@ local function testTouch(event)
 	if not disabledControl then
 		if CONTROL.DPAD then
 			controlDpad(event)
-			print(camera.scrollX, camera.scrollY)
 		elseif CONTROL.DRAG then
 			controlDrag(event)
 		end
@@ -1157,11 +1209,20 @@ end
 
 local function loadObstacles()
 	
---	local blackhole = obstacles.newObstacle("blackhole")
---	physics.addBody(blackhole, {isSensor = true, radius = 150})
---	blackhole.x = -250
---	camera:add(blackhole)
---	
+	local obstacleData = worldsData[worldIndex][levelIndex].obstacle
+	
+	if obstacleData then
+		for obstacleIndex = 1, #obstacleData do
+			local currentObstacle = obstacleData[obstacleIndex]
+			local obstacle = obstacles.newObstacle(currentObstacle.type)
+			obstacle.x = currentObstacle.position.x
+			obstacle.y = currentObstacle.position.y 
+			physics.addBody(obstacle, {isSensor = true, radius = 150})
+			physicsObjectList[#physicsObjectList+1] = obstacle
+			camera:add(obstacle)
+		end
+	end
+	
 end
 
 local function loadLevel()
@@ -1176,7 +1237,7 @@ end
 
 local function createObjetives()
 	
-	local objetivesGroup = display.newGroup()
+	objetivesGroup = display.newGroup()
 	local startY = 0
 	local OFFSET_ICONX = 10
 	local OFFSET_ICONY = 10
@@ -1199,11 +1260,21 @@ local function createObjetives()
 			objetiveImage.y = OFFSET_ICONY
 			objetiveImage:scale(0.23, 0.23)
 			objetiveGroup:insert(objetiveImage)
-
+			
+			local objetiveTextGroup = display.newGroup()
 			local objetiveText = display.newText(objetives[keyObjetive].portions, 30, 0, settings.fontName, 32)
 			objetives[keyObjetive].label = objetiveText
-			objetiveText.y = OFFSET_ICONY
-			objetiveGroup:insert(objetiveText)
+			objetiveTextGroup:insert(objetiveText)
+			
+			local objetiveMark = display.newImage("images/general/right_mark.png")
+			objetives[keyObjetive].mark = objetiveMark
+			objetiveMark.isVisible = false
+			objetiveMark.x = 35
+			objetiveTextGroup:insert(objetiveMark)
+			
+			objetiveTextGroup.y = OFFSET_ICONY
+			
+			objetiveGroup:insert(objetiveTextGroup)
 
 			objetiveGroup.x = display.screenOriginX + (objetiveGroup.contentWidth * 0.4)
 			objetiveGroup.y = display.contentHeight * 0.25 + startY
@@ -1285,7 +1356,7 @@ local function initialize(event)
 	
 	disabledControl = true
 	
-	
+	obstacleList = {}
 	isPaused = false
 	
 	isGameover = false
@@ -1325,9 +1396,10 @@ local function initialize(event)
 	
 end
 
-local function setIndicator(target, indicator)
+local function indicatorUpdate(target, indicator)
 	
-	local currentIndicator = target--planets[indexLine]
+	local currentIndicator = target
+	--indicator.foodType = currentIndicator.foodType
 				
 	local diffX =(-camera.scrollX + display.contentWidth * 0.50) - currentIndicator.x
 	local diffY =(-camera.scrollY + display.contentHeight * 0.50) - currentIndicator.y
@@ -1337,40 +1409,42 @@ local function setIndicator(target, indicator)
 
 	local limitX = display.contentWidth * 0.45
 	local limitY = display.contentHeight * 0.45
-
-	if diffX < limitX and diffX > -limitX and diffY < limitY and diffY > -limitY then
-		indicator.x = currentIndicator.x
-		indicator.y = currentIndicator.y
-		indicator.isVisible = false
-	else
-		indicator.isVisible = true
-		if diffX >= limitX then
-			indicator.x = (-camera.scrollX + display.contentWidth * 0.50) - limitX
-		end
-
-		if diffX <= -limitX then
-			indicator.x = (-camera.scrollX + display.contentWidth * 0.50) + limitX
-		end
-
-		if diffY >= limitY then
-			indicator.y = (-camera.scrollY + display.contentHeight * 0.50) - limitY
-		end
-
-		if diffY <= -limitY then
-			indicator.y = (-camera.scrollY + display.contentHeight * 0.50) + limitY
-		end
-		
-	end
 	
+	if not indicator.disabled then
+		if diffX < limitX and diffX > -limitX and diffY < limitY and diffY > -limitY then
+			indicator.x = currentIndicator.x
+			indicator.y = currentIndicator.y
+			indicator.isVisible = false
+		else
+			indicator.isVisible = true
+			if diffX >= limitX then
+				indicator.x = (-camera.scrollX + display.contentWidth * 0.50) - limitX
+			end
+
+			if diffX <= -limitX then
+				indicator.x = (-camera.scrollX + display.contentWidth * 0.50) + limitX
+			end
+
+			if diffY >= limitY then
+				indicator.y = (-camera.scrollY + display.contentHeight * 0.50) - limitY
+			end
+
+			if diffY <= -limitY then
+				indicator.y = (-camera.scrollY + display.contentHeight * 0.50) + limitY
+			end
+		end
+	else
+		indicator.isVisible = false
+	end
 end
 
 local function updateIndicators()
 		
 		if not isGameover then
 			for indexLine = 1, #planets do
-				setIndicator(planets[indexLine], indicator[indexLine])
+				indicatorUpdate(planets[indexLine], indicator[indexLine])
 			end
-			setIndicator(earth, earthIndicator)
+			indicatorUpdate(earth, earthIndicator)
 		end
 end
 
@@ -1394,7 +1468,7 @@ local function updateGameLoop(event)
 		updateParallax()
 		updateEnemies()
 		updateBullets()
-		showDebugInformation()
+		--showDebugInformation()
 		enterFrame(event)
 		updateIndicators()
 		updateTutorial()
@@ -1494,13 +1568,18 @@ local function destroyGame()
 	physics.pause()
 	sound.stopPitch()
 	controlGroup:removeEventListener("touch", testTouch)
+	Runtime:removeEventListener("touch", testTouch)
 	camera:stop()
+	
+	display.remove(objetivesGroup)
+	display.remove(circleGroup)
 	
 	for index = #physicsObjectList, 1, -1 do
 		camera:remove(physicsObjectList[index])
 		display.remove(physicsObjectList[index])
 		physicsObjectList[index] = nil
 	end
+	
 	physicsObjectList = nil
 	
 	spaceships.stop()
@@ -1605,7 +1684,7 @@ function scene:show( event )
 		currentTutorials = tutorial.initializeTutorials(worldsData[worldIndex][levelIndex].tutorial)
 		if currentTutorials.hasTutorial then
 			
-			local circleGroup = display.newGroup()
+			circleGroup = display.newGroup()
 			local radian = (math.pi / 180) * 50
 			for indexDegree = 1, 50 do
 				local x = math.sin(radian * indexDegree - 1) * 180
@@ -1628,11 +1707,13 @@ function scene:show( event )
 			arrow.yScale = 0.3
 			transition.to(arrow, {iterations = -1, xScale = 0.5, yScale = 0.5, transition = easing.continuousLoop})
 			indicator[indexPlanet] = arrow
+			indicator[indexPlanet].type = planets[indexPlanet].foodType
 			camera:add(arrow)
 		end
 		
 		earthIndicator = display.newImage("images/shooter/arrow.png")
 		earthIndicator.isVisible = false
+		earthIndicator.type = "planet"
 		earthIndicator.xScale = 0.4
 		earthIndicator.yScale = 0.4
 		transition.to(earthIndicator, {iterations = -1, xScale = 0.9, yScale = 0.9, transition = easing.continuousLoop})

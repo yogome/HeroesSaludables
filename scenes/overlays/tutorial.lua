@@ -9,6 +9,7 @@ local tutorialData = require("data.tutorialdata")
 local scene = director.newScene()
 local okButton
 local panelGroup
+local animationGroup
 
 ----------------------------Constants
 local NUMBER_TIPS = 13
@@ -36,6 +37,56 @@ local function searchTutorialName(tutorialName)
 	return searchIndex
 end
 
+local function getAnimation(id)
+	
+	local animationData = {
+		[1] = {	
+			asset = "images/tutorialanimation/tutorial1.png",
+		},
+		[2] = {	
+			asset = "images/tutorialanimation/tutorial2.png",
+		},
+		[3] = {	
+			asset = "images/tutorialanimation/tutorial3.png",
+		},
+		[4] = {	
+			asset = "images/tutorialanimation/tutorial4.png",
+		}
+	}
+	
+	local animationGroup = display.newGroup()
+	if animationData[id] then
+		
+		local optionsSheet = {
+			width = 256,
+			height = 256,
+			
+			numFrames = 64,
+			sheeContentWidth = 2048,
+			sheetContentHeight  = 2048,
+		}
+		
+		local spriteInfo = graphics.newImageSheet(animationData[id].asset, optionsSheet)
+		
+		local spriteOptions = {
+			name = "tutorial",
+			start = 1,
+			count = 64,
+			time = 2000,
+		}
+		
+		local spriteSheet = display.newSprite(spriteInfo, spriteOptions)
+		animationGroup:insert(spriteSheet)
+		animationGroup.sprite = spriteSheet
+		
+		return animationGroup
+	else 
+		return nil
+	end
+	
+	
+end
+
 local function createTutorialScreen(data, parent)
 	
 	local tutorialTitle = data.name
@@ -43,6 +94,13 @@ local function createTutorialScreen(data, parent)
 		
 	panelGroup.title.text = tutorialTitle
 	panelGroup.description.text = tutorialDescription
+	
+	animationGroup = getAnimation(data.animationId)
+	if animationGroup then
+		animationGroup.x = panelGroup.contentWidth * -0.20
+		animationGroup.sprite:play()
+		panelGroup:insert(animationGroup)
+	end
 	
 	buttonList.ok.onRelease = function(event)
 		closeOverlay(event, parent)
@@ -130,7 +188,7 @@ function scene:hide( event )
 
     if ( phase == "will" ) then
 	elseif ( phase == "did" ) then
-		
+		display.remove(animationGroup)
     end
 end
 

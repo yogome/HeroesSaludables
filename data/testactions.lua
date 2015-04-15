@@ -1,10 +1,15 @@
 
 local director = require( "libs.helpers.director" )
 local players = require( "models.players" )
+local dataSaver = require("services.datasaver")
 
 local function goGame()
-	director.gotoScene("scenes.game.shooter", { params = { worldIndex = 1, levelIndex = 1}} );
+	director.gotoScene("scenes.game.shooter", { params = { worldIndex = 2, levelIndex = 2}} );
 end	
+
+local function goMinigame1()
+	director.gotoScene("scenes.minigames.label1", { params = { worldIndex = 1, levelIndex = 12}})
+end
 
 local function goObjetives()
 	local objetives = {
@@ -21,6 +26,14 @@ local function goObjetives()
 	}
 	director.gotoScene("scenes.overlays.objetives", { params = {objetives = objetives}} );
 end
+
+local function unlockLevels()
+	dataSaver:initialize()
+	for index = 1, 15 do
+		dataSaver:unlockLevel(1, index)
+	end
+end
+
 
 local function goTutorial()
 	local tutorialName = "enemycanoner"
@@ -101,6 +114,7 @@ local testActions = {
 	{"Go Levels", goLevels, {0.5,0.5,0.5}},
 	{"Go Objetives", goObjetives, {0.5,0.5,0.5},2},
 	{"Go Tutorial", goTutorial, {0.5,0.5,0.5},2},
+	{"Unlock Levels", unlockLevels, {0.5,0.5,0.5},1},
 
 	{"Go Home", goHome, {0.5,0.5,0.5}},
 	{"Go Info", goInfo, {0.5,0.5,0.5},2},
@@ -116,6 +130,7 @@ local testActions = {
 	{"Toggle FPS", toggleFPS,{0.3,0.3,0.8}},
 	{"Reset player", resetPlayer,{0.8,0.2,0.2}},
 	{"Go Editor", goEditor, {0.5,0.5,0.5}, 2},
+	{"Minigame1", goMinigame1, {0.5,0.5,0.5}, 2},
 }
 
 return testActions

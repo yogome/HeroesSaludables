@@ -187,8 +187,8 @@ local function shootAtAngle(self, angle)
 			bullet.x = self.x
 			bullet.y = self.y
 			bullet.rotation = rotation
-			bullet.xScale = 0.50
-			bullet.yScale = 0.50
+			bullet.xScale = 0.30
+			bullet.yScale = 0.30
 			bullet.alpha = 0
 			bullet.name = "bullet"
 

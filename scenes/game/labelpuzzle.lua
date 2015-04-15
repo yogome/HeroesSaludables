@@ -9,7 +9,7 @@ local colors = require( "libs.helpers.colors" )
 local scene = director.newScene()
 
 -- -----------------------------------------------------------------------------------------------------------------
--- All code outside of the listener functions will only be executed ONCE unless "director.removeScene()" is called.
+	-- All code outside of the listener functions will only be executed ONCE unless "director.removeScene()" is called.
 -- -----------------------------------------------------------------------------------------------------------------
 
 -- local forward references should go here

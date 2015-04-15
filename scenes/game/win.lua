@@ -157,14 +157,14 @@ local function startTransitions()
 			local delay = baseDelay + 300 * index
 			local halfTime = transitionTime * 0.5
 			local startY = display.contentCenterY + OFFSETS_STARS[index].y
+			local startX = display.contentCenterX
 			local arcTop = startY - 230
-			star.y = startY
 			
 			transition.to(star, {tag = TAG_WIN_TRANSITION, delay = delay, time = halfTime, y = arcTop, transition = easing.inQuad, onStart = function()
 				star.alpha = 1
 			end})
 			transition.to(star, {tag = TAG_WIN_TRANSITION, delay = delay + halfTime, time = halfTime, y = startY, transition = easing.outBounce})
-			transition.from(star, {tag = TAG_WIN_TRANSITION, delay = delay, time = transitionTime, x = display.contentCenterX, xScale = 1, yScale = 1, rotation = -1000, transition = easing.outQuad, onComplete = function()
+			transition.from(star, {tag = TAG_WIN_TRANSITION, delay = delay, time = transitionTime, x = startX, xScale = 1, yScale = 1, rotation = -1000, transition = easing.outQuad, onComplete = function()
 				sound.play("star"..index)
 			end})
 		end
@@ -294,6 +294,11 @@ function scene:hide( event )
     if ( phase == "will" ) then
 		self.disableButtons()
 	elseif ( phase == "did" ) then
+		
+		for index = 1, starAmount do
+			stars[index].alpha = 0
+		end
+		
 		removeTitle()
 		transition.cancel(TAG_WIN_TRANSITION)
 	end
