@@ -17,11 +17,15 @@ local bandSprite
 local iconPortion, portionDescription, portionDescriptionBG
 local currentPortion
 local animationTimer
-local bandPieces
 local middleGroup
 local labelDescription
 local descriptionText
 local nextSceneButton
+
+----------------Groups to remove
+-- 
+local labelBG
+local bandPieces
 
 ----------------------------Constants
 local NUMBER_TIPS = 45
@@ -78,12 +82,14 @@ local function initialize()
 	startButton:setEnabled(true)
 	startButton.isVisible = true
 	
-	local randomPortion = 9--math.random(1, #labelData)
+	local randomPortion = math.random(1, #labelData)
 	currentPortion = labelData[randomPortion]
 	
 	descriptionText.text = currentPortion.description
 	descriptionText.alpha = 0
 	nextSceneButton.alpha = 0
+	
+	bandSprite:pause()
 end
 
 local function onPieceTouch(event)
@@ -155,7 +161,7 @@ local function onPieceTouch(event)
 
 local function createLabelElements(sceneGroup)
 	
-	local labelBG = display.newImage(currentPortion.labelBG)
+	labelBG = display.newImage(currentPortion.labelBG)
 	labelBG.x = display.contentWidth * 0.19
 	labelBG.y = display.contentCenterY
 	sceneGroup:insert(labelBG)
@@ -352,7 +358,16 @@ function scene:hide( event )
 		
 	elseif ( phase == "did" ) then
 		
-    end
+		Runtime:removeEventListener("enterFrame", updateGame)
+		for indexPiece = 1, #bandPieces do
+			display.remove(bandPieces[indexPiece])
+		end
+		
+		display.remove(iconPortion)
+		display.remove(portionDescription)
+		display.remove(portionDescriptionBG)
+		display.remove(labelBG)
+		end
 end
 
 
