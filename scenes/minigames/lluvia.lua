@@ -1,16 +1,18 @@
 ----------------------------------------------- Lluvia Minigame
 local director = require( "libs.helpers.director" )
 local buttonList = require("data.buttonlist")
+local labelData = require("data.labeldata")
+local settings = require("settings")
 local widget = require("widget")
 local sound = require("libs.helpers.sound")
-local colors = require( "libs.helpers.colors" )
 local game = director.newScene()
 
 ----------------------------------------------- Variables
-local puzzleContainer
+local currentPortion
 local puzzlePieces
-
+local iconPortion, portionDescription, portionDescriptionBG
 local okButton
+local lluvia
 
 ----------------------------------------------- Constants
 local centerX = display.contentCenterX
@@ -27,52 +29,85 @@ local mRandom = math.random
 
 ----------------------------------------------- Functions
 local function dragnDrop(event)
+	local target = event.target
 	if event.phase == "began" then
-		display.getCurrentStage():setFocus( event.target, event.id )
-		event.target.isFocus = true
-		event.target.markX = event.target.x
-		event.target.markY = event.target.y
-	elseif event.target.isFocus then
+		transition.cancel(target)
+		display.getCurrentStage():setFocus( target, event.id )
+		target.isFocus = true
+		target.markX = event.target.x
+		target.markY = event.target.y
+		if target[1] then
+			transition.to(target[1] , {alpha = 0, time=300})
+		end
+	elseif target.isFocus then
 		if event.phase == "moved" then
-			event.target.x = event.x - event.xStart + event.target.markX
-			event.target.y = event.y - event.yStart + event.target.markY
+			target.x = event.x - event.xStart + target.markX
+			target.y = event.y - event.yStart + target.markY
 		elseif event.phase == "ended" or event.phase == "cancelled" then
-			display.getCurrentStage():setFocus(event.target, nil)
-			event.target.isFocus = false
+			display.getCurrentStage():setFocus(target, nil)
+			target.isFocus = false
 		end
 	end
 	return true
 end  
 
-local function createPuzzle(group)
-	local pzzl = mRandom(1, 11)
+local function createPuzzle()
+	local pzzl = mRandom(1, 10)
+	currentPortion = labelData[pzzl]
+	lluvia = {}
 	puzzlePieces = display.newGroup()
-	puzzlePieces.pieces = {}
+--	puzzlePieces.pieces = {}
 	
 	local numPieces = 5
 		
 	for i = 1, numPieces do
-		local piece_ = display.newImage("images/label/pieces/phase1/" .. pzzl  .. "/piece" .. i .. ".png")
+		local piece_ = display.newImage(currentPortion.pieces[i].assets[1])
 		local box = display.newImage("images/label/piecesBoxes/etiqueta_0" .. i .. ".png")
 		box:scale( 0.7, 0.7 )
-		local piece =display.newGroup();
+		local piece =display.newGroup()
 		piece:insert(box)
 		piece:insert(piece_)
 		
 		piece:addEventListener("touch", dragnDrop)
-		piece.id = i
-		puzzlePieces.pieces[i] = piece
+		lluvia[i] = piece
+--		puzzlePieces.pieces[i] = piece
 		puzzlePieces:insert(piece)
 	end
-	group:insert(puzzlePieces)
+	
+	iconPortion = display.newImage(currentPortion.iconAsset)
+	iconPortion:scale(1.4, 1.4)
+	iconPortion.x = display.contentWidth * 0.65
+	iconPortion.y = display.contentHeight * 0.5
+	
+	portionDescription = display.newText(currentPortion.name, iconPortion.x, iconPortion.y * 0.4, settings.fontName, 45)
+	portionDescription:setFillColor(0.1)
+	
+	portionDescriptionBG = display.newText(currentPortion.name, iconPortion.x, iconPortion.y * 0.4, settings.fontName, 45)
+	portionDescriptionBG.alpha = 0
+	portionDescriptionBG:setFillColor(1)
 end
 
 local function setElements(group)
-	puzzleContainer = display.newImage("images/label/panel_etiquetas.png")
-	puzzleContainer.x = screenLeft - 300
+	createPuzzle()
+	
+	okButton:setEnabled(true)
+	okButton.isVisible=true
+	okButton.alpha=1
+	
+	local puzzleContainer = display.newImage("images/label/panel_etiquetas.png")
+	puzzleContainer.x = screenLeft + 213
 	puzzleContainer.y = centerY
-
-    local background = display.newImage("images/label/labelBackground.png")	
+	
+	local labelBG = display.newImage(currentPortion.labelBG)
+	labelBG.x = screenLeft + 180
+	labelBG.y = centerY
+	
+	local nameContainer = display.newImage("images/minigames/panel_producto.png")
+	nameContainer:scale( 1.2, 1 )
+	nameContainer.x = display.contentWidth - (nameContainer.contentWidth * 0.45)
+	nameContainer.y = display.screenOriginY + (nameContainer.contentHeight * 0.3)
+	
+	local background = display.newImage("images/label/labelBackground.png")	
 	background.x = centerX
 	background.y = centerY
     background.width = screenWidth
@@ -80,12 +115,13 @@ local function setElements(group)
 
 	group:insert(background)
 	group:insert(puzzleContainer)
-	createPuzzle(group)
-end
-
-local function initialize(event)
-	okButton.x = display.contentCenterX
-	okButton.y = display.contentCenterY
+	group:insert(labelBG)
+	group:insert(puzzlePieces)
+	group:insert(okButton)
+	group:insert(nameContainer)
+	group:insert(iconPortion)
+	group:insert(portionDescription)
+	group:insert(portionDescriptionBG)
 end
 
 local function createButton(event)
@@ -93,15 +129,32 @@ local function createButton(event)
 		if ( "ended" == event.phase ) then
 			transition.to(okButton, {alpha = 0, time=300, onComplete = function()
 				okButton:setEnabled(false)
+				okButton.isVisible=false
+				transition.to(iconPortion, {xScale = 0.3, yScale = 0.3, x = display.contentWidth * 0.95, y = display.contentWidth * 0.04, transition = easing.outQuad})
+				transition.to(portionDescription, {alpha = 0, xScale = 0.8, yScale = 0.8, x = display.contentWidth * 0.75, y = display.contentWidth * 0.03, transition = easing.outQuad})
+				transition.to(portionDescriptionBG, {alpha = 1, xScale = 0.8, yScale = 0.8, x = display.contentWidth * 0.75, y = display.contentWidth * 0.03, transition = easing.outQuad})
+				startGame()
 			end})
-			transition.to(puzzleContainer, {transition = easing.outBounce, x = screenLeft + 213, time=500})
-			sound.play("ironshield")
 		end
 	end
 	
 	local buttonData = buttonList.minigamestart
 	buttonData.onRelease = comenzarBtn
 	okButton = widget.newButton(buttonData)
+	okButton:scale(1.2, 1.2)
+	okButton.x = display.contentWidth * 0.8
+	okButton.y = display.contentHeight * 0.85
+end
+
+local function startGame()
+	repeatLoop()
+
+end
+
+local function repeatLoop()
+	lluvia[1].x=centerX
+	lluvia[1].y=centerY
+	transition.to(lluvia[1], {x = display.contentWidth * 1.3} )	
 end
 
 local function stopGame()
@@ -120,10 +173,9 @@ function game:show(event)
     local phase = event.phase
 	director = event.parent
     if phase == "will" then
-		initialize(event)
+		--startGame(event)
 	elseif phase == "did" then
-
-		
+	
     end
 end
 
@@ -134,6 +186,7 @@ function game:hide(event)
 		
 	elseif phase == "did" then
 		stopGame()
+		setElements(sceneGroup)
     end
 end
 
