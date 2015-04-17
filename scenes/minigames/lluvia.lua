@@ -68,44 +68,48 @@ end
 
 local function dragnDrop(event)
 	local target = event.target
-	if event.phase == "began" then
-		transition.pause(target)
-		display.getCurrentStage():setFocus( target, event.id )
-		target.isFocus = true
-		target.markX = event.target.x
-		target.markY = event.target.y
-		if target[1] then
-			transition.to(target[1] , {alpha = 0, time=300})
-		end
-	elseif target.isFocus then
-		if event.phase == "moved" then
-			target.x = event.x - event.xStart + target.markX
-			target.y = event.y - event.yStart + target.markY
-		elseif event.phase == "ended" or event.phase == "cancelled" then
-			display.getCurrentStage():setFocus(target, nil)
-			target.isFocus = false
-			
-			if magnet(target) then
-				transition.cancel(target)
-				target:removeEventListener("touch", dragnDrop)
-				transition.to(target, {xScale = 1.1, yScale = 1.1, x = target.destX, y = target.destY, time=300})
-				target.correct = true
-			else--if target[1].alpha==0 then
-				transition.to(target[2] , {alpha = 0, time=300})
-				transition.to(target[1] , {alpha = 1, time=300, delay=2500})
-				transition.to(target[2] , {alpha = 1, time=300, delay=2500})
-				transition.to(target , {x = iniX + mRandom(-200, 200)})
-				transition.resume(target)
-				timer.performWithDelay( 1000, listener )
+	if not target.preventTouch then
+		if event.phase == "began" then
+			transition.pause(target)
+			display.getCurrentStage():setFocus( target, event.id )
+			target.isFocus = true
+			target.markX = event.target.x
+			target.markY = event.target.y
+			if target[1] then
+				transition.to(target[1] , {alpha = 0, time=300})
 			end
-				
-			local win = true 
-			for i = 1, #queue do
-				win = win and queue[i].correct
+		elseif target.isFocus then
+			if event.phase == "moved" then
+				target.x = event.x - event.xStart + target.markX
+				target.y = event.y - event.yStart + target.markY
+			elseif event.phase == "ended" or event.phase == "cancelled" then
+				display.getCurrentStage():setFocus(target, nil)
+				target.isFocus = false
+				target.preventTouch=true
+
+				if magnet(target) then
+					transition.cancel(target)
+					target:removeEventListener("touch", dragnDrop)
+					transition.to(target, {xScale = 1.1, yScale = 1.1, x = target.destX, y = target.destY, time = 300})
+					target.correct = true
+				else
+					transition.to(target[2] , {alpha = 0, time = 300, onComplete = function() 
+						target.x = iniX + mRandom(-200, 200)
+						transition.resume(target)
+						target.preventTouch=false
+					end})
+					transition.to(target[1] , {alpha = 1, time = 300, delay = 2500})
+					transition.to(target[2] , {alpha = 1, time = 300, delay = 2500})
+				end
+
+				local win = true 
+				for i = 1, #queue do
+					win = win and queue[i].correct
+				end
+				if win then
+					stopGame()
+				end	
 			end
-			if win then
-				stopGame()
-			end	
 		end
 	end
 	return true
@@ -269,6 +273,8 @@ function game:show(event)
 		okButton.alpha=1
 		okButton.isVisible=true
 		okButton:setEnabled(true)
+		
+		nextSceneButton.alpha=0
 
 	elseif phase == "did" then
 	
