@@ -922,18 +922,20 @@ local function drawDebugGrid(levelWidth, levelHeight)
 	local startX = levelWidth * -0.5
 	local startY = levelHeight * -0.5
 	
-	local lines = 10 
-	local lineDistanceX = levelWidth / lines
-	local lineDistanceY = levelHeight / lines
+	local gridSize = 300
+	local lineDistanceX = gridSize
+	local lineDistanceY = gridSize
+	local linesX = levelWidth / gridSize
+	local linesY = levelHeight / gridSize
 	
-	for indexVertical = 1, lines do
-		local line = display.newLine(startX + (lineDistanceX * (indexVertical - 1)),  startY, startX + (lineDistanceX * (indexVertical - 1)), levelHeight)
+	for indexVertical = 0, linesX do
+		local line = display.newLine(startX + (lineDistanceX * (indexVertical)),  startY, startX + (lineDistanceX * (indexVertical)), levelHeight)
 		camera:add(line)
 		line.strokeWidth = 2
 	end
 	
-	for indexHorizontal = 1, lines do
-		local line = display.newLine(startX, startY + (lineDistanceY * (indexHorizontal - 1)), levelWidth, startY + (lineDistanceY * (indexHorizontal - 1)))
+	for indexHorizontal = 0, linesY do
+		local line = display.newLine(startX, startY + (lineDistanceY * (indexHorizontal)), levelWidth, startY + (lineDistanceY * (indexHorizontal)))
 		camera:add(line)
 		line.strokeWidth = 2
 	end
@@ -945,7 +947,7 @@ local function createBorders()
 	local levelWidth = levelData.levelWidth
 	local levelHeight = levelData.levelHeight
 	
---	drawDebugGrid(levelWidth, levelHeight)
+	drawDebugGrid(levelWidth, levelHeight)
 	
 	local halfLevelWidth = levelWidth * 0.5
 	local halfLevelHeight = levelHeight * 0.5
@@ -1105,7 +1107,6 @@ end
 local function loadEarth()
 	local earthData = worldsData[worldIndex][levelIndex].earth
 	--earth = display.newImage(earthData.asset)
-	
 	local sheetHappyData = {
 		width = 256,
 		height = 256,

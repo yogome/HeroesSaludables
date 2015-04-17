@@ -1094,7 +1094,7 @@ local function createPopup()
 	local confirmButtonInfo = extratable.deepcopy(buttonList.ok)
 	confirmButtonInfo.onRelease = function(event)
 		scene.enableButtons()
-                popupGroup.button:setEnabled(false)
+		popupGroup.button:setEnabled(false)
 		local barUnits = powercubeBar.fullWidth / 300
 		local newSize = currentPowercubes * barUnits
 
