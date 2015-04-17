@@ -10,6 +10,56 @@ local scale = (display.viewableContentHeight / 768) * 1024 * numberOfBacks
 
 local worldsData = {
 	-- World 1
+	[4] = {
+		path = {easingX = easing.linear, easingY = easing.inOutCubic},
+		icon = "images/worlds/mundos01.png",
+		[1] = {
+			levelWidth = 2048,
+			levelHeight = 2048,
+			ship = {position = { x = -724, y = -724}},
+			objetives = {fruit = {portions = 3}},
+			enemySpawnData = {
+			},
+			obstacle = {
+				[1] = {
+					type = "blackhole",
+					position = {x = 76, y = -324},
+				},
+			},
+			earth = {
+				position = { x = 876, y = 876},
+				name = "earth",
+				assetPath = "images/planets/earth/",
+				scaleFactor = 1.5,
+			},
+			planets = {
+				[1] = {
+					foodType = "cereal",
+					position = {x = 76, y = -524},
+				},
+			},
+			asteroids = {
+				[1] = {
+					lineStart = { x = -724, y = -524},
+					lineEnd = { x = -124, y = -524},
+					easingX = easing.linear,
+					easingY = easing.linear,
+				},
+				[2] = {
+					lineStart = { x = -124, y = -924},
+					lineEnd = { x = 276, y = -924},
+					easingX = easing.linear,
+					easingY = easing.linear,
+				},
+				[3] = {
+					lineStart = { x = 276, y = -924},
+					lineEnd = { x = 276, y = -524},
+					easingX = easing.linear,
+					easingY = easing.linear,
+				},
+			},
+		},
+	},
 	[1] = {
 		path = {easingX = easing.linear, easingY = easing.inOutCubic},
 		icon = "images/worlds/mundos01.png",
@@ -19,7 +69,7 @@ local worldsData = {
 			y = 100,
 			background = "images/backgrounds/space.png",
 			levelWidth = 4000,
-			levelHeight = 1000 ,
+			levelHeight = 1000,
 			ship = {position = {x = 0, y = 0}},
 			levelDescription = "Recolecta las porciones necesarias",
 			tutorial = {"moveOutCircle", "moveToBase", "baseTutorial", "collectPortion", "finishLevel"},
@@ -392,7 +442,7 @@ local worldsData = {
 				assetPath = "images/planets/earth/",
 				position = {x = -1200, y = -550},
 				scaleFactor = 1.5
-			},
+			},		
 			planets = {
 				[1] = {
 					foodType = "fruit",

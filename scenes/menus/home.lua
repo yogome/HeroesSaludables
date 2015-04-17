@@ -227,8 +227,7 @@ local function pressButton(event)
 	local tag = event.target.tag
 	local enabled
 	if tag == "play" then
-		director.gotoScene("scenes.menus.selecthero")
-	elseif tag == "settings" then
+		director.gotoScene("scenes.menus.selecthero", {effect = "fade", time = 500})
 		backBtn:setEnabled(false)
 		settingsBtn:setEnabled(false)
 		okBtn:setEnabled(true)
@@ -387,6 +386,7 @@ function scene:show( event )
     local phase = event.phase
 
     if ( phase == "will" ) then
+		settingsScreen.isVisible = false
 		initializeStarField()
 		initializeStarShine()
 		Runtime:addEventListener("enterFrame", updateGameLoop)
