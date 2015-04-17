@@ -53,10 +53,11 @@ local function stopGame()
 end
 
 local function magnet(obj)
-	local dx = math.abs(obj.x - obj.destX)
-	local dy = math.abs(obj.y - obj.destY)
+	local sqrtt = math.sqrt
+	local dx = obj.x - obj.destX
+	local dy = obj.y - obj.destY
 
-	local distance = math.sqrt( dx*dx + dy*dy )
+	local distance = sqrtt( dx*dx + dy*dy )
 	local objectSize = obj.contentWidth*0.3 + snapTreshold 
 
 	if ( distance < objectSize ) then
@@ -264,6 +265,11 @@ function game:show(event)
 		dynamicLayer = display.newGroup()
 		createPuzzle(dynamicLayer)
 		sceneGroup:insert(dynamicLayer)
+		
+		okButton.alpha=1
+		okButton.isVisible=true
+		okButton:setEnabled(true)
+
 	elseif phase == "did" then
 	
     end
@@ -275,12 +281,13 @@ function game:hide(event)
     if phase == "will" then
 		
 	elseif phase == "did" then
-		display.remove(backgroundLayer)
 		display.remove(dynamicLayer)
     end
 end
 
 function game:destroy()
+		display.remove(backgroundLayer)
+
 end
 
 ----------------------------------------------- Execution
