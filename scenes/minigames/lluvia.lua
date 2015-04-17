@@ -1,6 +1,7 @@
 ----------------------------------------------- Lluvia Minigame
 local director = require( "libs.helpers.director" )
 local tabla = require( "libs.helpers.extratable" )
+local colors = require( "libs.helpers.colors" )
 local buttonList = require("data.buttonlist")
 local labelData = require("data.labeldata")
 local settings = require("settings")
@@ -16,11 +17,14 @@ local labelBG
 local puzzlePieces
 local descriptionText
 local nextSceneButton
-local iconPortion, portionDescription, portionDescriptionBG
+local iconPortion, portionDescriptionText
 local okButton
 local queue = {}
 ----------------------------------------------- Constants
-local numPieces = 5 
+local NUMBER_PIECES = 5 
+
+local SCALE_BOXES = 0.7
+local SCALE_OKBUTTON = 1.2
 
 local centerX = display.contentCenterX
 local centerY = display.contentCenterY
@@ -30,11 +34,12 @@ local screenTop = display.screenOriginY
 local screenHeight = display.viewableContentHeight - screenTop * 2
 
 local iniX = display.contentWidth * 0.65
-local iniY = screenTop-150
+local iniY = screenTop - 150
 
 local snapTreshold = 50
 -----------------------------------------------Cached functions
-local mRandom = math.random  
+local mathRandom = math.random  
+local mathSqrt = math.sqrt
 ----------------------------------------------- Functions
 local function startGame()
 	local dly = 0
@@ -53,11 +58,10 @@ local function stopGame()
 end
 
 local function magnet(obj)
-	local sqrtt = math.sqrt
 	local dx = obj.x - obj.destX
 	local dy = obj.y - obj.destY
 
-	local distance = sqrtt( dx*dx + dy*dy )
+	local distance = mathSqrt( dx*dx + dy*dy )
 	local objectSize = obj.contentWidth*0.3 + snapTreshold 
 
 	if ( distance < objectSize ) then
@@ -94,7 +98,7 @@ local function dragnDrop(event)
 					target.correct = true
 				else
 					transition.to(target[2] , {alpha = 0, time = 300, onComplete = function() 
-						target.x = iniX + mRandom(-200, 200)
+						target.x = iniX + mathRandom(-200, 200)
 						transition.resume(target)
 						target.preventTouch=false
 					end})
@@ -116,44 +120,36 @@ local function dragnDrop(event)
 end  
 
 local function createPuzzle(group)
-	local pzzl = mRandom(1, 10)
+	local pzzl = mathRandom(1, 10)
 	
 	currentPortion = labelData[pzzl]
 	puzzlePieces = display.newGroup()
 	
-	labelBG = display.newImage(currentPortion.labelBG)
-	labelBG.x = screenLeft + 180
-	labelBG.y = centerY
-	
-	local hgt = labelBG.y - labelBG.height*0.5
-	
-	iconPortion = display.newImage(currentPortion.iconAsset)
-	iconPortion:scale(1.4, 1.4)
-	iconPortion.x = iniX
-	iconPortion.y = display.contentHeight * 0.5
-	
-	portionDescription = display.newText(currentPortion.name, iconPortion.x, iconPortion.y * 0.4, settings.fontName, 45)
-	portionDescription:setFillColor(0.1)
-	
-	portionDescriptionBG = display.newText(currentPortion.name, iconPortion.x, iconPortion.y * 0.4, settings.fontName, 45)
-	portionDescriptionBG.alpha = 0
-	portionDescriptionBG:setFillColor(1)	
-		
 	descriptionText = display.newEmbossedText({
-			text = currentPortion.description,
-			width = display.contentWidth * 0.45,
-			height = display.contentHeight * 0.5,
-			font = settings.fontName,
-			fontSize = 32,
-			align = "left"})
+		text = currentPortion.description,
+		width = display.contentWidth * 0.45,
+		height = display.contentHeight * 0.5,
+		font = settings.fontName,
+		fontSize = 32,
+		align = "left"
+	})
 	descriptionText.x = display.contentWidth * 0.75
 	descriptionText.y = display.contentCenterY
 	descriptionText.alpha = 0
-		
-	for i = 1, numPieces do
-		local piece_ = display.newImage(currentPortion.pieces[i].assets[1])
-		local box = display.newImage("images/label/piecesBoxes/etiqueta_0" .. i .. ".png")
-		box:scale( 0.7, 0.7 )
+	group:insert(descriptionText)
+	
+	labelBG = display.newImage(currentPortion.labelBG)
+	labelBG.x = screenLeft + 180 -- TODO check this scaling and pieces stuff
+	labelBG.y = centerY + 10
+	labelBG.yScale = 0.9
+	group:insert(labelBG)
+
+	local height = labelBG.y - labelBG.height * 0.5
+
+	for index = 1, NUMBER_PIECES do
+		local piece_ = display.newImage(currentPortion.pieces[index].assets[1])
+		local box = display.newImage("images/label/piecesBoxes/etiqueta_0" .. index .. ".png")
+		box:scale(SCALE_BOXES, SCALE_BOXES)
 		
 		local piece = display.newGroup()
 		piece.x = iniX
@@ -164,45 +160,54 @@ local function createPuzzle(group)
 		piece:addEventListener("touch", dragnDrop)
 		
 		piece.destX = labelBG.x
-		if i == 3 then
-			piece.destY =  hgt + piece[2].height*0.5
-			hgt = hgt + piece[2].height*0.3
+		if index == 3 then
+			piece.destY =  height + piece[2].height*0.5
+			height = height + piece[2].height*0.3
 		else
-			piece.destY =  hgt + piece[2].height*0.5
-			hgt = hgt + piece[2].height
+			piece.destY =  height + piece[2].height*0.5
+			height = height + piece[2].height
 		end		
 		
-		queue[i] = piece
+		queue[index] = piece
 		puzzlePieces:insert(piece)
 	end
-	
-	group:insert(descriptionText)
-	group:insert(labelBG)
 	group:insert(puzzlePieces)
-	group:insert(iconPortion)
-	group:insert(portionDescription)
+	
+	local portionDescriptionBG = display.newImage("images/minigames/panel_producto.png")
+	portionDescriptionBG:scale( 1.2, 1 )
+	portionDescriptionBG.x = display.contentWidth - (portionDescriptionBG.contentWidth * 0.45)
+	portionDescriptionBG.y = display.screenOriginY + (portionDescriptionBG.contentHeight * 0.3)
 	group:insert(portionDescriptionBG)
+	
+	iconPortion = display.newImage(currentPortion.iconAsset)
+	iconPortion:scale(1.4, 1.4)
+	iconPortion.x = iniX
+	iconPortion.y = display.contentHeight * 0.5
+	group:insert(iconPortion)
+
+	portionDescriptionText = display.newText(currentPortion.name, iconPortion.x, iconPortion.y * 0.4, settings.fontName, 45)
+	colors.addColorTransition(portionDescriptionText)
+	portionDescriptionText.alpha = 1
+	portionDescriptionText:setFillColor(0.1)	
+	group:insert(portionDescriptionText)
 end
 
-local function bgElements(group)
-	local puzzleContainer = display.newImage("images/label/panel_etiquetas.png")
-	puzzleContainer.x = screenLeft + 213
-	puzzleContainer.y = centerY
-	
-	local nameContainer = display.newImage("images/minigames/panel_producto.png")
-	nameContainer:scale( 1.2, 1 )
-	nameContainer.x = display.contentWidth - (nameContainer.contentWidth * 0.45)
-	nameContainer.y = display.screenOriginY + (nameContainer.contentHeight * 0.3)
+local function createBgElements()
+	local bgElements = display.newGroup()
 	
 	local background = display.newImage("images/label/labelBackground.png")	
 	background.x = centerX
 	background.y = centerY
     background.width = screenWidth
     background.height = screenHeight
+	bgElements:insert(background)
 	
-	group:insert(background)
-	group:insert(puzzleContainer)
-	group:insert(nameContainer)
+	local puzzleContainer = display.newImage("images/label/panel_etiquetas.png")
+	puzzleContainer.x = screenLeft + 213
+	puzzleContainer.y = centerY
+	bgElements:insert(puzzleContainer)
+	
+	return bgElements
 end
 
 local function createButton(group)
@@ -212,8 +217,7 @@ local function createButton(group)
 			transition.to(okButton, {alpha = 0, time=300, onComplete = function()
 				okButton.isVisible=false
 				transition.to(iconPortion, {xScale = 0.3, yScale = 0.3, x = display.contentWidth * 0.95, y = display.contentWidth * 0.04, transition = easing.outQuad})
-				transition.to(portionDescription, {alpha = 0, xScale = 0.8, yScale = 0.8, x = display.contentWidth * 0.75, y = display.contentWidth * 0.03, transition = easing.outQuad})
-				transition.to(portionDescriptionBG, {alpha = 1, xScale = 0.8, yScale = 0.8, x = display.contentWidth * 0.75, y = display.contentWidth * 0.03, transition = easing.outQuad})
+				transition.to(portionDescriptionText, {r = 1, g = 1, b = 1, xScale = 0.8, yScale = 0.8, x = display.contentWidth * 0.75, y = display.contentWidth * 0.03, transition = easing.outQuad})
 			end})
 			startGame()
 		end
@@ -222,44 +226,45 @@ local function createButton(group)
 	local buttonData = buttonList.minigamestart
 	buttonData.onRelease = comenzarBtn
 	okButton = widget.newButton(buttonData)
-	okButton:scale(1.2, 1.2)
+	okButton:scale(SCALE_OKBUTTON, SCALE_OKBUTTON)
 	okButton:setEnabled(true)
-	okButton.isVisible=true
-	okButton.alpha=1
+	okButton.isVisible = true
+	okButton.alpha = 1
 	okButton.x = display.contentWidth * 0.8
 	okButton.y = display.contentHeight * 0.85
 	
 	group:insert(okButton)
 end
 
-local function nextButton(group)
-	local function comenzarBtn(event)
-		if ( "ended" == event.phase ) then
-			nextSceneButton:setEnabled(false)
-			nextSceneButton.isVisible=false
-			director.gotoScene("scenes.overlays.tips", {effect = "fade", time = 350})
-		end
+local function nextSceneButtonListener(event)
+	if ( "ended" == event.phase ) then
+		nextSceneButton:setEnabled(false)
+		director.gotoScene("scenes.overlays.tips", {effect = "fade", time = 350})
 	end
-	
+end
+
+local function createNextSceneButton(parentGroup)
 	local buttonData = buttonList.ok
-	buttonData.onRelease = comenzarBtn
+	buttonData.onRelease = nextSceneButtonListener
 	nextSceneButton = widget.newButton(buttonData)
-	nextSceneButton:setEnabled(false)
 	nextSceneButton.alpha = 0
 	nextSceneButton.x = display.contentWidth - (nextSceneButton.contentWidth)
 	nextSceneButton.y = display.contentHeight - (nextSceneButton.contentHeight * 0.80)
-	
-	group:insert(nextSceneButton)
+	nextSceneButton:setEnabled(false)
+	parentGroup:insert(nextSceneButton)
 end 
 ---------------------------------------------
 function game:create(event)
 	local sceneGroup = self.view
 	
 	backgroundLayer = display.newGroup()
-	bgElements(backgroundLayer)
-	createButton(backgroundLayer)
-	nextButton(backgroundLayer)
 	sceneGroup:insert(backgroundLayer)
+
+	local bgElements = createBgElements()
+	backgroundLayer:insert(bgElements)
+	
+	createButton(backgroundLayer)
+	createNextSceneButton(backgroundLayer)
 end
 
 function game:show(event)
@@ -292,7 +297,7 @@ function game:hide(event)
 end
 
 function game:destroy()
-		display.remove(backgroundLayer)
+	display.remove(backgroundLayer)
 
 end
 
