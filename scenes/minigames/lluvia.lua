@@ -8,6 +8,9 @@ local widget = require("widget")
 
 local game = director.newScene()
 ----------------------------------------------- Variables
+local backgroundLayer
+local dynamicLayer
+
 local currentPortion
 local labelBG
 local puzzlePieces
@@ -29,19 +32,17 @@ local screenHeight = display.viewableContentHeight - screenTop * 2
 local iniX = display.contentWidth * 0.65
 local iniY = screenTop-150
 
-local snapTreshold = 260
+local snapTreshold = 50
 -----------------------------------------------Cached functions
 local mRandom = math.random  
 ----------------------------------------------- Functions
 local function startGame()
 	local dly = 0
-	
 	queue = tabla.shuffle(queue)
-	
 	for i=1, 5 do
 		local currentPiece = queue[i]
 		transition.to(currentPiece,{delay = dly, y=screenHeight+200, time=5000, iterations = -1})
-		dly = dly + 1200
+		dly = dly + 1000
 	end
 end
 
@@ -49,6 +50,19 @@ local function stopGame()
 	nextSceneButton:setEnabled(true)
 	transition.to(nextSceneButton, {alpha = 1, time = 300})
 	transition.to(descriptionText, {alpha = 1, time = 300})
+end
+
+local function magnet(obj)
+	local dx = math.abs(obj.x - obj.destX)
+	local dy = math.abs(obj.y - obj.destY)
+
+	local distance = math.sqrt( dx*dx + dy*dy )
+	local objectSize = obj.contentWidth*0.3 + snapTreshold 
+
+	if ( distance < objectSize ) then
+		return true
+	end
+	return false
 end
 
 local function dragnDrop(event)
@@ -69,32 +83,28 @@ local function dragnDrop(event)
 		elseif event.phase == "ended" or event.phase == "cancelled" then
 			display.getCurrentStage():setFocus(target, nil)
 			target.isFocus = false
-						
-			if target[1] then
-				if math.abs(target.y - target.destY) < snapTreshold and math.abs(target.x - target.destY) < snapTreshold then
-					transition.cancel(target)
-					target:removeEventListener("touch", dragnDrop)
-					
-					transition.to(target, {xScale = 1.1, yScale = 1.1, x = target.destX, y = target.destY, time=300})
-					target.correct = true
-				else
-					transition.to(target[2] , {alpha = 0, time=300})
-					transition.to(target[1] , {alpha = 1, time=300, delay=2500})
-					transition.to(target[2] , {alpha = 1, time=300, delay=2500})
-					transition.to(target , {x = iniX + mRandom(-200, 200)})
-					transition.resume(target)
-				end
-				
-				local win = true 
-				for i = 1, #queue do
-					win = win and queue[i].correct
-				end
-
-				if win then
-					stopGame()
-				end
-			end
 			
+			if magnet(target) then
+				transition.cancel(target)
+				target:removeEventListener("touch", dragnDrop)
+				transition.to(target, {xScale = 1.1, yScale = 1.1, x = target.destX, y = target.destY, time=300})
+				target.correct = true
+			else--if target[1].alpha==0 then
+				transition.to(target[2] , {alpha = 0, time=300})
+				transition.to(target[1] , {alpha = 1, time=300, delay=2500})
+				transition.to(target[2] , {alpha = 1, time=300, delay=2500})
+				transition.to(target , {x = iniX + mRandom(-200, 200)})
+				transition.resume(target)
+				timer.performWithDelay( 1000, listener )
+			end
+				
+			local win = true 
+			for i = 1, #queue do
+				win = win and queue[i].correct
+			end
+			if win then
+				stopGame()
+			end	
 		end
 	end
 	return true
@@ -140,11 +150,13 @@ local function createPuzzle(group)
 		local box = display.newImage("images/label/piecesBoxes/etiqueta_0" .. i .. ".png")
 		box:scale( 0.7, 0.7 )
 		
-		local piece =display.newGroup()
-		piece:insert(box)
-		piece:insert(piece_)
+		local piece = display.newGroup()
 		piece.x = iniX
 		piece.y = iniY
+		piece.correct = false
+		piece:insert(box)
+		piece:insert(piece_)
+		piece:addEventListener("touch", dragnDrop)
 		
 		piece.destX = labelBG.x
 		if i == 3 then
@@ -153,19 +165,11 @@ local function createPuzzle(group)
 		else
 			piece.destY =  hgt + piece[2].height*0.5
 			hgt = hgt + piece[2].height
-		end
-		
-		piece.correct = false
-		
-		piece:addEventListener("touch", dragnDrop)
+		end		
 		
 		queue[i] = piece
 		puzzlePieces:insert(piece)
 	end
-	
-	okButton:setEnabled(true)
-	okButton.isVisible=true
-	okButton.alpha=1
 	
 	group:insert(descriptionText)
 	group:insert(labelBG)
@@ -173,11 +177,9 @@ local function createPuzzle(group)
 	group:insert(iconPortion)
 	group:insert(portionDescription)
 	group:insert(portionDescriptionBG)
-	group:insert(okButton)
-	group:insert(nextSceneButton)
 end
 
-local function setElements(group)
+local function bgElements(group)
 	local puzzleContainer = display.newImage("images/label/panel_etiquetas.png")
 	puzzleContainer.x = screenLeft + 213
 	puzzleContainer.y = centerY
@@ -198,11 +200,11 @@ local function setElements(group)
 	group:insert(nameContainer)
 end
 
-local function createButton(event)
+local function createButton(group)
 	local function comenzarBtn(event)
 		if ( "ended" == event.phase ) then
+			okButton:setEnabled(false)
 			transition.to(okButton, {alpha = 0, time=300, onComplete = function()
-				okButton:setEnabled(false)
 				okButton.isVisible=false
 				transition.to(iconPortion, {xScale = 0.3, yScale = 0.3, x = display.contentWidth * 0.95, y = display.contentWidth * 0.04, transition = easing.outQuad})
 				transition.to(portionDescription, {alpha = 0, xScale = 0.8, yScale = 0.8, x = display.contentWidth * 0.75, y = display.contentWidth * 0.03, transition = easing.outQuad})
@@ -216,13 +218,20 @@ local function createButton(event)
 	buttonData.onRelease = comenzarBtn
 	okButton = widget.newButton(buttonData)
 	okButton:scale(1.2, 1.2)
+	okButton:setEnabled(true)
+	okButton.isVisible=true
+	okButton.alpha=1
 	okButton.x = display.contentWidth * 0.8
 	okButton.y = display.contentHeight * 0.85
+	
+	group:insert(okButton)
 end
 
-local function nextButton(event)
+local function nextButton(group)
 	local function comenzarBtn(event)
 		if ( "ended" == event.phase ) then
+			nextSceneButton:setEnabled(false)
+			nextSceneButton.isVisible=false
 			director.gotoScene("scenes.overlays.tips", {effect = "fade", time = 350})
 		end
 	end
@@ -234,20 +243,27 @@ local function nextButton(event)
 	nextSceneButton.alpha = 0
 	nextSceneButton.x = display.contentWidth - (nextSceneButton.contentWidth)
 	nextSceneButton.y = display.contentHeight - (nextSceneButton.contentHeight * 0.80)
+	
+	group:insert(nextSceneButton)
 end 
 ---------------------------------------------
 function game:create(event)
 	local sceneGroup = self.view
-	createButton(event)
-	nextButton(event)
-	setElements(sceneGroup)
+	
+	backgroundLayer = display.newGroup()
+	bgElements(backgroundLayer)
+	createButton(backgroundLayer)
+	nextButton(backgroundLayer)
+	sceneGroup:insert(backgroundLayer)
 end
 
 function game:show(event)
     local sceneGroup = self.view
     local phase = event.phase
     if phase == "will" then
-		createPuzzle(sceneGroup)
+		dynamicLayer = display.newGroup()
+		createPuzzle(dynamicLayer)
+		sceneGroup:insert(dynamicLayer)
 	elseif phase == "did" then
 	
     end
@@ -259,13 +275,8 @@ function game:hide(event)
     if phase == "will" then
 		
 	elseif phase == "did" then
-		display.remove(puzzlePieces)
-		display.remove(iconPortion)
-		display.remove(portionDescription)
-		display.remove(portionDescriptionBG)
-		display.remove(labelBG)
-		display.remove(descriptionText)
-		display.remove(nextSceneButton)
+		display.remove(backgroundLayer)
+		display.remove(dynamicLayer)
     end
 end
 
