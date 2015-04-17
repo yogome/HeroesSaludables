@@ -126,6 +126,8 @@ local function createPuzzle(group)
 	puzzlePieces = display.newGroup()
 	
 	descriptionText = display.newEmbossedText({
+		highlight = { r=0.3, g=0.3, b=0.3 },
+		shadow = { r=1, g=1, b=1 },
 		text = currentPortion.description,
 		width = display.contentWidth * 0.45,
 		height = display.contentHeight * 0.5,
@@ -144,7 +146,7 @@ local function createPuzzle(group)
 	labelBG.yScale = 0.9
 	group:insert(labelBG)
 
-	local height = labelBG.y - labelBG.height * 0.5
+	local height = labelBG.y - labelBG.height * 0.5 + 25
 
 	for index = 1, NUMBER_PIECES do
 		local piece_ = display.newImage(currentPortion.pieces[index].assets[1])
@@ -161,11 +163,11 @@ local function createPuzzle(group)
 		
 		piece.destX = labelBG.x
 		if index == 3 then
-			piece.destY =  height + piece[2].height*0.5
+			piece.destY =  height + piece[2].height*0.5 + 10
 			height = height + piece[2].height*0.3
 		else
 			piece.destY =  height + piece[2].height*0.5
-			height = height + piece[2].height
+			height = height + piece[2].height -12
 		end		
 		
 		queue[index] = piece
