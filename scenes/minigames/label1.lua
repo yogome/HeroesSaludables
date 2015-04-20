@@ -210,17 +210,17 @@ local function showIcon(sceneGroup)
 	sceneGroup:insert(iconPortion)
 	
 	local function animateIconPortion(animationName)
-			transition.to(iconPortion, {tag = animationName, time = 300, y = iconPortion.y - 50, transition = easing.outQuad, onComplete = function()
+			transition.to(iconPortion, {tag = "icon", time = 300, y = iconPortion.y - 50, transition = easing.outQuad, onComplete = function()
 				transition.to(iconPortion, {time = 100, y = iconPortion.y + 50, transition = easing.inQuad})
 			end})
-			transition.to(iconPortion, {time = 200, xScale = 0.8, transition = easing.outBounce, onComplete = function()
-				transition.to(iconPortion, {delay = 0, xScale = 1, transition = easing.outBounce, onComplete = function()
+			transition.to(iconPortion, {tag = "icon", time = 200, xScale = 0.8, transition = easing.outBounce, onComplete = function()
+				transition.to(iconPortion, {tag = "icon", delay = 0, xScale = 1, transition = easing.outBounce, onComplete = function()
 					animationTimer = timer.performWithDelay(3000, animateIconPortion)
 				end})
 				--animateIconPortion()
 			end})
-			transition.to(iconPortion, {time = 200, yScale = 1.2, transition = easing.outBounce, onComplete = function()
-				transition.to(iconPortion, {yScale = 1, transition = easing.outElastic})
+			transition.to(iconPortion, {tag = "icon", time = 200, yScale = 1.2, transition = easing.outBounce, onComplete = function()
+				transition.to(iconPortion, {tag = "icon", yScale = 1, transition = easing.outElastic})
 			end})
 	end
 	
@@ -239,7 +239,7 @@ end
 
 local function goToNextScene()
 	
-	director.gotoScene("scenes.overlays.tips", {effect = "fade", time = 350})
+	director.gotoScene("scenes.overlays.tips", {effect = "fade", time = 350, params = {worldIndex = worldIndex, levelIndex = levelIndex}})
 	--print("next scene")
 end
 
@@ -248,7 +248,7 @@ function scene:create( event )
 
     local sceneGroup = self.view
 	local scale = display.contentWidth / 1024
-	local background = display.newImage(assetPath.."/background_01.png")
+	local background = display.newImage(assetPath.."background_01.png")
 	background:scale(scale, scale)
 	background.x = display.contentCenterX
 	background.y = display.contentCenterY
@@ -363,6 +363,10 @@ function scene:hide( event )
 			display.remove(bandPieces[indexPiece])
 		end
 		
+		transition.cancel("icon")
+		if animationTimer then
+			timer.cancel(animationTimer)
+		end
 		display.remove(iconPortion)
 		display.remove(portionDescription)
 		display.remove(portionDescriptionBG)
