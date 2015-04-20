@@ -67,11 +67,13 @@ local enemies
 local isFoodSpawned
 local collectedFood
 local gradientGroup
+local foodBubbleIndex
 -----------------------------------------------Vars used by level loader
 local debugText
 ----------------------------------------------- Caches
 local squareRoot = math.sqrt 
 ----------------------------------------------- Constants
+local SIZE_GRID  = 100
 local PADDING = 16
 local RADIUS_TUTORIAL = 180
 local SCALE_HEARTINDICATOR = 0.3
@@ -355,7 +357,10 @@ local function randomFoodByType(foodType)
 	for indexBubble = 1, #foodBubbleGroup.bubbles do
 		local currentBubble = foodBubbleGroup.bubbles[indexBubble]
 		if currentBubble.type == foodType then
-			bubbleSearchIndexes[#bubbleSearchIndexes + 1] = indexBubble
+			if indexBubble == foodBubbleIndex then
+				bubbleSearchIndexes[-#bubbleSearchIndexes + 1] = indexBubble
+			end
+			
 		end
 	end
 	return bubbleSearchIndexes[math.random(1, #bubbleSearchIndexes)]
@@ -369,7 +374,7 @@ local function spawnBubble(planet)
 	
 	if not isFoodSpawned[planet.foodType] and not planet.isDisabled then
 		isFoodSpawned[planet.foodType] = true
-		local foodBubbleIndex = math.random(1, #foodlist[planet.foodType].food)
+		foodBubbleIndex = math.random(1, #foodlist[planet.foodType].food)
 		local foundBubble = foodBubbleGroup.bubbles[planet.foodType][foodBubbleIndex]
 		camera:add(foundBubble)
 
@@ -628,9 +633,10 @@ end
 local function suckFood(player, otherObject)
 	
 	if playerCharacter.isCarringItem then
-		local fruit = player.item
-		--camera:add(fruit)
-		
+		local foodData = foodlist[player.item.type]
+		local fruit = display.newImage(foodData.food[foodBubbleIndex].asset)		
+		fruit:scale(0.2,0.2)
+
 		for indexIndicator = 1, #indicator do
 			indicator[indexIndicator].isVisible = true
 		end
@@ -651,10 +657,13 @@ local function suckFood(player, otherObject)
 		fruit.y = targetY
 		rotatingGroup:insert(fruit)
 		
+		hideBubble()
+		
 		transition.to(rotatingGroup, {time = 2500, rotation = 900, transition = easing.inQuad})
+		transition.to(fruit, {time = 500, xScale = 0.3, yScale = 0.3, transition = easing.outBounce})
 		transition.to(fruit, {time = 2500, x = 0, y = 0, transition = easing.inQuad})
 		transition.to(fruit, {delay = 2000, time = 500, alpha = 0, transition = easing.outQuad, onComplete = function()
-			hideBubble()
+			display.remove(fruit)
 		end})
 		
 	end
@@ -922,11 +931,10 @@ local function drawDebugGrid(levelWidth, levelHeight)
 	local startX = levelWidth * -0.5
 	local startY = levelHeight * -0.5
 	
-	local gridSize = 300
-	local lineDistanceX = gridSize
-	local lineDistanceY = gridSize
-	local linesX = levelWidth / gridSize
-	local linesY = levelHeight / gridSize
+	local lineDistanceX = SIZE_GRID
+	local lineDistanceY = SIZE_GRID
+	local linesX = levelWidth / SIZE_GRID
+	local linesY = levelHeight / SIZE_GRID
 	
 	for indexVertical = 0, linesX do
 		local line = display.newLine(startX + (lineDistanceX * (indexVertical)),  startY, startX + (lineDistanceX * (indexVertical)), levelHeight)
@@ -947,7 +955,7 @@ local function createBorders()
 	local levelWidth = levelData.levelWidth
 	local levelHeight = levelData.levelHeight
 	
-	drawDebugGrid(levelWidth, levelHeight)
+	--drawDebugGrid(levelWidth, levelHeight)
 	
 	local halfLevelWidth = levelWidth * 0.5
 	local halfLevelHeight = levelHeight * 0.5
@@ -1216,9 +1224,10 @@ local function loadObstacles()
 		for obstacleIndex = 1, #obstacleData do
 			local currentObstacle = obstacleData[obstacleIndex]
 			local obstacle = obstacles.newObstacle(currentObstacle.type)
+			obstacle:scale(0.8, 0.8)
 			obstacle.x = currentObstacle.position.x
 			obstacle.y = currentObstacle.position.y 
-			physics.addBody(obstacle, {isSensor = true, radius = 150})
+			physics.addBody(obstacle, {isSensor = true, radius = 100})
 			physicsObjectList[#physicsObjectList+1] = obstacle
 			camera:add(obstacle)
 		end
