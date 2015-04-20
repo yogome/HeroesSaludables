@@ -3,7 +3,7 @@ local obstacleData
 obstacleData = {
 	
 	["blackhole"] = {
-		scale = 2,
+		scale = 0.8,
 		spriteSheet = {
 			path = "images/general/blackhole.png",
 		},
