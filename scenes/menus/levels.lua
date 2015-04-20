@@ -81,13 +81,13 @@ local function levelIconTapped(event)
 		local randomTool = math.random(1,3)
 		local scene
 		if randomTool == 1 then
-			scene = "scenes.game.labelpuzzle"
+			scene = "scenes.minigames.label1"
 		elseif randomTool == 2 then
 --			scene = "scenes.game.labelpuzzle"
-			scene = "scenes.game.labelquiz"
+			scene = "scenes.minigames.label1"
 		elseif randomTool == 3 then
 --			scene = "scenes.game.questionquiz"
-			scene = "scenes.game.labelquiz"
+			scene = "scenes.minigames.label1"
 		end
 		director.gotoScene(scene, {effect = "fade", time = 500, params = {worldIndex = worldIndex, levelIndex = levelIndex}})
 		--director.gotoScene("scenes.game.shooter", { effect = "zoomInOutFade", time = 600, ,})
@@ -117,7 +117,7 @@ local function createSpaceShip()
 			position = -playerCharacter.x
 		end
 		
-		if playerCharacter.x >= (4096 - (display.contentWidth)) then
+		if playerCharacter.x >= (4096 - (display.contentWidth * 1.2)) then
 			position = (lastUnlockedLevel.x - (display.contentWidth * 0.8)) * -1
 		end
 		
