@@ -23,7 +23,7 @@ local queue = {}
 ----------------------------------------------- Constants
 local NUMBER_PIECES = 5 
 
-local SCALE_BOXES = 0.7
+local SCALE_BOXES = 0.83
 local SCALE_OKBUTTON = 1.2
 
 local centerX = display.contentCenterX
@@ -36,7 +36,7 @@ local screenHeight = display.viewableContentHeight - screenTop * 2
 local iniX = display.contentWidth * 0.65
 local iniY = screenTop - 150
 
-local snapTreshold = 50
+local snapTreshold = 0--50
 -----------------------------------------------Cached functions
 local mathRandom = math.random  
 local mathSqrt = math.sqrt
@@ -74,6 +74,7 @@ local function dragnDrop(event)
 	local target = event.target
 	if not target.preventTouch then
 		if event.phase == "began" then
+			target:toFront()
 			transition.pause(target)
 			display.getCurrentStage():setFocus( target, event.id )
 			target.isFocus = true
@@ -94,7 +95,7 @@ local function dragnDrop(event)
 				if magnet(target) then
 					transition.cancel(target)
 					target:removeEventListener("touch", dragnDrop)
-					transition.to(target, {xScale = 1.1, yScale = 1.1, x = target.destX, y = target.destY, time = 300})
+					transition.to(target, {x = target.destX, y = target.destY, time = 300})
 					target.correct = true
 				else
 					transition.to(target[2] , {alpha = 0, time = 300, onComplete = function() 
@@ -141,12 +142,11 @@ local function createPuzzle(group)
 	group:insert(descriptionText)
 	
 	labelBG = display.newImage(currentPortion.labelBG)
-	labelBG.x = screenLeft + 180 -- TODO check this scaling and pieces stuff
-	labelBG.y = centerY + 10
-	labelBG.yScale = 0.9
+	labelBG.x = screenLeft + 180
+	labelBG.y = centerY
 	group:insert(labelBG)
 
-	local height = labelBG.y - labelBG.height * 0.5 + 25
+	local height = labelBG.y - labelBG.height * 0.5
 
 	for index = 1, NUMBER_PIECES do
 		local piece_ = display.newImage(currentPortion.pieces[index].assets[1])
@@ -163,11 +163,17 @@ local function createPuzzle(group)
 		
 		piece.destX = labelBG.x
 		if index == 3 then
-			piece.destY =  height + piece[2].height*0.5 + 10
-			height = height + piece[2].height*0.3
+			local ax1 = display.newImage(currentPortion.pieces[5].assets[1])
+			local ax2 = display.newImage(currentPortion.pieces[4].assets[1])
+			
+			piece.destY =  height + piece[2].height*0.5 + 1
+			height = labelBG.y + labelBG.height * 0.5 - ax1.height - ax2.height + 12
+			
+			ax1:removeSelf()
+			ax2:removeSelf()
 		else
 			piece.destY =  height + piece[2].height*0.5
-			height = height + piece[2].height -12
+			height = height + piece[2].height -15
 		end		
 		
 		queue[index] = piece
