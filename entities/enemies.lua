@@ -8,8 +8,8 @@ local enemyFactory = {}
 ---------------------------------------------- Variables
 
 ---------------------------------------------- Constants
-local COLOR_OUTER_RANGE_CIRCLE = {0.5,0.1}
-local COLOR_INNER_RANGE_CIRCLE = {0.5,0.1}
+local COLOR_OUTER_RANGE_CIRCLE = {0.5,0.2}
+local COLOR_INNER_RANGE_CIRCLE = {0.5,0.3}
 local THRESHOLD_PATROLTIME = 8
 local TOLERANCE_PATROL = 10
 local THRESHOLD_FOLLOWSPEED = 0.01
@@ -269,6 +269,9 @@ function enemyFactory.newEnemy(enemySpawnData)
 		{name = "enemyAnimation", sheet = enemySprite, start = 1, count = 8, 1200},
 	}
 	
+	local enemyRange = createVisualRange(enemy.viewRadius)
+	enemy:insert(enemyRange)
+	
 	local enemyImage = display.newSprite( enemySprite, enemySequenceData )
 	enemyImage:scale(SCALE_ENEMY, SCALE_ENEMY)
 	enemyImage:setSequence("idleOpen")
@@ -278,9 +281,6 @@ function enemyFactory.newEnemy(enemySpawnData)
 --	local enemyImage = display.newImage(currentEnemyData.asset)
 --	enemyImage:scale(0.25, 0.25)
 	enemy:insert(enemyImage)
-	
-	local enemyRange = createVisualRange(enemy.viewRadius)
-	enemy:insert(enemyRange)
 	
 	return enemy
 end
