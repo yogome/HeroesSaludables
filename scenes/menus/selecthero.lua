@@ -205,7 +205,7 @@ local function gotoLevel()
 --        --helperDoors.loader("scenes.game.versus", {world = currentWorld, level = currentLevel}, {})
 --    end})
 
-    director.gotoScene("scenes.menus.worlds", {effect = "fade", time = 600})
+    director.gotoScene("scenes.menus.worlds", {effect = "fade", time = 500})
     dataSaver:setYogotarType(currentYogotarType)
     dataSaver:setCurrentYogotar(currentSelectedYogotar)
     dataSaver:setPowercubes(currentPowercubes)
@@ -950,6 +950,9 @@ local function animateScene(params)
 		yogotar.setAnimationStack(animationParams)
 		
 		yogotar.group.x = display.screenOriginX - display.contentWidth * 0.55
+		timer.performWithDelay(1500, function()
+			sound.play("brake")
+		end)
 		transition.to(yogotar.group, {x = display.contentWidth * 0.75, time = 2000, onComplete = function()
 			animateUI()
 				
@@ -1245,7 +1248,7 @@ function scene:show( event )
 		setPowercubesBar()
 		
 	elseif ( phase == "did" ) then
-		music.playTrack(3,0)
+		music.playTrack(2, 200)
 		scene.enableButtons()
 		
 		animateScene(params)

@@ -13,7 +13,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocoleche/piece1.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.49},	
+					[1] = {x = 1, y = -206.55},	
 				}
 			},
 			[2] ={
@@ -22,7 +22,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocoleche/piece2.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.65},	
+					[1] = {x = 1, y = -141.75},	
 				}
 			},
 			[3] ={
@@ -31,7 +31,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocoleche/piece3.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.98},	
+					[1] = {x = 1, y = -141.75},	
 				}
 			},
 			[4] ={
@@ -40,7 +40,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocoleche/piece4.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.14},	
+					[1] = {x = 1, y = 56.70},	
 				}
 			},
 			[5] ={
@@ -49,7 +49,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocoleche/piece5.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.52},	
+					[1] = {x = 1, y = 210.60},	
 				}
 			},
 		}
@@ -66,7 +66,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/lechenatural/piece1.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.55},	
+					[1] = {x = 1, y = -182.25},	
 				}
 			},
 			[2] ={
@@ -75,7 +75,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/lechenatural/piece2.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.71},	
+					[1] = {x = 1, y = -117.45},	
 				}
 			},
 			[3] ={
@@ -84,7 +84,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/lechenatural/piece3.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.04},	
+					[1] = {x = 1, y = 16.20},	
 				}
 			},
 			[4] ={
@@ -93,7 +93,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/lechenatural/piece4.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.20},	
+					[1] = {x = 1, y = 81.00},	
 				}
 			},
 			[5] ={
@@ -102,7 +102,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/lechenatural/piece5.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.53},	
+					[1] = {x = 1, y = 214.65},	
 				}
 			},
 		}
@@ -119,7 +119,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/yogurt/piece1.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.51},	
+					[1] = {x = 1, y = -198.45},	
 				},
 			},
 			[2] ={
@@ -128,7 +128,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/yogurt/piece2.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.67},	
+					[1] = {x = 1, y = -133.65},	
 				},
 			},
 			[3] ={
@@ -137,7 +137,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/yogurt/piece3.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.00},	
+					[1] = {x = 1, y = 0},	
 				},
 			},
 			[4] ={
@@ -146,7 +146,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/yogurt/piece4.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.17},	
+					[1] = {x = 1, y = 68.85},	
 				},
 			},
 			[5] ={
@@ -155,7 +155,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/yogurt/piece5.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.53},	
+					[1] = {x = 1, y = 214.65},	
 				},
 			},
 		}
@@ -172,7 +172,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugonatural/piece1.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.51},	
+					[1] = {x = 1, y = -198.45},	
 				},
 			},
 			[2] ={
@@ -181,7 +181,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugonatural/piece2.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.66},	
+					[1] = {x = 1, y = -137.70},	
 				},
 			},
 			[3] ={
@@ -190,7 +190,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugonatural/piece3.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1},	
+					[1] = {x = 1, y = 0},	
 				},
 			},
 			[4] ={
@@ -199,7 +199,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugonatural/piece4.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.17},	
+					[1] = {x = 1, y = 68.85},	
 				},
 			},
 			[5] ={
@@ -208,7 +208,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugonatural/piece5.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.53},	
+					[1] = {x = 1, y = 214.65},	
 				},
 			},
 		}
@@ -225,7 +225,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/friturasdequeso/piece1.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.49},	
+					[1] = {x = 1, y = -206.55},	
 				},
 			},
 			[2] ={
@@ -234,7 +234,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/friturasdequeso/piece2.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.65},	
+					[1] = {x = 1, y = -141.75},	
 				},
 			},
 			[3] ={
@@ -243,7 +243,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/friturasdequeso/piece3.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.98},	
+					[1] = {x = 1, y = -8.10},	
 				},
 			},
 			[4] ={
@@ -252,7 +252,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/friturasdequeso/piece4.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.15},	
+					[1] = {x = 1, y = 60.75},	
 				},
 			},
 			[5] ={
@@ -261,7 +261,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/friturasdequeso/piece5.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.54},	
+					[1] = {x = 1, y = 218.70},	
 				},
 			},
 		}
@@ -278,7 +278,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugodemanzana/piece1.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.50},	
+					[1] = {x = 1, y = -202.50},	
 				},
 			},
 			[2] ={
@@ -287,7 +287,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugodemanzana/piece2.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.66},	
+					[1] = {x = 1, y = -137.70},	
 				},
 			},
 			[3] ={
@@ -296,7 +296,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugodemanzana/piece3.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1},	
+					[1] = {x = 1, y = 0},	
 				},
 			},
 			[4] ={
@@ -305,7 +305,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugodemanzana/piece4.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.17},	
+					[1] = {x = 1, y = 68.85},	
 				},
 			},
 			[5] ={
@@ -314,7 +314,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugodemanzana/piece5.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.54},	
+					[1] = {x = 1, y = 218.70},	
 				},
 			},
 		}
@@ -331,7 +331,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/pastelchocolate/piece1.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.48},	
+					[1] = {x = 1, y = -210.60},	
 				},
 			},
 			[2] ={
@@ -340,7 +340,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/pastelchocolate/piece2.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.64},	
+					[1] = {x = 1, y = -145.80},	
 				},
 			},
 			[3] ={
@@ -349,7 +349,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/pastelchocolate/piece3.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.99},	
+					[1] = {x = 1, y = -4.05},	
 				},
 			},
 			[4] ={
@@ -358,7 +358,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/pastelchocolate/piece4.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.16},	
+					[1] = {x = 1, y = 64.80},	
 				},
 			},
 			[5] ={
@@ -367,7 +367,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/pastelchocolate/piece5.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.54},	
+					[1] = {x = 1, y = 218.70},	
 				},
 			},
 		}
@@ -384,7 +384,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/cerealazucarado/piece1.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.53},	
+					[1] = {x = 1, y = -190.35},	
 				},
 			},
 			[2] ={
@@ -393,7 +393,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/cerealazucarado/piece2.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.69},	
+					[1] = {x = 1, y = -125.55},	
 				},
 			},
 			[3] ={	
@@ -402,7 +402,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/cerealazucarado/piece3.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.02},	
+					[1] = {x = 1, y = 8.10},	
 				},
 			},
 			[4] ={
@@ -411,7 +411,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/cerealazucarado/piece4.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.19},	
+					[1] = {x = 1, y = 76.95},	
 				},
 			},
 			[5] ={
@@ -420,7 +420,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/cerealazucarado/piece5.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.53},	
+					[1] = {x = 1, y = 214.65},	
 				},
 			},
 		}
@@ -437,7 +437,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocochispas/piece1.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.49},	
+					[1] = {x = 1, y = -206.55},	
 				},
 			},
 			[2] ={
@@ -446,7 +446,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocochispas/piece2.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.65},	
+					[1] = {x = 1, y = -141.75},	
 				},
 			},
 			[3] ={
@@ -455,7 +455,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocochispas/piece3.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.99},	
+					[1] = {x = 1, y = -4.05},	
 				},
 			},
 			[4] ={
@@ -464,7 +464,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocochispas/piece4.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.15},	
+					[1] = {x = 1, y = 60.75},	
 				},
 			},
 			[5] ={
@@ -473,7 +473,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocochispas/piece5.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.53},	
+					[1] = {x = 1, y = 214.65},	
 				},
 			},
 		}
@@ -490,7 +490,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/refrescodecola/piece1.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.49},	
+					[1] = {x = 1, y = -206.55},	
 				},
 			},
 			[2] ={
@@ -499,7 +499,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/refrescodecola/piece2.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.65},	
+					[1] = {x = 1, y = -141.75},	
 				},
 			},
 			[3] ={
@@ -508,7 +508,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/refrescodecola/piece3.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 0.99},	
+					[1] = {x = 1, y = -4.05},	
 				},
 			},
 			[4] ={
@@ -517,7 +517,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/refrescodecola/piece4.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.16},	
+					[1] = {x = 1, y = 64.80},	
 				},
 			},
 			[5] ={
@@ -526,7 +526,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/refrescodecola/piece5.png"
 				},
 				answers = {
-					[1] = {x = 1, y = 1.50},	
+					[1] = {x = 1, y = 202.50},	
 				},
 			},
 		}

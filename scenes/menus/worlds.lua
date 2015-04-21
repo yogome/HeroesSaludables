@@ -10,6 +10,7 @@ local robot = require( "libs.helpers.robot" )
 local database = require( "libs.helpers.database" )
 local settings = require("settings")
 local worldsData = require( "data.worldsdata" )
+local music = require("libs.helpers.music")
 
 local scene = director.newScene() 
 ----------------------------------------------- Variables
@@ -20,6 +21,7 @@ local spawnZoneWidth, halfSpawnZoneWidth
 local titleGroup, title, language
 local selectedWorldIndex, movingMenu
 local currentPlayer
+local menuGroup
 local items
 ----------------------------------------------- Constants
 local DATA_TITLE = {x = display.contentCenterX, y = display.screenOriginY + 100, scale = 0.7} 
@@ -48,7 +50,7 @@ local function disableMenu()
 end
 
 local function onReleasedBack()
-	director.gotoScene( "scenes.menus.home", { effect = "zoomInOutFade", time = 600, } )
+	director.gotoScene( "scenes.menus.selecthero", { effect = "zoomInOutFade", time = 600, } )
 	--director.gotoScene( "scenes.menus.profiles", { effect = "zoomInOutFade", time = 600, } )
 end
 
@@ -124,26 +126,57 @@ local function fillWorldData()
 	
 	for indexWorld = 1, #items do
 		local currentWorld = currentPlayer.unlockedWorlds[indexWorld]
-		local totalStars = 0
-		
-		for indexLevel = 1, #worldsData[indexWorld] do
-			totalStars = totalStars + MAX_STARS_PER_LEVEL
-		end
-		
-		local playerStars = 0
-		
-		for indexLevel = 1, #currentWorld.levels do
-			if currentWorld.levels[indexLevel] then
-				if currentWorld.levels[indexLevel].unlocked then
-					playerStars = playerStars + currentWorld.levels[indexLevel].stars
+		if currentWorld.unlocked then
+		--sceneGroup:insert(menu)
+			
+			local totalStars = 0
+
+			for indexLevel = 1, #worldsData[indexWorld] do
+				totalStars = totalStars + MAX_STARS_PER_LEVEL
+			end
+
+			local playerStars = 0
+
+			for indexLevel = 1, #currentWorld.levels do
+				if currentWorld.levels[indexLevel] then
+					if currentWorld.levels[indexLevel].unlocked then
+						playerStars = playerStars + currentWorld.levels[indexLevel].stars
+					end
 				end
 			end
+
+			local currentItem = items[indexWorld]
+			currentItem.unlockedGroup.completionText.text = playerStars.."/"..totalStars
+			currentItem.locked = false
+			items[indexWorld].unlockedGroup.alpha = 1
+			items[indexWorld].lockedGroup.alpha = 1
 		end
 		
-		local currentItem = items[indexWorld]
-		currentItem.unlockedGroup.completionText.text = playerStars.."/"..totalStars
+					
+		local menuOptions = {
+			itemSize = SIZE_WORLD_ITEM,
+			smallIconScale = 0.5,
+			tolerance = 600,
+			lock = "images/worlds/level_lock.png",
+			lockAlpha = 0.9,
+			items = items,
+			tapListener = onMenuTapped,
+			itemOffsetY = 60,
+			lockDarken = 0.3,
+		}
+
+		menu = scrollmenu.new(menuOptions)
+		menuGroup:insert(menu)
+		
 	end
 	
+end
+
+local function initialize()
+	for index = 1, #items do
+		items[index].unlockedGroup.alpha = 0
+		items[index].lockedGroup.alpha = 0
+	end
 end
 
 ----------------------------------------------- Class functions 
@@ -168,7 +201,6 @@ end
 
 function scene:create(event)
 	local sceneGroup = self.view
-	
 	movingMenu = false
 	selectedWorldIndex = 1
 	
@@ -176,7 +208,9 @@ function scene:create(event)
 	
 	items = {}
 	for index = 1, #worldsData do
+		
 		local unlockedGroup = display.newGroup()
+		unlockedGroup.alpha = 0
 		local image = display.newImage(worldsData[index].icon, true)
 		unlockedGroup:insert(image)
 		unlockedGroup.image = image
@@ -191,7 +225,7 @@ function scene:create(event)
 			y = OFFSET_COMPLETION_TEXT.y,
 			align = "center",
 			font = settings.fontName,
-			text = "{COLLECTED/TOTAL}",
+			text = "Bloqueado",
 			fontSize = 50,
 		}
 
@@ -203,26 +237,15 @@ function scene:create(event)
 		end
 		
 		local lockedGroup = display.newGroup()
+		lockedGroup.alpha = 0
 		local lockImage = display.newImage("images/general/lock.png")
 		lockedGroup:insert(lockImage)
-	
-		items[index] = {unlockedGroup = unlockedGroup, lockedGroup = lockedGroup, locked = false}
+		
+		items[index] = {unlockedGroup = unlockedGroup, lockedGroup = lockedGroup, locked = true}
 	end
 	
-	local menuOptions = {
-		itemSize = SIZE_WORLD_ITEM,
-		smallIconScale = 0.5,
-		tolerance = 600,
-		lock = "images/worlds/level_lock.png",
-		lockAlpha = 0.9,
-		items = items,
-		tapListener = onMenuTapped,
-		itemOffsetY = 60,
-		lockDarken = 0.3,
-	}
-	
-	menu = scrollmenu.new(menuOptions)
-	sceneGroup:insert(menu)
+	menuGroup = display.newGroup()
+	sceneGroup:insert(menuGroup)
 	
 	titleGroup = display.newGroup()
 	sceneGroup:insert(titleGroup)
@@ -255,16 +278,16 @@ function scene:show( event )
     local phase = event.phase
 
     if ( phase == "will" ) then
-		language = database.config("language") or "en"
+		initialize()
 		currentPlayer = players.getCurrent()
 		fillWorldData()
+		enableMenu()
 		Runtime:addEventListener("enterFrame", updateWorlds)
 		self.disableButtons()
-		enableMenu()
+		language = database.config("language") or "en"
 	elseif ( phase == "did" ) then
+		music.playTrack(2, 200)
 		self.enableButtons()
-		
-		
 	end
 end
 

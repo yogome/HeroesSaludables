@@ -3,6 +3,7 @@ local buttonList = require("data.buttonlist")
 local widget = require("widget")
 local labelData = require("data.labeldata")
 local settings = require("settings")
+local sound = require("libs.helpers.sound")
 
 ----------------------------Variables
 local scene = director.newScene()
@@ -129,18 +130,21 @@ local function onPieceTouch(event)
 			--local positionY = event.target.y / labelBG.y
 --			local positionX = "x = display.contentWidth * "..event.target.x / display.contentWidth
 --			local positionY = "y = display.contentHeight * "..event.target.y / display.contentHeight
-			--print(string.format("%.2f", positionY))
+			local positionY = event.target.y - labelBG.y
+			
 			
 			local positionX = target.position.x * labelBG.x
-			local positionY = target.position.y * labelBG.y
+			local positionY = labelBG.y + target.position.y
 			
 			if (target.x < positionX + 50 and target.x > positionX - 50) and
 				(target.y < positionY + 50 and target.y > positionY - 50) then
+				sound.play("flip")
 				target.onPlace = true
 				target:removeEventListener("touch", onPieceTouch)
 				transition.to(target, {time = 200, xScale = 1.25, yScale = 1.25, x = positionX, y = positionY})
 			else
 				transition.to(target.bg, {time = 200, alpha = 1})
+				sound.play("wrong")
 			end
 			
 			if target.isTouchable then
@@ -156,6 +160,7 @@ local function onPieceTouch(event)
 			end
 			
 			if isLabelComplete then
+				sound.play("correct")
 				labelComplete()
 			end
 		end

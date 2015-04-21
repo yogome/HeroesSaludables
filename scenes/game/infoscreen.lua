@@ -175,6 +175,7 @@ local function pressButton(event)
 			turnOnAlert("Género")
 			return
 		end
+		sound.play("flip")
 		checkFirst = false
 		checkSecond = true
 		nextButton:setEnabled(false)
@@ -189,6 +190,7 @@ local function pressButton(event)
 		okButton:setEnabled(true)
 		backButton:setEnabled(true)
 	elseif tag == "back" then
+		sound.play("flip")
 		checkFirst = true
 		checkSecond = false
 		backButton:setEnabled(false)
@@ -196,6 +198,7 @@ local function pressButton(event)
 		transition.to(firstPlane,{delay = 400, x = screenLeft, time = 500,rotation = 0 })
 		nextButton:setEnabled(true)
 	elseif tag == "ok" then
+		sound.play("flip")
 --		okButton:setEnabled(false)
 --		for i=1, #activityBtnNames do
 --			local practice
@@ -226,6 +229,7 @@ local function pressButton(event)
 			finalYogoGirl.alpha = 1
 		end
 	elseif tag == "backThird" then
+		sound.play("flip")
 		backButton:setEnabled(true)
 		checkSecond = true
 		transition.to(thirdPlane,{x = screenWidth + screenWidth, time = 500,rotation = 90 })
@@ -871,6 +875,8 @@ function game:show( event )
 		hand:setSequence("tap")
         hand:play()
 	elseif ( phase == "did" ) then
+		
+		music.playTrack(1)
 		
 	end
 end

@@ -4,7 +4,7 @@ local players = require( "models.players" )
 local dataSaver = require("services.datasaver")
 
 local function goGame()
-	director.gotoScene("scenes.game.shooter", { params = { worldIndex = 2, levelIndex = 15}} );
+	director.gotoScene("scenes.game.shooter", { params = { worldIndex = 2, levelIndex = 14}} );
 end	
 
 local function goMinigame1()

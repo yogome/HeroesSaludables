@@ -12,14 +12,14 @@ local shiplist = {
 		iconPath = "images/ships/shop_ship3.png",
 		price = 100,
 		spritesheet = "images/ships/ship3_a.png"},
-	[4] = {
-		iconPath = "images/ships/shop_ship3.png",
-		price = 100,
-		spritesheet = "images/ships/ship3_a.png"},
-	[5] = {
-		iconPath = "images/ships/shop_ship3.png",
-		price = 100,
-		spritesheet = "images/ships/ship3_a.png"},
+--	[4] = {
+--		iconPath = "images/ships/shop_ship3.png",
+--		price = 100,
+--		spritesheet = "images/ships/ship3_a.png"},
+--	[5] = {
+--		iconPath = "images/ships/shop_ship3.png",
+--		price = 100,
+--		spritesheet = "images/ships/ship3_a.png"},
 }
 
 return shiplist

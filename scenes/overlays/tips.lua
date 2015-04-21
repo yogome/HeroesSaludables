@@ -18,7 +18,7 @@ local NUMBER_TIPS = 45
 local function closeOverlay(event)
 	event.target:setEnabled(false)
 	transition.to(scene.view, {alpha = 0, time = 500, onComplete = function()
-		director.gotoScene(nextScene, {effect = "fade", time = 300, params = {worldIndex = worldIndex, levelIndex = levelIndex}})
+		director.gotoScene(nextScene, {effect = "fade", time = 500, params = {worldIndex = worldIndex, levelIndex = levelIndex}})
 	end})
 end
 

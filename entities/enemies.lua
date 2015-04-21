@@ -82,6 +82,10 @@ end
 local function followTarget(self)
 	local vY = -(self.oldY - self.y)
 	
+	if self.isSound then
+		self.isSound = false
+		sound.play("detected")
+	end
 	self.rotation = (self.rotation + (vY * THRESHOLD_ROTATION_ANIMATION) * self.xScale) * 0.5
 	self.oldY = self.y
 	
@@ -89,6 +93,7 @@ local function followTarget(self)
 		if self.isPatroling then
 			transition.cancel(self)
 			self.isPatroling = false
+			self.isSound = true
 		end
 		
 		local differenceX = self.target.x - self.x
@@ -125,7 +130,7 @@ local function shootTarget(self)
 		local rotation = extramath.getFullAngle(differenceX, differenceY) + 90
 		self.rotation = self.xScale > 0 and rotation or (rotation - 180)
 			
-		if self.currentFireFrame >= self.data.projectileData.fireFrame then
+		if self.currentFireFrame >= (self.data.projectileData.fireFrame * self.fireFrame) then
 			local projectileSpeed = self.data.projectileData.speed
 			
 			self.currentFireFrame = 0
@@ -177,7 +182,7 @@ local function shootAtAngle(self, angle)
 		local rotation = extramath.getFullAngle(differenceX, differenceY) + 90
 		self.rotation = self.xScale > 0 and rotation or (rotation - 180)
 			
-		if self.currentFireFrame >= self.data.projectileData.fireFrame then
+		if self.currentFireFrame >= (self.data.projectileData.fireFrame * self.fireFrame) then
 			local projectileSpeed = self.data.projectileData.speed
 			
 			self.currentFireFrame = 0
@@ -222,11 +227,13 @@ function enemyFactory.newEnemy(enemySpawnData)
 	enemy.viewRadius = currentEnemyData.viewRadius
 	enemy.speed = currentEnemyData.speed
 	enemy.range = currentEnemyData.range
+	enemy.fireFrame = enemySpawnData.fireFrame
 	
 	enemy.targetPatrolPoint = 1
 	enemy.target = nil
 	enemy.isPatroling = false
 	enemy.currentFireFrame = 0
+	enemy.isSound = true
 	
 	enemy.oldY = 0
 	

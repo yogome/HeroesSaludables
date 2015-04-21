@@ -373,6 +373,7 @@ local function spawnBubble(planet)
 	end
 	
 	if not isFoodSpawned[planet.foodType] and not planet.isDisabled then
+		sound.play("spawn")
 		isFoodSpawned[planet.foodType] = true
 		foodBubbleIndex = math.random(1, #foodlist[planet.foodType].food)
 		local foundBubble = foodBubbleGroup.bubbles[planet.foodType][foodBubbleIndex]
@@ -401,7 +402,7 @@ end
 local function grabFruit(fruit)
 	if not fruit.isGrabbed then
 		fruit.isGrabbed = true
-		
+		sound.play("grab")
 		if currentTutorials.hasTutorial then
 			currentTutorials.success("baseTutorial")
 			currentTutorials.show("collectPortion", {onSuccess = successTutorial, onStart = startTutorial, delay = 1500})
@@ -527,9 +528,19 @@ local function checkAmounts(foodType)
 					dataSaver:unlockLevel(worldIndex, levelIndex+1)
 				end
 				dataSaver:setStars(worldIndex, levelIndex, heartIndicator.currentHearts)
-				director.gotoScene("scenes.menus.levels", {params = {worldIndex = worldIndex}, effect = "fade", time = 500})
+				
+				if levelIndex >= #worldsData[worldIndex] then
+					if worldIndex + 1 <= #worldsData then
+						dataSaver:unlockWorld(worldIndex + 1)
+						director.gotoScene("scenes.menus.worlds", {params = {worldIndex = worldIndex}, effect = "fade", time = 500})	
+					end
+				else
+					director.gotoScene("scenes.menus.levels", {params = {worldIndex = worldIndex}, effect = "fade", time = 500})
+				end
+				
 			end
 			winScene.show(heartIndicator.currentHearts, 200, onBackReleased, onRetryReleased, onPlayReleased)
+			music.fade(1000)
 		end
 	end
 	
@@ -545,7 +556,7 @@ local function collectBubble(earth)
 			currentTutorials.success("collectPortion")
 			currentTutorials.show("finishLevel", {onSuccess = successTutorial, onStart = startTutorial, delay = 1000})
 		end
-		
+		sound.play("planetcollect")
 		earth:setSequence("eat")
 		earth:play()
 		earth:addEventListener("sprite", function(event)
@@ -633,6 +644,8 @@ end
 local function suckFood(player, otherObject)
 	
 	if playerCharacter.isCarringItem then
+		
+		sound.play("hole")
 		local foodData = foodlist[player.item.type]
 		local fruit = display.newImage(foodData.food[foodBubbleIndex].asset)		
 		fruit:scale(0.2,0.2)
@@ -680,6 +693,7 @@ local function checkPlayerCollision(player, otherObject, element1, element2)
 		elseif otherObject.name == "enemy" then
 			if not playerCharacter.isDamaged then
 				if element2 == 2 then
+					sound.play("fly2")
 					damagePlayer()
 					if not heartIndicator:removeHeart() then
 						gameOver()
@@ -689,6 +703,7 @@ local function checkPlayerCollision(player, otherObject, element1, element2)
 		elseif otherObject.name == "bullet" then
 			if element2 == 1 then
 				if not playerCharacter.isDamaged then
+					sound.play("fly2")
 					addDamage(otherObject)
 					damagePlayer()
 				end
@@ -1200,6 +1215,7 @@ local function loadEnemies()
 	local enemySpawnData = worldsData[worldIndex][levelIndex].enemySpawnData
 	for indexEnemy = 1, #enemySpawnData do
 		local currentEnemySpawnData = enemySpawnData[indexEnemy]
+		currentEnemySpawnData.fireFrame = 1/worldIndex
 		local enemyObject = enemyFactory.newEnemy(currentEnemySpawnData)
 		
 		enemyObject.onBulletCreate = function(bullet)
@@ -1731,10 +1747,10 @@ function scene:show( event )
 		
 	elseif ( phase == "did" ) then
 		--intro()		
-		music.playTrack(3)
+		music.playTrack(4, 500)
 		scene.enableButtons()
 		camera:setFocus(playerCharacter)
-		director.showOverlay("scenes.overlays.objetives", {isModal = true, params = {objetives = objetives}})
+		director.showOverlay("scenes.overlays.objetives", {effect = "fade", time = 300, isModal = true, params = {objetives = objetives}})
 	end
 end
 

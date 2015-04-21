@@ -386,6 +386,7 @@ function scene:show( event )
 		Runtime:addEventListener("enterFrame", updateGameLoop)
 		self.disableButtons()
 	elseif ( phase == "did" ) then
+		music.playTrack(2, 200)
 		self.enableButtons()
 	end
 end

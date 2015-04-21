@@ -3,6 +3,7 @@ local soundlist = {
 	{id = "wrongAnswer", path = "sounds/wrongAnswer.mp3"},
 	{id = "yogomekids", path = "sounds/yogomekids.mp3"},
 	{id = "jackpot", path = "sounds/jackpot.mp3"},
+	{id = "fly2", path = "sounds/fly2.mp3"},
 	{id = "star1", path = "sounds/star1.mp3"},
 	{id = "star2", path = "sounds/star2.mp3"},
 	{id = "star3", path = "sounds/star3.mp3"},
@@ -13,6 +14,14 @@ local soundlist = {
 	{id = "wrong", path = "sounds/wrong.mp3"},
 	{id = "fly", path = "sounds/fly.mp3"},
 	{id = "enemyshoot", path = "sounds/enemyshoot.mp3"},
+	{id = "flip", path = "sounds/flip.mp3"},
+	{id = "brake", path = "sounds/yogotarBrake.mp3"},
+	{id = "grab", path = "sounds/grab.mp3"},
+	{id = "spawn", path = "sounds/spawn.mp3"},
+	{id = "planetcollect", path = "sounds/planetcollect.mp3"},
+	{id = "detected", path = "sounds/detected.mp3"},
+	{id = "hole", path = "sounds/hole.mp3"},
+	{id = "win", path = "sounds/win1.mp3"},
 }
 
 return soundlist

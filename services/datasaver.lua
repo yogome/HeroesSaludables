@@ -173,6 +173,16 @@ function dataSaver:unlockLevel(world, level)
     players.save(self.currentPlayer)
 end
 
+function dataSaver:unlockWorld(world)
+    local unlockedLevels = self.currentPlayer.unlockedWorlds
+    if unlockedLevels[world] then
+		if not unlockedLevels[world].unlocked then
+			unlockedLevels[world].unlocked = true
+		end
+	end
+    players.save(self.currentPlayer)
+end
+
 function dataSaver:setStars(world, level, stars)
 	local unlockedLevels = self.currentPlayer.unlockedWorlds
 	
