@@ -37,6 +37,8 @@ local iniX = display.contentWidth * 0.65
 local iniY = screenTop - 150
 
 local snapTreshold = 0--50
+local worldIndex
+local levelIndex
 -----------------------------------------------Cached functions
 local mathRandom = math.random  
 local mathSqrt = math.sqrt
@@ -107,7 +109,7 @@ local function dragnDrop(event)
 					transition.to(target[2] , {alpha = 1, time = 300, delay = 2500})
 				end
 
-				local win = true 
+				local win = true
 				for i = 1, #queue do
 					win = win and queue[i].correct
 				end
@@ -247,7 +249,7 @@ end
 local function nextSceneButtonListener(event)
 	if ( "ended" == event.phase ) then
 		nextSceneButton:setEnabled(false)
-		director.gotoScene("scenes.overlays.tips", {effect = "fade", time = 350})
+		director.gotoScene("scenes.overlays.tips", {effect = "fade", time = 350, params = {worldIndex = worldIndex, levelIndex = levelIndex}})
 	end
 end
 
@@ -278,6 +280,10 @@ end
 function game:show(event)
     local sceneGroup = self.view
     local phase = event.phase
+	local params = event.params or {}
+	
+	worldIndex = params.worldIndex or 1
+	levelIndex = params.levelIndex or 1
     if phase == "will" then
 		dynamicLayer = display.newGroup()
 		createPuzzle(dynamicLayer)
