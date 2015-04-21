@@ -13,7 +13,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocoleche/piece1.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18915642632378,y = display.contentHeight * 0.22432100272473},	
+					[1] = {x = 1, y = 0.49},	
 				}
 			},
 			[2] ={
@@ -22,7 +22,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocoleche/piece2.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.1887444390191,y = display.contentHeight * 0.31444445951485},	
+					[1] = {x = 1, y = 0.65},	
 				}
 			},
 			[3] ={
@@ -31,7 +31,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocoleche/piece3.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.1881746645327,y = display.contentHeight * 0.48851853358893},	
+					[1] = {x = 1, y = 0.98},	
 				}
 			},
 			[4] ={
@@ -40,7 +40,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocoleche/piece4.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18830317744502,y = display.contentHeight * 0.57864199037905},	
+					[1] = {x = 1, y = 1.14},	
 				}
 			},
 			[5] ={
@@ -49,7 +49,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocoleche/piece5.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18847582781756,y = display.contentHeight * 0.78358026198399},	
+					[1] = {x = 1, y = 1.52},	
 				}
 			},
 		}
@@ -66,7 +66,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/lechenatural/piece1.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18994236698857,y = display.contentHeight * 0.24901236074942},	
+					[1] = {x = 1, y = 0.55},	
 				}
 			},
 			[2] ={
@@ -75,7 +75,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/lechenatural/piece2.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18979469581887,y = display.contentHeight * 0.33913581753954},	
+					[1] = {x = 1, y = 0.71},	
 				}
 			},
 			[3] ={
@@ -84,7 +84,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/lechenatural/piece3.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18891494185836,y = display.contentHeight * 0.51197532371238},	
+					[1] = {x = 1, y = 1.04},	
 				}
 			},
 			[4] ={
@@ -93,7 +93,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/lechenatural/piece4.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18871047408492,y = display.contentHeight * 0.60333334840374},	
+					[1] = {x = 1, y = 1.20},	
 				}
 			},
 			[5] ={
@@ -102,13 +102,13 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/lechenatural/piece5.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18902452256944,y = display.contentHeight * 0.77123458297164},	
+					[1] = {x = 1, y = 1.53},	
 				}
 			},
 		}
 	},
 	[3] = {
-		name = "Yogurt",
+		name = "Queso petit suisse",
 		iconAsset = assetPath.."icons/3.png",
 		labelBG = assetPath .. "panels/yogurt.png",
 		description = "Consume con moderación los productos estilo Queso Petit Suisse ya que pueden contener mucho más de lo suficiente de azúcares y grasas.",
@@ -119,7 +119,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/yogurt/piece1.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19035135904948,y = display.contentHeight * 0.24037038544078},	
+					[1] = {x = 1, y = 0.51},	
 				},
 			},
 			[2] ={
@@ -128,7 +128,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/yogurt/piece2.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19001493100767,y = display.contentHeight * 0.3267901385272},	
+					[1] = {x = 1, y = 0.67},	
 				},
 			},
 			[3] ={
@@ -137,7 +137,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/yogurt/piece3.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19224616156684,y = display.contentHeight * 0.50209878050251},	
+					[1] = {x = 1, y = 1.00},	
 				},
 			},
 			[4] ={
@@ -146,7 +146,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/yogurt/piece4.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19071677879051,y = display.contentHeight * 0.58851853358893},	
+					[1] = {x = 1, y = 1.17},	
 				},
 			},
 			[5] ={
@@ -155,7 +155,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/yogurt/piece5.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19089638038918,y = display.contentHeight * 0.77740742247782},	
+					[1] = {x = 1, y = 1.53},	
 				},
 			},
 		}
@@ -172,7 +172,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugonatural/piece1.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19014553493924,y = display.contentHeight * 0.23543211383584},	
+					[1] = {x = 1, y = 0.51},	
 				},
 			},
 			[2] ={
@@ -181,7 +181,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugonatural/piece2.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19002295600043,y = display.contentHeight * 0.32432100272473},	
+					[1] = {x = 1, y = 0.66},	
 				},
 			},
 			[3] ={
@@ -190,7 +190,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugonatural/piece3.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18992518672237,y = display.contentHeight * 0.50086421260127},	
+					[1] = {x = 1, y = 1},	
 				},
 			},
 			[4] ={
@@ -199,7 +199,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugonatural/piece4.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18821394178602,y = display.contentHeight * 0.58728396568769},	
+					[1] = {x = 1, y = 1.17},	
 				},
 			},
 			[5] ={
@@ -208,7 +208,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugonatural/piece5.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18823581271701,y = display.contentHeight * 0.77370371877411},	
+					[1] = {x = 1, y = 1.53},	
 				},
 			},
 		}
@@ -225,7 +225,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/friturasdequeso/piece1.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18831617567274,y = display.contentHeight * 0.2304938422309},	
+					[1] = {x = 1, y = 0.49},	
 				},
 			},
 			[2] ={
@@ -234,7 +234,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/friturasdequeso/piece2.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18902452256944,y = display.contentHeight * 0.31691359531732},	
+					[1] = {x = 1, y = 0.65},	
 				},
 			},
 			[3] ={
@@ -243,7 +243,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/friturasdequeso/piece3.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18995010941117,y = display.contentHeight * 0.49345680519387},	
+					[1] = {x = 1, y = 0.98},	
 				},
 			},
 			[4] ={
@@ -252,7 +252,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/friturasdequeso/piece4.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18840343334057,y = display.contentHeight * 0.57864199037905},	
+					[1] = {x = 1, y = 1.15},	
 				},
 			},
 			[5] ={
@@ -261,7 +261,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/friturasdequeso/piece5.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18912455240885,y = display.contentHeight * 0.77370371877411},	
+					[1] = {x = 1, y = 1.54},	
 				},
 			},
 		}
@@ -278,7 +278,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugodemanzana/piece1.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19132085729528,y = display.contentHeight * 0.23666668173708},	
+					[1] = {x = 1, y = 0.50},	
 				},
 			},
 			[2] ={
@@ -287,7 +287,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugodemanzana/piece2.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19163151493779,y = display.contentHeight * 0.3230864348235},	
+					[1] = {x = 1, y = 0.66},	
 				},
 			},
 			[3] ={
@@ -296,7 +296,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugodemanzana/piece3.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19186028374566,y = display.contentHeight * 0.50086421260127},	
+					[1] = {x = 1, y = 1},	
 				},
 			},
 			[4] ={
@@ -305,7 +305,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugodemanzana/piece4.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18972834834346,y = display.contentHeight * 0.58604939778646},	
+					[1] = {x = 1, y = 1.17},	
 				},
 			},
 			[5] ={
@@ -314,7 +314,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/jugodemanzana/piece5.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18944634331597,y = display.contentHeight * 0.77246915087288},	
+					[1] = {x = 1, y = 1.54},	
 				},
 			},
 		}
@@ -331,7 +331,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/pastelchocolate/piece1.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19036560058594,y = display.contentHeight * 0.2304938422309},	
+					[1] = {x = 1, y = 0.48},	
 				},
 			},
 			[2] ={
@@ -340,7 +340,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/pastelchocolate/piece2.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18967545120804,y = display.contentHeight * 0.31814816321856},	
+					[1] = {x = 1, y = 0.64},	
 				},
 			},
 			[3] ={
@@ -349,7 +349,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/pastelchocolate/piece3.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19113181785301,y = display.contentHeight * 0.4946913730951},	
+					[1] = {x = 1, y = 0.99},	
 				},
 			},
 			[4] ={
@@ -358,7 +358,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/pastelchocolate/piece4.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18931127477575,y = display.contentHeight * 0.58111112618152},	
+					[1] = {x = 1, y = 1.16},	
 				},
 			},
 			[5] ={
@@ -367,7 +367,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/pastelchocolate/piece5.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18948516845703,y = display.contentHeight * 0.77864199037905},	
+					[1] = {x = 1, y = 1.54},	
 				},
 			},
 		}
@@ -384,7 +384,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/cerealazucarado/piece1.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18947640878183,y = display.contentHeight * 0.24777779284819},	
+					[1] = {x = 1, y = 0.53},	
 				},
 			},
 			[2] ={
@@ -393,7 +393,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/cerealazucarado/piece2.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18960136131004,y = display.contentHeight * 0.33543211383584},	
+					[1] = {x = 1, y = 0.69},	
 				},
 			},
 			[3] ={	
@@ -402,7 +402,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/cerealazucarado/piece3.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19143394187645,y = display.contentHeight * 0.51197532371238},	
+					[1] = {x = 1, y = 1.02},	
 				},
 			},
 			[4] ={
@@ -411,7 +411,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/cerealazucarado/piece4.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.1902749520761,y = display.contentHeight * 0.5983950767988},	
+					[1] = {x = 1, y = 1.19},	
 				},
 			},
 			[5] ={
@@ -420,7 +420,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/cerealazucarado/piece5.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19008133499711,y = display.contentHeight * 0.77617285457658},	
+					[1] = {x = 1, y = 1.53},	
 				},
 			},
 		}
@@ -437,7 +437,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocochispas/piece1.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19097284387659,y = display.contentHeight * 0.23419754593461},	
+					[1] = {x = 1, y = 0.49},	
 				},
 			},
 			[2] ={
@@ -446,7 +446,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocochispas/piece2.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19098160355179,y = display.contentHeight * 0.32061729902103},	
+					[1] = {x = 1, y = 0.65},	
 				},
 			},
 			[3] ={
@@ -455,7 +455,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocochispas/piece3.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19190233018663,y = display.contentHeight * 0.4983950767988},	
+					[1] = {x = 1, y = 0.99},	
 				},
 			},
 			[4] ={
@@ -464,7 +464,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocochispas/piece4.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18958135534216,y = display.contentHeight * 0.58481482988522},	
+					[1] = {x = 1, y = 1.15},	
 				},
 			},
 			[5] ={
@@ -473,7 +473,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/chocochispas/piece5.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.18942667643229,y = display.contentHeight * 0.78234569408275},	
+					[1] = {x = 1, y = 1.53},	
 				},
 			},
 		}
@@ -490,7 +490,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/refrescodecola/piece1.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19030654342086,y = display.contentHeight * 0.22802470642843},	
+					[1] = {x = 1, y = 0.49},	
 				},
 			},
 			[2] ={
@@ -499,7 +499,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/refrescodecola/piece2.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.1896413732458,y = display.contentHeight * 0.31567902741609},	
+					[1] = {x = 1, y = 0.65},	
 				},
 			},
 			[3] ={
@@ -508,7 +508,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/refrescodecola/piece3.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.1905756632487,y = display.contentHeight * 0.49345680519387},	
+					[1] = {x = 1, y = 0.99},	
 				},
 			},
 			[4] ={
@@ -517,7 +517,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/refrescodecola/piece4.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19012168601707,y = display.contentHeight * 0.57864199037905},	
+					[1] = {x = 1, y = 1.16},	
 				},
 			},
 			[5] ={
@@ -526,7 +526,7 @@ local labeldata = {
 					[1] = assetPath.."pieces/phase1/refrescodecola/piece5.png"
 				},
 				answers = {
-					[1] = {x = display.contentWidth * 0.19070999710648,y = display.contentHeight * 0.75641976815683},	
+					[1] = {x = 1, y = 1.50},	
 				},
 			},
 		}

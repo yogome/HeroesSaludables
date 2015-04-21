@@ -125,15 +125,20 @@ local function onPieceTouch(event)
 			
 			target.focus = false
 			display.getCurrentStage():setFocus(nil)
-			local positionX = "x = display.contentWidth * "..event.target.x / display.contentWidth
-			local positionY = "y = display.contentHeight * "..event.target.y / display.contentHeight
-			print("{"..positionX..","..positionY.."},")
+			--local positionX = event.target.x / labelBG.y
+			--local positionY = event.target.y / labelBG.y
+--			local positionX = "x = display.contentWidth * "..event.target.x / display.contentWidth
+--			local positionY = "y = display.contentHeight * "..event.target.y / display.contentHeight
+			--print(string.format("%.2f", positionY))
 			
-			if (target.x < target.position.x + 50 and target.x > target.position.x - 50) and
-				(target.y < target.position.y + 50 and target.y > target.position.y - 50) then
+			local positionX = target.position.x * labelBG.x
+			local positionY = target.position.y * labelBG.y
+			
+			if (target.x < positionX + 50 and target.x > positionX - 50) and
+				(target.y < positionY + 50 and target.y > positionY - 50) then
 				target.onPlace = true
 				target:removeEventListener("touch", onPieceTouch)
-				transition.to(target, {time = 200, xScale = 1.1, yScale = SCALE_PIECE, x = target.position.x, y = target.position.y})
+				transition.to(target, {time = 200, xScale = 1.25, yScale = 1.25, x = positionX, y = positionY})
 			else
 				transition.to(target.bg, {time = 200, alpha = 1})
 			end
@@ -183,7 +188,7 @@ local function createLabelElements(sceneGroup)
 		pieceGroup:insert(pieceBG)
 		
 		local piece = display.newImage(currentPortion.pieces[indexPiece].assets[PHASE])
-		--piece:scale(1.1,1.35)
+		piece:scale(0.8,0.8)
 		--piece.answerPosition = currentPortion.pieces[indexPiece].answers[PHASE]
 		pieceGroup:insert(piece)
 		
