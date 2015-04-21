@@ -84,7 +84,7 @@ local function levelIconTapped(event)
 			scene = "scenes.minigames.label1"
 		elseif randomTool == 2 then
 --			scene = "scenes.game.labelpuzzle"
-			scene = "scenes.minigames.label1"
+			scene = "scenes.minigames.lluvia"
 		elseif randomTool == 3 then
 --			scene = "scenes.game.questionquiz"
 			scene = "scenes.minigames.label1"

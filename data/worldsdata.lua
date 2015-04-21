@@ -1052,13 +1052,13 @@ local worldsData = {
 			objetives = {fruit = {portions = 3}},
 			enemySpawnData = {
 				{
-					type = "canoner",
+					type = "shooter",
 					angle = 0,
 					spawnPoint = {x = -1600, y = -800},
 					patrolPath = {[1] = {x = -1600, y = -800}},
 				},
 				{
-					type = "canoner",
+					type = "shooter",
 					angle = 0,
 					spawnPoint = {x = -1600, y = 800},
 					patrolPath = {[1] = {x = -1600, y = 800}},
