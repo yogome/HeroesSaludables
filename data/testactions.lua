@@ -29,6 +29,7 @@ end
 
 local function unlockLevels()
 	dataSaver:initialize()
+	dataSaver:unlockWorld(3)
 	for index = 1, 15 do
 		dataSaver:unlockLevel(1, index)
 	end
