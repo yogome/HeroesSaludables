@@ -4,6 +4,7 @@ local widget = require("widget")
 local labelData = require("data.labeldata")
 local settings = require("settings")
 local sound = require("libs.helpers.sound")
+local extratable = require("libs.helpers.extratable")
 
 ----------------------------Variables
 local scene = director.newScene()
@@ -178,11 +179,6 @@ local function createLabelElements(sceneGroup)
 	
 	bandPieces = {}
 	
---	local textOptions = {
---		text = currentPortion.
---	}
---	local labelDescription = display.newEmbossedText("")
-	
 	for indexPiece = 1, #currentPortion.pieces do
 		
 		local pieceGroup = display.newGroup()
@@ -194,7 +190,6 @@ local function createLabelElements(sceneGroup)
 		
 		local piece = display.newImage(currentPortion.pieces[indexPiece].assets[PHASE])
 		piece:scale(0.8,0.8)
-		--piece.answerPosition = currentPortion.pieces[indexPiece].answers[PHASE]
 		pieceGroup:insert(piece)
 		
 		pieceGroup.onUpperLayer = false
@@ -210,6 +205,8 @@ local function createLabelElements(sceneGroup)
 		pieceGroup.x = display.contentWidth + pieceGroup.contentWidth
 		middleGroup:insert(pieceGroup)
 	end
+	
+	bandPieces = extratable.shuffle(bandPieces)
 end
 
 local function showIcon(sceneGroup)
