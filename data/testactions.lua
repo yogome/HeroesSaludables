@@ -4,7 +4,7 @@ local players = require( "models.players" )
 local dataSaver = require("services.datasaver")
 
 local function goGame()
-	director.gotoScene("scenes.game.shooter", { params = { worldIndex = 2, levelIndex = 14}} );
+	director.gotoScene("scenes.game.shooter", { params = { worldIndex = 3, levelIndex = 8}} );
 end	
 
 local function goMinigame1()
@@ -29,10 +29,14 @@ end
 
 local function unlockLevels()
 	dataSaver:initialize()
-	dataSaver:unlockWorld(3)
-	for index = 1, 15 do
-		dataSaver:unlockLevel(1, index)
+	
+	for indexWorld = 1, 3 do
+		dataSaver:unlockWorld(indexWorld)
+		for indexLevel = 1, 15 do
+			dataSaver:unlockLevel(indexWorld, indexLevel)
+		end
 	end
+	
 end
 
 
