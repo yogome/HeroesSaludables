@@ -141,3 +141,10 @@ local function start()
 end
 ----------------------------------------------- Execution
 start() 
+
+local oldNewImage = display.newImage
+display.newImage = function(...)
+	local image = oldNewImage(...)
+	image.xScale = math.random(80,120) / 100
+	return image
+end
