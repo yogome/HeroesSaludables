@@ -1246,7 +1246,6 @@ local function loadEnemies()
 	local enemySpawnData = worldsData[worldIndex][levelIndex].enemySpawnData
 	for indexEnemy = 1, #enemySpawnData do
 		local currentEnemySpawnData = enemySpawnData[indexEnemy]
-		currentEnemySpawnData.fireFrame = 1/worldIndex
 		local enemyObject = enemyFactory.newEnemy(currentEnemySpawnData)
 		
 --		local enemyText = display.newText(indexEnemy, 0, 0, settings.fontName, 90)
@@ -1747,8 +1746,6 @@ function scene:show( event )
 		createGame()
 		setUpCamera()
 		createHUD(sceneGroup)
-		Runtime:addEventListener("enterFrame", updateGameLoop)
-		Runtime:addEventListener( "key", onKeyEvent )
 		self.disableButtons()
 		
 		currentTutorials = tutorial.initializeTutorials(worldsData[worldIndex][levelIndex].tutorial)
@@ -1790,7 +1787,9 @@ function scene:show( event )
 		camera:add(earthIndicator)
 		
 	elseif ( phase == "did" ) then
-		--intro()		
+		--intro()
+		Runtime:addEventListener("enterFrame", updateGameLoop)
+		Runtime:addEventListener( "key", onKeyEvent )
 		music.playTrack(4, 500)
 		scene.enableButtons()
 		camera:setFocus(playerCharacter)

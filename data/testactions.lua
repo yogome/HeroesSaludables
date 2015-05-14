@@ -3,6 +3,10 @@ local director = require( "libs.helpers.director" )
 local players = require( "models.players" )
 local dataSaver = require("services.datasaver")
 
+local function goMenus()
+	director.gotoScene("scenes.menus.foodmenu");
+end
+
 local function goGame()
 	director.gotoScene("scenes.game.shooter", { params = { worldIndex = 3, levelIndex = 13}});
 end	
@@ -136,6 +140,7 @@ local testActions = {
 	{"Reset player", resetPlayer,{0.8,0.2,0.2}},
 	{"Go Editor", goEditor, {0.5,0.5,0.5}, 2},
 	{"Minigame1", goMinigame1, {0.5,0.5,0.5}, 2},
+	{"Food Menu", goMenus, {0.5,0.5,1}, 2},
 }
 
 return testActions

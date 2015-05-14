@@ -24,6 +24,7 @@ players.default = {
     yogotarId = 1,
     bundleId = 0,
 	shipIndex = 1,
+	playerIMC = 0,
     isFirstTimePlay = true,
     unlockedWorlds = {
 		[1] = {
