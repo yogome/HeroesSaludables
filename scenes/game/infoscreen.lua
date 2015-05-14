@@ -217,6 +217,7 @@ local function pressButton(event)
 --		end
 		print ( hourSlider.value .. "horas")
 		kidCalories = getCalories(kidAge)
+		currentPlayer.playerCalories = kidCalories
 		if isBoy then
 			genre = "niño"
 		else

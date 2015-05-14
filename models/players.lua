@@ -25,6 +25,7 @@ players.default = {
     bundleId = 0,
 	shipIndex = 1,
 	playerIMC = 0,
+	playerCalories = 0,
     isFirstTimePlay = true,
     unlockedWorlds = {
 		[1] = {
