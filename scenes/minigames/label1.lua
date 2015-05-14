@@ -21,7 +21,7 @@ local currentPortion
 local animationTimer
 local middleGroup
 local labelDescription
-local descriptionText
+local descriptionText,descriptionRect
 local nextSceneButton
 
 ----------------Groups to remove
@@ -30,6 +30,10 @@ local labelBG
 local bandPieces
 
 ----------------------------Constants
+local screenLeft = display.screenOriginX
+local screenWidth = display.viewableContentWidth - screenLeft * 2
+local screenTop = display.screenOriginY 
+local screenHeight = display.viewableContentHeight - screenTop * 2
 local NUMBER_TIPS = 45
 local PHASE = 1
 local SCALE_PIECE = 1.35 * (display.contentHeight / 810)
@@ -53,6 +57,7 @@ local function labelComplete()
 	nextSceneButton:setEnabled(true)
 	transition.to(nextSceneButton, {alpha = 1, time = 300})
 	transition.to(descriptionText, {alpha = 1, time = 300})
+	transition.to(descriptionRect, {alpha = 0.6, time = 300})
 	
 end
 
@@ -90,7 +95,7 @@ local function initialize()
 	descriptionText.text = currentPortion.description
 	descriptionText.alpha = 0
 	nextSceneButton.alpha = 0
-	
+	descriptionRect.alpha = 0
 	bandSprite:pause()
 end
 
@@ -287,17 +292,22 @@ function scene:create( event )
 	middleGroup = display.newGroup()
 	sceneGroup:insert(middleGroup)
 	
+	descriptionRect = display.newRoundedRect(screenWidth * 0.72,screenTop + 170, screenWidth * 0.5, screenHeight * 0.45 , 30)
+	descriptionRect.anchorY = 0
+	descriptionRect:setFillColor(0)
+	sceneGroup:insert(descriptionRect)
+	
 	local descriptionData = {
 		text = "[DESCRIPTION]",
 		width = display.contentWidth * 0.45,
 		height = display.contentHeight * 0.5,
 		font = settings.fontName,
 		fontSize = 32,
-		align = "left"
+		align = "center"
 	}
 	
 	descriptionText = display.newEmbossedText(descriptionData)
-	descriptionText.x = display.contentWidth * 0.75
+	descriptionText.x = display.contentWidth * 0.72
 	descriptionText.y = display.contentCenterY
 	sceneGroup:insert(descriptionText)
 	
@@ -318,9 +328,10 @@ function scene:create( event )
 	sceneGroup:insert(startButton)
 	
 	local nameContainer = display.newImage("images/minigames/panel_producto.png")
-	nameContainer.x = display.contentWidth - (nameContainer.contentWidth * 0.45)
+	nameContainer.x = screenWidth + 20
 	nameContainer.y = display.screenOriginY + (nameContainer.contentHeight * 0.4)
-	
+	nameContainer.anchorX = 1
+	nameContainer.xScale = 1.1
 	sceneGroup:insert(nameContainer)
 	
 	local buttonData = buttonList.ok
