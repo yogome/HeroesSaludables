@@ -72,6 +72,10 @@ local foodBubbleIndex
 local debugText
 ----------------------------------------------- Caches
 local squareRoot = math.sqrt 
+local mathRandom = math.random
+local mathSin = math.sin
+local mathCos = math.cos
+local mathCeil = math.ceil
 ----------------------------------------------- Constants
 local SIZE_GRID  = 100
 local PADDING = 16
@@ -96,6 +100,7 @@ local CONTROL = {
 	ANALOG = false,
 	DRAG = true,
 }
+local MATH_PI = math.pi
 ----------------------------------------------- Functions
 
 local function startTutorial(data)
@@ -112,6 +117,9 @@ local function addPhysicsObject(object)
 end 
 
 local function createAsteroidLine(point1, point2, easingX, easingY)
+	
+	local pathAsteroids = {}
+	
 	local p2 = {x = point1.x, y = point1.y}
 	local p1 = {x = point2.x, y = point2.y}
 
@@ -124,32 +132,50 @@ local function createAsteroidLine(point1, point2, easingX, easingY)
 
 	local chainBodyPoints = {}
 
-	local iterations = math.ceil(distance / 55)
+	local iterations = mathCeil(distance / 90)
 	local asteroidGraphics = {}
 	for index = 1, iterations do
-		local randomSideMultiplier = index % 2 * 2 -3
-		local randomScale = math.random(90,110) * 0.01
-		local asteroid = display.newImage("images/enviroment/asteroid"..math.random(1,3)..".png")
+		local colisionPoints = {
+			x = easingX(index - 1, iterations - 1, p1.x, distanceX),
+			y = easingY(index - 1, iterations - 1, p1.y, distanceY)
+		}
 		
-		asteroid.x = easingX(index, iterations, p1.x, distanceX)
-		asteroid.y = easingY(index, iterations, p1.y, distanceY)
-		asteroid:scale(randomScale, randomScale)
-		asteroid.rotation = math.random(0,360)
+		chainBodyPoints[#chainBodyPoints + 1] = colisionPoints.x
+		chainBodyPoints[#chainBodyPoints + 1] = colisionPoints.y
 		
-		asteroidGraphics[index] = asteroid
+	end
+	
+	local iterations = mathCeil(distance)
+	local asteroid = display.newImage("images/enviroment/asteroid"..mathRandom(1,3)..".png")
+	asteroid.x = p1.x
+	asteroid.y = p1.y
+	pathAsteroids[#pathAsteroids + 1] = asteroid
+	disposableAsteroidGroup:insert(asteroid)
+	
+	for index = 1, iterations do
+		local newPositionX = easingX(index - 1, iterations - 1, p1.x, distanceX)
+		local newPositionY = easingY(index - 1, iterations - 1, p1.y, distanceY)
+		local lastAsteroid = pathAsteroids[#pathAsteroids]
+		local lastAsteroidBoundsX = lastAsteroid.contentWidth * 0.6
+		local lastAsteroidBoundsY = lastAsteroid.contentHeight * 0.6
 
-		disposableAsteroidGroup:insert(asteroid)
-
-		chainBodyPoints[#chainBodyPoints + 1] = asteroid.x
-		chainBodyPoints[#chainBodyPoints + 1] = asteroid.y
-
-		asteroid.x = asteroid.x + math.random(0,10) * randomSideMultiplier
-		asteroid.y = asteroid.y - math.random(0,10) * randomSideMultiplier
+		if (newPositionX >= lastAsteroid.x + lastAsteroidBoundsX or newPositionX <= lastAsteroid.x - lastAsteroidBoundsX) or
+			(newPositionY >= lastAsteroid.y + lastAsteroidBoundsY or newPositionY <= lastAsteroid.y - lastAsteroidBoundsY) then
+			
+			local asteroid = display.newImage("images/enviroment/asteroid"..mathRandom(1,3)..".png")
+			asteroid.rotation = mathRandom(0,360)
+			 
+			asteroid.x = newPositionX
+			asteroid.y = newPositionY
+			
+			pathAsteroids[#pathAsteroids + 1] = asteroid
+			disposableAsteroidGroup:insert(asteroid)
+		end
 	end
 
 	local asteroidLineBody = display.newRect( 0, 0, 5, 5 )
 	asteroidLineBody.name = "asteroid"
-	asteroidLineBody.asteroidGraphics = asteroidGraphics
+	asteroidLineBody.asteroidGraphics = pathAsteroids
 	asteroidLineBody.isVisible = false
 	physics.addBody( asteroidLineBody, "static", {
 		friction = 2,
@@ -212,7 +238,7 @@ local function createPreviewLine()
 	local easingX = easingFunctions[currentEasingXIndex].value
 	local easingY = easingFunctions[currentEasingYIndex].value
 	
-	local iterations = math.ceil(distance / 55)
+	local iterations = mathCeil(distance / 55)
 	local asteroidGraphics = {}
 	for index = 1, iterations do
 		local previewCircle = display.newCircle(0,0,5,5)
@@ -327,29 +353,34 @@ end
 
 local function showDebugInformation()
 	debugText.text = [[
-		Press Q for player mode
-		Press E for edit mode
-		Press R to store coordinate
-		Press T to dump coordinate
+		x: ]] .. math.ceil(playerCharacter.x) .. [[
 		
-		Press N,M to set draw mode
-		
-		Press L to dump level (NOT IMPLEMENTED)
-		
-		Press U to create asteroids
-		Press I to delete asteroids
-		
-		Press Z for previous easingX
-		Press X for next easingX
-		Current easingX: ]]..currentEasingX..[[
-		
-		Press A for previous easingY
-		Press S for next easingY
-		Current easingY: ]]..currentEasingY..[[
-		
-		P1 = {]]..lastTwoCoordinates[1].x..[[, ]]..lastTwoCoordinates[1].y..[[}
-		P2 = {]]..lastTwoCoordinates[2].x..[[, ]]..lastTwoCoordinates[2].y..[[}
-	]]
+		y: ]] .. math.ceil(playerCharacter.y) .. [[
+		]]
+--	debugText.text = [[
+--		Press Q for player mode
+--		Press E for edit mode
+--		Press R to store coordinate
+--		Press T to dump coordinate
+--		
+--		Press N,M to set draw mode
+--		
+--		Press L to dump level (NOT IMPLEMENTED)
+--		
+--		Press U to create asteroids
+--		Press I to delete asteroids
+--		
+--		Press Z for previous easingX
+--		Press X for next easingX
+--		Current easingX: ]]..currentEasingX..[[
+--		
+--		Press A for previous easingY
+--		Press S for next easingY
+--		Current easingY: ]]..currentEasingY..[[
+--		
+--		P1 = {]]..lastTwoCoordinates[1].x..[[, ]]..lastTwoCoordinates[1].y..[[}
+--		P2 = {]]..lastTwoCoordinates[2].x..[[, ]]..lastTwoCoordinates[2].y..[[}
+--	]]
 end
 
 local function randomFoodByType(foodType)
@@ -363,7 +394,7 @@ local function randomFoodByType(foodType)
 			
 		end
 	end
-	return bubbleSearchIndexes[math.random(1, #bubbleSearchIndexes)]
+	return bubbleSearchIndexes[mathRandom(1, #bubbleSearchIndexes)]
 end
 
 local function spawnBubble(planet)
@@ -375,7 +406,7 @@ local function spawnBubble(planet)
 	if not isFoodSpawned[planet.foodType] and not planet.isDisabled then
 		sound.play("spawn")
 		isFoodSpawned[planet.foodType] = true
-		foodBubbleIndex = math.random(1, #foodlist[planet.foodType].food)
+		foodBubbleIndex = mathRandom(1, #foodlist[planet.foodType].food)
 		local foundBubble = foodBubbleGroup.bubbles[planet.foodType][foodBubbleIndex]
 		camera:add(foundBubble)
 
@@ -392,7 +423,7 @@ local function spawnBubble(planet)
 
 			physics.addBody(foundBubble, "dynamic", {density = 0, friction = 0, bounce = 1, radius = 60})
 			foundBubble.gravityScale = 0
-			foundBubble:applyLinearImpulse( math.random(-5,5)/100, math.random(-5,5)/100, foundBubble.x, foundBubble.y)
+			foundBubble:applyLinearImpulse( mathRandom(-5,5)/100, mathRandom(-5,5)/100, foundBubble.x, foundBubble.y)
 		end
 
 		timer.performWithDelay(100, showBubble)
@@ -408,7 +439,7 @@ local function grabFruit(fruit)
 			currentTutorials.show("collectPortion", {onSuccess = successTutorial, onStart = startTutorial, delay = 1500})
 		end
 		
-		local descriptionIndex = math.random(1, #fruit.description)
+		local descriptionIndex = mathRandom(1, #fruit.description)
 		hudGroup.infoIndicator.text = fruit.description[descriptionIndex]
 		physics.removeBody(fruit)
 		local contentX, contentY = fruit:localToContent(0,0)
@@ -823,19 +854,19 @@ local function createBackground(sceneGroup)
 		for starsIndex = 1, STARS_PER_LAYER do
 			local scale =  0.05 + layerIndex * 0.05
 			
-			local randomStarIndex = math.random(1, 1000)
+			local randomStarIndex = mathRandom(1, 1000)
 			local star
 			if randomStarIndex >= 1 and randomStarIndex < 900 then
 				star = display.newCircle(500, 0, 20)
 			elseif randomStarIndex >= 500 then
-				local randomIndex = math.random(1, #elementsTable)
+				local randomIndex = mathRandom(1, #elementsTable)
 				star = display.newImage(elementsTable[randomIndex])
 			end
 			
-			star.xOffset = math.random(objectSpawnX, objectDespawnX)
-			star.yOffset = math.random(objectSpawnY, objectDespawnY)
-			star.x = math.random(-containerHalfWidth, containerHalfWidth)
-			star.y = math.random(-containerHalfHeight, containerHalfHeight)
+			star.xOffset = mathRandom(objectSpawnX, objectDespawnX)
+			star.yOffset = mathRandom(objectSpawnY, objectDespawnY)
+			star.x = mathRandom(-containerHalfWidth, containerHalfWidth)
+			star.y = mathRandom(-containerHalfHeight, containerHalfHeight)
 			star.xScale = scale
 			star.yScale = scale
 			star.xVelocity = STARS_LAYER_DEPTH_RATIO * layerIndex
@@ -1217,6 +1248,9 @@ local function loadEnemies()
 		local currentEnemySpawnData = enemySpawnData[indexEnemy]
 		currentEnemySpawnData.fireFrame = 1/worldIndex
 		local enemyObject = enemyFactory.newEnemy(currentEnemySpawnData)
+		
+--		local enemyText = display.newText(indexEnemy, 0, 0, settings.fontName, 90)
+--		enemyObject:insert(enemyText)
 		
 		enemyObject.onBulletCreate = function(bullet)
 			addPhysicsObject(bullet)
@@ -1603,7 +1637,17 @@ local function destroyGame()
 	for index = #physicsObjectList, 1, -1 do
 		camera:remove(physicsObjectList[index])
 		display.remove(physicsObjectList[index])
+		
+		if physicsObjectList[index].asteroidGraphics then
+			local currentAsteroidPath = physicsObjectList[index].asteroidGraphics
+			for indexPath = 1, #currentAsteroidPath do
+				display.remove(currentAsteroidPath[indexPath])
+			end
+		
+		end
+		
 		physicsObjectList[index] = nil
+		
 	end
 	
 	physicsObjectList = nil
@@ -1686,7 +1730,7 @@ function scene:create(event)
 	
 	debugText = display.newText(debugTextOptions)
 	debugText.anchorY = 0
-	debugText.isVisible = false
+	debugText.isVisible = true
 end
 
 function scene:destroy()
@@ -1711,10 +1755,10 @@ function scene:show( event )
 		if currentTutorials.hasTutorial then
 			
 			circleGroup = display.newGroup()
-			local radian = (math.pi / 180) * 50
+			local radian = (MATH_PI / 180) * 50
 			for indexDegree = 1, 50 do
-				local x = math.sin(radian * indexDegree - 1) * 180
-				local y = math.cos(radian * indexDegree - 1) * 180
+				local x = mathSin(radian * indexDegree - 1) * 180
+				local y = mathCos(radian * indexDegree - 1) * 180
 				local circle = display.newCircle(x, y, 2)
 				circle:setFillColor(1, 1)
 				circleGroup:insert(circle)
