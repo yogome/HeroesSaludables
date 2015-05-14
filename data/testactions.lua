@@ -4,7 +4,7 @@ local players = require( "models.players" )
 local dataSaver = require("services.datasaver")
 
 local function goGame()
-	director.gotoScene("scenes.game.shooter", { params = { worldIndex = 3, levelIndex = 8}} );
+	director.gotoScene("scenes.game.shooter", { params = { worldIndex = 3, levelIndex = 13}});
 end	
 
 local function goMinigame1()
@@ -38,7 +38,6 @@ local function unlockLevels()
 	end
 	
 end
-
 
 local function goTutorial()
 	local tutorialName = "enemycanoner"
@@ -77,7 +76,6 @@ local function goQuestion()
 	director.gotoScene("scenes.game.questionquiz")
 end
 
-
 local function goHero()
 	director.gotoScene("scenes.menus.selecthero")
 end
@@ -115,7 +113,6 @@ local function resetPlayer()
 		players.save(currentPlayer)
 	end
 end
-
 
 local testActions = {
 

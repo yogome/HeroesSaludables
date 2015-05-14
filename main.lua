@@ -1,4 +1,4 @@
------------------------------------------------- Main
+require "CiderDebugger";------------------------------------------------ Main
 local extrafile = require( "libs.helpers.extrafile" )
 local director = require( "libs.helpers.director" )
 local logger = require( "libs.helpers.logger" )
@@ -141,10 +141,3 @@ local function start()
 end
 ----------------------------------------------- Execution
 start() 
-
-local oldNewImage = display.newImage
-display.newImage = function(...)
-	local image = oldNewImage(...)
-	image.xScale = math.random(80,120) / 100
-	return image
-end

@@ -276,8 +276,11 @@ function enemyFactory.newEnemy(enemySpawnData)
 		{name = "enemyAnimation", sheet = enemySprite, start = 1, count = 8, 1200},
 	}
 	
-	local enemyRange = createVisualRange(enemy.viewRadius)
-	enemy:insert(enemyRange)
+	if not (enemy.type == "shooter") then
+		local enemyRange = createVisualRange(enemy.viewRadius)
+		enemy:insert(enemyRange)
+	end
+	
 	
 	local enemyImage = display.newSprite( enemySprite, enemySequenceData )
 	enemyImage:scale(SCALE_ENEMY, SCALE_ENEMY)
