@@ -17,7 +17,7 @@ local dynamicLayer
 local currentPortion
 local labelBG
 local puzzlePieces
-local descriptionText
+local descriptionText, descriptionRect
 local nextSceneButton
 local iconPortion, portionDescriptionText
 local okButton
@@ -60,6 +60,7 @@ local function stopGame()
 	nextSceneButton:setEnabled(true)
 	transition.to(nextSceneButton, {alpha = 1, time = 300})
 	transition.to(descriptionText, {alpha = 1, time = 300})
+	transition.to(descriptionRect, {alpha = 0.6, time = 300})
 end
 
 local function magnet(obj)
@@ -132,20 +133,27 @@ local function createPuzzle(group)
 	currentPortion = labelData[pzzl]
 	puzzlePieces = display.newGroup()
 	
+	descriptionRect = display.newRoundedRect(screenWidth * 0.7,screenTop + 170, screenWidth * 0.5, screenHeight * 0.4 , 30)
+	descriptionRect.anchorY = 0
+	descriptionRect:setFillColor(0)
+	descriptionRect.alpha = 0
+	group:insert(descriptionRect)
+	
 	descriptionText = display.newEmbossedText({
 		highlight = { r=0.3, g=0.3, b=0.3 },
 		shadow = { r=1, g=1, b=1 },
 		text = currentPortion.description,
-		width = display.contentWidth * 0.45,
-		height = display.contentHeight * 0.5,
+		width = screenWidth * 0.45,
+		height = screenHeight * 0.5,
 		font = settings.fontName,
 		fontSize = 32,
-		align = "left"
+		align = "center"
 	})
-	descriptionText.x = display.contentWidth * 0.75
-	descriptionText.y = display.contentCenterY
+	descriptionText.x = screenWidth * 0.7
+	descriptionText.y = centerY
 	descriptionText.alpha = 0
 	group:insert(descriptionText)
+	
 	
 	labelBG = display.newImage(currentPortion.labelBG)
 	labelBG.x = screenLeft + 180
