@@ -227,7 +227,7 @@ function enemyFactory.newEnemy(enemySpawnData)
 	enemy.viewRadius = currentEnemyData.viewRadius
 	enemy.speed = currentEnemyData.speed
 	enemy.range = currentEnemyData.range
-	enemy.fireFrame = enemySpawnData.fireFrame
+	enemy.fireFrame = enemySpawnData.fireFrame or 1
 	
 	enemy.targetPatrolPoint = 1
 	enemy.target = nil

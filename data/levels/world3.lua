@@ -1572,7 +1572,7 @@ local worldData = {
 				patrolPath = {
 					[1] = {x = -1400, y = -300},
 					[2] = {x = -1300, y = 300},
-					},
+				},
 			},
 			{
 				type = "follower",
@@ -1691,7 +1691,7 @@ local worldData = {
 		},
 		planets = {
 			[1] = {
-				foodType = "fruit",
+				foodType = "protein",
 				position = {x = 1500, y = 1500},
 			},
 			[2] = {

@@ -7,6 +7,7 @@ local textbox = require("libs.helpers.textbox")
 local settings = require("settings")
 local music = require("libs.helpers.music")
 local sound = require("libs.helpers.sound")
+local players = require("models.players")
 
 local game = director.newScene() 
 ----------------------------------------------- Variables
@@ -18,6 +19,7 @@ local activityBtnNames = {"caminar","correr","basquet","futbol","baseball","nada
 local activityBooleans = {false,false,false,false,false,false, false,false,false,false}
 local tableCalBoys = {1810,1900,1990,2070,2150,2150,2240,2310,2440}
 local tableCalGirls = {1630,1700,1770,1830,1880,1910,1980,2050,2120}
+local currentPlayer
 local tableObesityGirls = {
 	[1] =  {min = 12.9, max = 18.1},
 	[2] =  {min = 12.9, max = 18.4},
@@ -187,6 +189,10 @@ local function pressButton(event)
 		kidAge = ageSlider.value
 		kidImc = getImc(kdHeight, kdWeight)
 		kidStatus = getKidStatus(kidAge,kidImc)
+		
+		currentPlayer.name = kidName
+		currentPlayer.playerIMC = kidImc
+		
 		okButton:setEnabled(true)
 		backButton:setEnabled(true)
 	elseif tag == "back" then
@@ -368,17 +374,8 @@ local function tapYogotar(event)
 	end
 end
 local function animateScene()
-	
-	firstPlane.x = screenLeft
-	firstPlane.rotation = 0
-	
-	secondPlane.x = screenWidth + screenWidth
-	secondPlane.rotation = 90
-	
-	thirdPlane.x = screenWidth + screenWidth
-	thirdPlane.rotation = 90
+	firstPlane.isVisible = true
 	transition.from(firstPlane,{delay = 300, x = screenWidth + screenWidth, time = 500,rotation = 90 })
-	
 end
 local function disableButtons()
 	for i = 1, (#activityBooleans - 1) do
@@ -429,6 +426,34 @@ local function pressedActivity(event)
 		oneCategory = true
 	end
 end
+
+local function initialize()
+	firstPlane.x = screenLeft
+	firstPlane.isVisible = false
+	firstPlane.rotation = 0
+	
+	secondPlane.x = screenWidth + screenWidth
+	secondPlane.rotation = 90
+	
+	thirdPlane.x = screenWidth + screenWidth
+	thirdPlane.rotation = 90
+	
+	oneCategory = false
+	
+	if checkSecond == nil then
+		checkSecond = false
+	end
+	disableButtons()
+	checkFirst = true
+	checkFirstScreen = true
+	if yogoKid.xScale == 0.5 and yogoGirl.xScale == 0.5 then
+		selectGenre = false
+	end
+	if textCompleted == nil then
+		textCompleted = ""
+	end
+end
+
 local function createScene(sceneGrp)
 	
 	firstPlane = display.newGroup()
@@ -818,6 +843,7 @@ end
 
 function game:destroy()
 end
+
 local function update()
 --	print ( weightSlider.value .. " weight ".. heightSlider.value .. " height " .. ageSlider.value .. " age " )
 	if checkFirst then
@@ -854,30 +880,21 @@ function game:show( event )
 	local phase = event.phase
 		
 	if ( phase == "will" ) then
-		oneCategory = false
-		if checkSecond == nil then
-			checkSecond = false
-		end
-		disableButtons()
-		checkFirst = true
-		checkFirstScreen = true
-		if yogoKid.xScale == 0.5 and yogoGirl.xScale == 0.5 then
-			selectGenre = false
-		end
-		if textCompleted == nil then
-			textCompleted = ""
-		end
+		currentPlayer = players.getCurrent()
+		
+		initialize()
+		
 		Runtime:addEventListener("enterFrame", update)
+	elseif ( phase == "did" ) then
+		
 	    nextButton:setEnabled(true)
 		backButton:setEnabled(true)
 		okButton:setEnabled(true)
 		animateScene()
 		hand:setSequence("tap")
         hand:play()
-	elseif ( phase == "did" ) then
 		
 		music.playTrack(1)
-		
 	end
 end
 
@@ -888,6 +905,7 @@ function game:hide( event )
 	    
 	elseif ( phase == "did" ) then
 		hand:pause()
+		players.save(currentPlayer)
 		Runtime:removeEventListener("enterFrame",update)
 	end
 end
