@@ -6,6 +6,8 @@ local buttonList = require("data.buttonlist")
 local labelData = require("data.labeldata")
 local settings = require("settings")
 local widget = require("widget")
+local sound = require("libs.helpers.sound")
+local music = require("libs.helpers.music")
 
 local game = director.newScene()
 ----------------------------------------------- Variables
@@ -36,7 +38,7 @@ local screenHeight = display.viewableContentHeight - screenTop * 2
 local iniX = display.contentWidth * 0.65
 local iniY = screenTop - 150
 
-local snapTreshold = 0--50
+local snapTreshold = 0
 local worldIndex
 local levelIndex
 -----------------------------------------------Cached functions
@@ -54,6 +56,7 @@ local function startGame()
 end
 
 local function stopGame()
+	sound.play("correct")
 	nextSceneButton:setEnabled(true)
 	transition.to(nextSceneButton, {alpha = 1, time = 300})
 	transition.to(descriptionText, {alpha = 1, time = 300})
@@ -76,6 +79,7 @@ local function dragnDrop(event)
 	local target = event.target
 	if not target.preventTouch then
 		if event.phase == "began" then
+			sound.play("grab")
 			target:toFront()
 			transition.pause(target)
 			display.getCurrentStage():setFocus( target, event.id )
@@ -93,7 +97,7 @@ local function dragnDrop(event)
 				display.getCurrentStage():setFocus(target, nil)
 				target.isFocus = false
 				target.preventTouch=true
-
+				sound.play("pop")
 				if magnet(target) then
 					transition.cancel(target)
 					target:removeEventListener("touch", dragnDrop)
@@ -296,7 +300,7 @@ function game:show(event)
 		nextSceneButton.alpha=0
 
 	elseif phase == "did" then
-	
+		music.playTrack(2)
     end
 end
 
@@ -306,6 +310,7 @@ function game:hide(event)
     if phase == "will" then
 		
 	elseif phase == "did" then
+		--music.
 		display.remove(dynamicLayer)
     end
 end
