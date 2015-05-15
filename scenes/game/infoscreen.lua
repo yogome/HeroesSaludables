@@ -68,7 +68,7 @@ local function createSpriteAnimation()
 
 	local sequenceData = {
 		{ name = "tap", sheet = masterSheet1, start = 1, count = 2, time = 1200, loopCount = 0 },
-                { name = "ok", sheet = masterSheet1, start = 3, count = 7, time = 1200, loopCount = 1 },
+		{ name = "ok", sheet = masterSheet1, start = 3, count = 7, time = 1200, loopCount = 1 },
 	}
 	local masterWinSprite = display.newSprite( masterSheet1, sequenceData )
 	return  masterWinSprite
@@ -242,6 +242,7 @@ local function pressButton(event)
 		transition.to(thirdPlane,{x = screenWidth + screenWidth, time = 500,rotation = 90 })
 		transition.to(secondPlane,{delay = 400, x = screenLeft, time = 500,rotation = 0 })
 	elseif tag == "okFinal" then
+		currentPlayer.isFirstTimePlay = false
 		director.gotoScene("scenes.menus.home", { effect = "fade", time = 500, params = nil})
 	end
 end

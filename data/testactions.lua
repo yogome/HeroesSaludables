@@ -8,11 +8,11 @@ local function goMenus()
 end
 
 local function goGame()
-	director.gotoScene("scenes.game.shooter", { params = { worldIndex = 3, levelIndex = 13}});
+	director.gotoScene("scenes.game.shooter", { params = { worldIndex = 1, levelIndex = 2}});
 end	
 
 local function goMinigame1()
-	director.gotoScene("scenes.minigames.label1", { params = { worldIndex = 1, levelIndex = 12}})
+	director.gotoScene("scenes.minigames.label1", { params = { worldIndex = 3, levelIndex = 12}})
 end
 
 local function goObjetives()
@@ -26,8 +26,8 @@ local function goObjetives()
 		protein = {
 			portions = 2,
 		},
-		
 	}
+	
 	director.gotoScene("scenes.overlays.objetives", { params = {objetives = objetives}} );
 end
 

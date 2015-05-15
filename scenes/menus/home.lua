@@ -12,7 +12,7 @@ local mixpanel = require( "libs.helpers.mixpanel" )
 
 local scene = director.newScene() 
 ----------------------------------------------- Variables
-local buttonPlay, settingsBtn, musicBtn, soundBtn, okBtn, musicOff, soundOff, backBtn
+local buttonPlay, menuBtn, musicBtn, soundBtn, okBtn, musicOff, soundOff, backBtn
 local logoGroup, starfieldGroup, asteroidGroup, shineStarGroup, settingsScreen
 local currentPlayer
 ----------------------------------------------- Constants 
@@ -229,18 +229,11 @@ local function pressButton(event)
 	if tag == "play" then
 		director.gotoScene("scenes.menus.selecthero", {effect = "fade", time = 500})
 		backBtn:setEnabled(false)
-		settingsBtn:setEnabled(false)
+		menuBtn:setEnabled(false)
 		okBtn:setEnabled(true)
 		transition.to(settingsScreen,{ alpha = 1, time = 300})
-	elseif tag == "music" then
-		if musicOff.alpha == 0 then
-			musicOff.alpha = 1
-		else
-			musicOff.alpha = 0
-		end
-		enabled = not database.config("music")
-		music.setEnabled(enabled)
-		database.config( "music", enabled)
+	elseif tag == "menu" then
+		director.gotoScene("scenes.menus.foodmenu", {effect = "fade", time = 500})
 	elseif tag == "sound" then
 		if soundOff.alpha == 0 then
 			soundOff.alpha = 1
@@ -252,7 +245,7 @@ local function pressButton(event)
 		database.config( "sound", enabled)
 	elseif tag == "ok" then
 		backBtn:setEnabled(true)
-		settingsBtn:setEnabled(true)
+		menuBtn:setEnabled(true)
 		okBtn:setEnabled(false)
 		transition.to(settingsScreen,{alpha = 0, time = 300})
 	elseif tag == "back" then
@@ -272,12 +265,12 @@ local function createButtons(group)
 	buttonPlay.tag = "play"
 	group:insert(buttonPlay)
 	
-	buttonList.settings.onRelease = pressButton
-    settingsBtn = widget.newButton(buttonList.settings)
-	settingsBtn.x = screenRight - 100
-	settingsBtn.y = screenBottom - 100
-	settingsBtn.tag = "settings"
-	group:insert(settingsBtn)
+	buttonList.recipe.onRelease = pressButton
+    menuBtn = widget.newButton(buttonList.recipe)
+	menuBtn.x = screenRight - 100
+	menuBtn.y = screenBottom - 100
+	menuBtn.tag = "menu"
+	group:insert(menuBtn)
 	
 	buttonList.back.onRelease = pressButton
 	backBtn = widget.newButton(buttonList.back)

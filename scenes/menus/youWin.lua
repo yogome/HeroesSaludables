@@ -64,7 +64,7 @@ local function pressButton(event)
 			director.hideOverlay()
             transition.to(pauseQuit,{alpha = 0, time = 300, onComplete = function()
 				quitPause = false
-				director.gotoScene("scenes.menus.levels", {time = 350, effect = "fade"})
+				director.gotoScene("scenes.menus.levels", {time = 350, effect = "fade", params = {indexWorld = currentWorld}})
             end})
         elseif tag == "backQuit" then
             transition.to(pauseQuit,{alpha = 0, time = 300, onComplete = function()

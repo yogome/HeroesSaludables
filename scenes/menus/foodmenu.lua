@@ -6,29 +6,49 @@ local buttonList = require("data.buttonlist")
 local localization = require("libs.helpers.localization")
 local settings = require("settings")
 local players = require("models.players")
+local menudiet = require("services.menudiet")
 
 local game = director.newScene() 
 local menuPanel
 local titleText
 local currentPlayer
+local menuIndex
 ----------------------------------------------- Variables
 
 ------------------------------------------------- Constants
 
 ------------------------------------------------- Functions
 --
+local function onTapRecipe(event)
+	director.gotoScene("scenes.menus.recipe", {effect = "fade", time = 500, params = {recipeIndex = event.target.index}})
+end
+
 local function createUnlockedMenus()
 	
+	local unlockedMenus = currentPlayer.unlockedMenus
 	local startX = -200
 	local startY = 0
+	menuPanel.icons = {}
 	for indexTitle = 1, 3 do
 		local lock = display.newImage("images/foodmenu/icon.png")
-		--lock:setFillColor(0)
 		lock:scale(0.6,0.6)
 		lock.x = startX + (lock.contentWidth * 1.40 * (indexTitle - 1))
 		lock.y = startY
+		lock.index = indexTitle
+		
+		if not unlockedMenus[indexTitle] then
+			lock:setFillColor(0)
+		else
+			lock:addEventListener("tap", onTapRecipe)
+		end
+		
+		menuPanel.icons[#menuPanel.icons + 1] = lock
 		menuPanel:insert(lock)
 	end
+end
+
+local function goBackScene()
+	director.gotoScene("scenes.menus.home", {effect = "fade", time = 500})
 end
 
 local function initialize()
@@ -82,6 +102,13 @@ function game:create(event)
 	titleText = display.newText("Menus para dieta de XXXX Kcal", 0, 0, settings.fontName, 36)
 	titleRect:insert(titleText)
 	
+	local buttonParams = buttonList.back
+	buttonParams.onRelease = goBackScene
+	
+	local buttonBack = widget.newButton(buttonParams)
+	buttonBack.x = display.screenOriginX + buttonBack.contentWidth * 0.5
+	buttonBack.y = display.screenOriginY + buttonBack.contentHeight * 0.5
+	sceneGroup:insert(buttonBack)
 end
 
 function game:destroy()
@@ -94,7 +121,6 @@ function game:show( event )
 	if ( phase == "will" ) then
 		initialize()
 		createUnlockedMenus()
-		
 	elseif ( phase == "did" ) then
 
 	end
@@ -107,7 +133,9 @@ function game:hide( event )
 	if ( phase == "will" ) then
 	    
 	elseif ( phase == "did" ) then
-		
+		for indexIcon = 1, #menuPanel.icons do
+			display.remove(menuPanel.icons[indexIcon])
+		end
 	end
 end
 ----------------------------------------------- Execution

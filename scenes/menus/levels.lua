@@ -84,7 +84,7 @@ local function levelIconTapped(event)
 			scene = "scenes.minigames.label1"
 		elseif randomTool == 2 then
 --			scene = "scenes.game.labelpuzzle"
-			scene = "scenes.minigames.lluvia"
+			scene = "scenes.minigames.label1"
 		elseif randomTool == 3 then
 --			scene = "scenes.game.questionquiz"
 			scene = "scenes.minigames.label1"
@@ -372,7 +372,7 @@ function scene:show( event )
     local phase = event.phase
 	
 	local params = event.params or {}
-	worldIndex = params.worldIndex or 1
+	worldIndex = params.indexWorld or 1
 
     if ( phase == "will" ) then
 		physics.start()

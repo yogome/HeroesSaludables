@@ -27,6 +27,7 @@ players.default = {
 	playerIMC = 0,
 	playerCalories = 0,
     isFirstTimePlay = true,
+	unlockedMenus = {},
     unlockedWorlds = {
 		[1] = {
 			unlocked = true,
@@ -58,9 +59,12 @@ players.default = {
 	shipsUnlocked = {1, 2, 3},
     unlockedYogotars = {[1] = {1,2,3,4,5,6}, [2] = {1,2,3,4,5,6}},
 	
-	playerShips = {1, 2, 3},
-    playerHats = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43},
-    playerYogotars = {[1] = {1,2,3,4,5,6}, [2] = {1,2,3,4,5,6}},
+	playerShips = {1},
+	playerHats = {},
+	playerYogotars = {[1] = {1}, [2] = {1}},
+	--playerShips = {1, 2, 3},
+    --playerHats = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43},
+    --playerYogotars = {[1] = {1,2,3,4,5,6}, [2] = {1,2,3,4,5,6}},
 	tutorialPowercubes = false,
 	tutorialUpgrade = false,
 	tutorialLevel = false,

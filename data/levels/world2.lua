@@ -59,7 +59,7 @@ local worldData = {
 		levelDescription = "Recolecta las porciones necesarias",
 		levelWidth = 4000,
 		levelHeight = 2000,
-		ship = {position = { x = 1500, y = -500}},
+		ship = {position = { x = 1500, y = 500}},
 		objetives = {cereal = {portions = 3}},
 		enemySpawnData = {
 			{
@@ -397,17 +397,19 @@ local worldData = {
 			{
 				type = "follower",
 				angle = 0,
-				spawnPoint = {x = 0, y = -300},
+				spawnPoint = {x = -300, y = -300},
 				patrolPath = {
-					[1] = {x = 0, y = -300},
+					[1] = {x = -300, y = -300},
+					[2] = {x = 300, y = -300},
 				},
 			},
 			{
 				type = "follower",
 				angle = 0,
-				spawnPoint = {x = 0, y = 300},
+				spawnPoint = {x = 300, y = 300},
 				patrolPath = {
-					[1] = {x = 0, y = 300},
+					[1] = {x = 300, y = 300},
+					[2] = {x = -300, y = 300},
 				},
 			},
 		},
@@ -911,11 +913,11 @@ local worldData = {
 		levelDescription = "Recolecta las porciones necesarias",
 		levelWidth = 4000,
 		levelHeight = 4000,
-		ship = {position = { x = 1000, y = -300}},
+		ship = {position = {x = -1800, y = -1700}},
 		objetives = {
-			vegetable = {portions = 2},
-			cereal = {portions = 2},
-			protein = {portions = 2},
+			vegetable = {portions = 1},
+			cereal = {portions = 3},
+			protein = {portions = 1},
 		},
 		enemySpawnData = {
 			{

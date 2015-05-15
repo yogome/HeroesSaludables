@@ -1,4 +1,6 @@
-local menulist = "data.menulist"
+local menulist = require("data.menulist")
+local extratable = require("libs.helpers.extratable")
+
 local menudiet = {}
 
 local rangeList = {
@@ -20,20 +22,16 @@ local rangeList = {
 
 function menudiet.getMenu(kcal)
 	
-	local selectedRange = nil
+	local selectedRange = 1
 	for indexRange = 1, #rangeList do
 		local currentRange = rangeList[indexRange]
-		if currentRange <= currentRange then
-			selectedRange
+		if kcal <= currentRange then
+			selectedRange = indexRange
 			break;
 		end
 	end
 	
-	if selectedRange then
-		return menulist[selectedRange]
-	else
-		return nil
-	end
+	return extratable.deepcopy(menulist[selectedRange])
 end
 
 return menudiet

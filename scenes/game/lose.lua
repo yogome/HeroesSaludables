@@ -94,8 +94,6 @@ local function initialize(event)
 	language = database.config("language") or "en"
 	parent = event.parent
 	scene.disableButtons()
-	
-	sound.play("lose1")
 end
 ----------------------------------------------- Class functions
 function scene.retrySetEnabled(enabled)
@@ -164,6 +162,7 @@ function scene.show(...)
 			initialize(event)
 			--createTitle()
 		elseif ( phase == "did" ) then
+			sound.play("lose")
 			self.enableButtons()
 		end
 	else

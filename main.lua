@@ -1,4 +1,4 @@
------------------------------------------------- Main
+require "CiderDebugger";------------------------------------------------ Main
 local extrafile = require( "libs.helpers.extrafile" )
 local director = require( "libs.helpers.director" )
 local logger = require( "libs.helpers.logger" )
@@ -18,6 +18,8 @@ local localization = require( "libs.helpers.localization" )
 local testMenu = require( "libs.helpers.testmenu" )
 local testActions = require( "data.testactions" )
 local soundList = require( "data.soundlist" )
+local intro = require("scenes.intro.yogome")
+local players = require("models.players")
 local launchArgs = ... 
 ----------------------------------------------- Constants
 ----------------------------------------------- Local functions
@@ -129,6 +131,12 @@ local function startGame()
 	if settings.testMenu then
 		director.gotoScene( "testMenu", { effect = "fade", time = 800} )
 	else
+		local currentPlayer = players.getCurrent()
+		if currentPlayer.isFirstTimePlay then
+			intro.setNextScene("scenes.game.infoscreen")
+		else
+			intro.setNextScene("scenes.menus.home")
+		end
 		director.gotoScene( "scenes.intro.yogome", { effect = "fade", time = 800} )
 	end
 	

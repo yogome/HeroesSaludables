@@ -157,8 +157,7 @@ local menulist = {
 			refrigerio = "18 uvas, Sándwich : 1 rebanada de pan  partida a la mitad, con 1 rebanada de jamón, lechuga, germen de alfalfa y 4 rebanadas de pepino, sazonado con mostaza, 1/4 taza de betabel crudo rallado y 1 pieza chicloso de cajeta.",
 			comida = "1/2 taza sopa de lentejas con 4 piezas de jitomate cherry cocidos, 2 piezas de nopal empanizado con 3 rebanadas de aguacate, 1/2  taza arroz rojo cocido con 1/2 plátano rebanado, 1 mini almond joy.",
 			colacion = "1/2  taza de zanahoria rallada con limón y chilito piquín, 1 agua de coco, 1 rebanada de pan tostado integral con 1 cucharadita de nutella, 2 nuggets de pollo.",
-			cena = "1 quesadilla: 1 tortilla de maíz con 25 g queso manchego y aguacate, 1 taza de espinaca cocida con una 1 cucharada de crema .
-",
+			cena = "1 quesadilla: 1 tortilla de maíz con 25 g queso manchego y aguacate, 1 taza de espinaca cocida con una 1 cucharada de crema."
 		},
 		[3] = {
 			desayuno = "licuado: 1/4 taza leche descremada con 1/4 taza yogurt natural, 1/2 taza fresas rebanadas,  1 cucharadita de vainilla en polvo ( o 1 cucharadita de azúcar y 1 cucharadita de extracto de vainilla), 1 pieza pan árabe con 1/4 taza jocoque y 1/2 taza pimientos cocidos con 1/3 taza cebollita picada cocida, 1 1/2 taza de papaya picada con limón.",

@@ -19,6 +19,7 @@ local dataSaver = require("services.datasaver")
 local obstacles = require("entities.obstacles")
 local tutorial = require("services.tutorial")
 local music = require("libs.helpers.music")
+local particlelist = require("data.particlelistdata")
 
 --physics.setDrawMode("hybrid")
 local scene = director.newScene() 
@@ -56,6 +57,7 @@ local objetives
 local currentTutorials
 local circleGroup
 local obstacleList
+local vamosImage
 ----------------------------------------------- Background stars data
 local spaceObjects, objectDespawnX, objectSpawnX, objectDespawnY, objectSpawnY
 local spawnZoneWidth, spawnZoneHeight, halfSpawnZoneWidth, halfSpawnZoneHeight
@@ -77,6 +79,8 @@ local mathSin = math.sin
 local mathCos = math.cos
 local mathCeil = math.ceil
 ----------------------------------------------- Constants
+-- 
+local BASE_COINS = 500
 local SIZE_GRID  = 100
 local PADDING = 16
 local RADIUS_TUTORIAL = 180
@@ -555,22 +559,30 @@ local function checkAmounts(foodType)
 			end
 			local function onPlayReleased()
 				winScene.disableButtons()
+					
+				if levelIndex >= 15 and worldIndex >= 3 then
+					director.gotoScene("scenes.menus.home", {effect = "fade", time = 500})
+					return
+				end
+					
 				if levelIndex + 1 <= #worldsData[worldIndex] then
 					dataSaver:unlockLevel(worldIndex, levelIndex+1)
 				end
+				
 				dataSaver:setStars(worldIndex, levelIndex, heartIndicator.currentHearts)
 				
 				if levelIndex >= #worldsData[worldIndex] then
 					if worldIndex + 1 <= #worldsData then
 						dataSaver:unlockWorld(worldIndex + 1)
-						director.gotoScene("scenes.menus.worlds", {params = {worldIndex = worldIndex}, effect = "fade", time = 500})	
+						director.gotoScene("scenes.menus.worlds", {params = {worldIndex = worldIndex}, effect = "fade", time = 500})
 					end
 				else
 					director.gotoScene("scenes.menus.levels", {params = {worldIndex = worldIndex}, effect = "fade", time = 500})
 				end
-				
 			end
-			winScene.show(heartIndicator.currentHearts, 200, onBackReleased, onRetryReleased, onPlayReleased)
+			local earnedCoins = BASE_COINS + (worldIndex * 100) + (levelIndex * 10) + (50 * heartIndicator.currentHearts)
+			dataSaver:addCoins(earnedCoins)
+			winScene.show(heartIndicator.currentHearts, earnedCoins, onBackReleased, onRetryReleased, onPlayReleased)
 			music.fade(1000)
 		end
 	end
@@ -587,12 +599,13 @@ local function collectBubble(earth)
 			currentTutorials.success("collectPortion")
 			currentTutorials.show("finishLevel", {onSuccess = successTutorial, onStart = startTutorial, delay = 1000})
 		end
-		sound.play("planetcollect")
+		
+
 		earth:setSequence("eat")
 		earth:play()
 		earth:addEventListener("sprite", function(event)
 			if event.phase == "ended" then
-				earth:setSequence("happy")
+				earth:setSequence("blush")
 				earth:play()
 			end
 		end)
@@ -603,6 +616,17 @@ local function collectBubble(earth)
 		playerCharacter.isCarringItem = false
 		playerCharacter:setAnimation("opening")
 		transition.to(playerCharacter.item, {transition = easing.outBounce, xScale = 1, yScale = 1, time = 500, onComplete = function()
+			
+			sound.play("planetcollect")
+			local particle = particlelist.getParticleEffect("starExplosion")
+			camera:add(particle)
+			particle.x = earth.x
+			particle.y = earth.y
+			
+			timer.performWithDelay(500, function()
+				display.remove(particle)
+			end)
+			
 			transition.to(playerCharacter.item, {alpha = 0, xScale = 0.5, yScale = 0.5, transition = easing.outCubic, time = 1000, x = earth.x, y = earth.y, onComplete = function()
 				hideBubble()
 			end})
@@ -626,7 +650,7 @@ local function gameOver()
 			loseScene.disableButtons()
 			retryGame()
 		end
-
+		music.fade(1000)
 		loseScene.show(onBackReleased, onRetryReleased)
 	end
 end
@@ -664,6 +688,7 @@ local function addDamage(bullet)
 end
 
 local function damagePlayer()
+	sound.play("shipcrash")
 	playerCharacter.isDamaged = true
 	timer.performWithDelay(1500, function()
 		playerCharacter.isDamaged = false
@@ -881,7 +906,7 @@ end
 
 local function onReleasePause()
 	isPaused = true
-	director.showOverlay("scenes.menus.youWin",{params = { effect="fromRight", time=500, screen = "pause", worldIndex=worldIndex, levelIndex=levelIndex}})
+	director.showOverlay("scenes.menus.youWin",{ params = { effect= "fromRight", time=500, screen = "pause", worldIndex = worldIndex, levelIndex=levelIndex}})
 end 
 
 local function controlDpad(event)
@@ -1288,8 +1313,8 @@ local function loadLevel()
 	loadEarth()
 	loadPlanets()
 	loadAsteroids()
-	loadEnemies()
 	loadObstacles()
+	loadEnemies()
 	loadObjetives()
 end
 
@@ -1393,7 +1418,7 @@ local function createHUD(sceneView)
 	local portionBG = display.newImage("images/shooter/info.png")
 	portionIndicator:insert(portionBG)
 	
-	local portionText = display.newText("", 0, 17, settings.fontName, 30)
+	local portionText = display.newText("", 0, 17, settings.fontName, 28)
 	hudGroup.infoIndicator = portionText
 	portionIndicator:insert(portionText)
 	
@@ -1412,7 +1437,9 @@ local function initialize(event)
 	
 	dataSaver.initialize()
 	
-	
+	vamosImage.alpha = 0
+	vamosImage.xScale = 0.5
+	vamosImage.yScale = 0.5
 	disabledControl = true
 	
 	obstacleList = {}
@@ -1499,17 +1526,17 @@ end
 
 local function updateIndicators()
 		
-		if not isGameover then
-			for indexLine = 1, #planets do
-				indicatorUpdate(planets[indexLine], indicator[indexLine])
-			end
-			indicatorUpdate(earth, earthIndicator)
+	if not isGameover then
+		for indexLine = 1, #planets do
+			indicatorUpdate(planets[indexLine], indicator[indexLine])
 		end
+		indicatorUpdate(earth, earthIndicator)
+	end
 end
 
 local function updateBullets()
 	
-		for index = #physicsObjectList, 1, -1 do		
+		for index = #physicsObjectList, 1, -1 do
 			local physicsObject = physicsObjectList[index]
 			if physicsObject then
 				if physicsObject.x > (camera.contentWidth * 0.5) or physicsObject.x < (camera.contentWidth * -0.5) then
@@ -1546,9 +1573,14 @@ local function intro()
 			camera.damping = 10
 			disabledControl = false
 			camera:setFocus(playerCharacter)
-			if currentTutorials.hasTutorial then
-				currentTutorials.show("moveOutCircle", {onSuccess = successTutorial, onStart = startTutorial, delay = 250})
-			end
+			transition.to(vamosImage, {alpha = 1, time = 300, xScale = 0.8, yScale = 0.8, transition = easing.outSine, onComplete = function()
+				sound.play("vamos")
+				transition.to(vamosImage, {delay = 500, xScale = 0.5, yScale = 0.5, alpha = 0, time = 300, transition = easing.inSine, onComplete = function()
+					if currentTutorials.hasTutorial then
+						currentTutorials.show("moveOutCircle", {onSuccess = successTutorial, onStart = startTutorial, delay = 250})
+					end
+				end})
+			end})
 			--transition.to(buttonBack, {alpha = 1, time = 500, transition = easing.outQuad})
 			scene.enableButtons()
 		end
@@ -1730,6 +1762,13 @@ function scene:create(event)
 	debugText = display.newText(debugTextOptions)
 	debugText.anchorY = 0
 	debugText.isVisible = true
+	
+	vamosImage = display.newImage("images/shooter/go_es.png")
+	vamosImage.x = display.contentCenterX
+	vamosImage.y = display.contentCenterY
+	vamosImage.alpha = 0
+	sceneGroup:insert(vamosImage)
+	
 end
 
 function scene:destroy()
@@ -1786,6 +1825,8 @@ function scene:show( event )
 		transition.to(earthIndicator, {iterations = -1, xScale = 0.9, yScale = 0.9, transition = easing.continuousLoop})
 		camera:add(earthIndicator)
 		
+		director.showOverlay("scenes.overlays.objetives", {effect = "fade", time = 300, isModal = true, params = {objetives = objetives}})
+		
 	elseif ( phase == "did" ) then
 		--intro()
 		Runtime:addEventListener("enterFrame", updateGameLoop)
@@ -1793,7 +1834,6 @@ function scene:show( event )
 		music.playTrack(4, 500)
 		scene.enableButtons()
 		camera:setFocus(playerCharacter)
-		director.showOverlay("scenes.overlays.objetives", {effect = "fade", time = 300, isModal = true, params = {objetives = objetives}})
 	end
 end
 

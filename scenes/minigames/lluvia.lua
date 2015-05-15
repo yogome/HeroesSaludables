@@ -128,7 +128,7 @@ local function dragnDrop(event)
 end  
 
 local function createPuzzle(group)
-	local pzzl = mathRandom(1, 10)
+	local pzzl = 10--mathRandom(1, 10)
 	
 	currentPortion = labelData[pzzl]
 	puzzlePieces = display.newGroup()

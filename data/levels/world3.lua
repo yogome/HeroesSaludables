@@ -757,7 +757,7 @@ local worldData = {
 		levelDescription = "Recolecta las porciones necesarias",
 		levelWidth = 4000,
 		levelHeight = 4000,
-		ship = {position = { x = -100, y = -500}},
+		ship = {position = { x = -1800, y = -1200}},
 		objetives = {
 			fruit = {portions = 2},
 			dryfruit = {portions = 2}
@@ -1212,7 +1212,7 @@ local worldData = {
 		levelDescription = "Recolecta las porciones necesarias",	
 		levelWidth = 3600,
 		levelHeight = 3400,
-		ship = {position = { x = -900, y = 0}},
+		ship = {position = {x = -1400, y = -1000}},
 		objetives = {
 			fruit = {portions = 2},
 			vegetable = {portions = 1},
@@ -1558,7 +1558,7 @@ local worldData = {
 		levelDescription = "Recolecta las porciones necesarias",
 		levelWidth = 4000,
 		levelHeight = 4000,
-		ship = {position = { x = -1900, y = -500}},
+		ship = {position =  {x = -1400, y = -900}},
 		objetives = {
 			protein = {portions = 2},
 			vegetable = {portions = 3},

@@ -345,7 +345,7 @@ local worldData = {
 		background = "images/backgrounds/space.png",
 		levelWidth = 3000,
 		levelHeight = 1500,
-		ship = {position = {x = -1100, y = -600}},
+		ship = {position = {x = 800, y = 550}},
 		objetives = {
 			fruit = { portions = 3,},
 		},
@@ -510,7 +510,7 @@ local worldData = {
 		background = "images/backgrounds/space.png",
 		levelWidth = 3000,
 		levelHeight = 1500,
-		ship = {position = {x = 1300, y = 500}},
+		ship = {position = {x = -1000, y = 0}},
 		objetives = {
 			fruit = { portions = 3,},
 		},
@@ -625,7 +625,6 @@ local worldData = {
 		ship = {position = {x = 1900, y = -900}},
 		objetives = {
 			fruit = { portions = 1,},
-			vegetable = { portions = 1,},
 			protein = { portions = 1,},
 		},
 		enemySpawnData = {

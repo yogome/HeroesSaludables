@@ -21,7 +21,7 @@ local tutorialdata = {
 		id = "baseTutorial",
 		name = "Bases de porciones",
 		description = {
-			[1] = "Cuando te acercas a una base, esta soltara una porción, recoje la porción que acaba de salir",
+			[1] = "Cuando te acercas a una base, esta soltará una porción, recoje la porción que acaba de salir",
 		},
 		animationId = 3,
 	},

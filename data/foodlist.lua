@@ -16,7 +16,7 @@ local foodData = {
 				name = "brocoli",
 				asset = assetPath .. "vegetable/v_brocoli.png",
 				description = {
-					[1] = "1 taza de brocoli",
+					[1] = "1 taza de brócoli",
 					[2] = "3/4 de taza de apio",
 				}
 			},

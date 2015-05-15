@@ -22,6 +22,9 @@ local soundlist = {
 	{id = "detected", path = "sounds/detected.mp3"},
 	{id = "hole", path = "sounds/hole.mp3"},
 	{id = "win", path = "sounds/win1.mp3"},
+	{id = "shipcrash", path = "sounds/shipcrash.mp3"},
+	{id = "lose", path = "sounds/youlose.mp3"},
+	{id = "vamos", path = "sounds/vamos.mp3"},
 }
 
 return soundlist
