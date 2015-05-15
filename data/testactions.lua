@@ -68,8 +68,9 @@ local function goSelector()
 	director.gotoScene("scenes.menus.choosehero")
 end
 
-local function goLluvia()
-	director.gotoScene("scenes.minigames.lluvia")
+local function goPantera()
+	--director.gotoScene("scenes.minigames.lluvia")
+	director.gotoScene("scenes.minigames.front")
 end
 
 local function goLabel()
@@ -124,7 +125,7 @@ local testActions = {
 	{"Go Levels", goLevels, {0.5,0.5,0.5}},
 	{"Go Objetives", goObjetives, {0.5,0.5,0.5},2},
 	{"Go Tutorial", goTutorial, {0.5,0.5,0.5},2},
-	{"Go Lluvia", goLluvia, {0.5,0.5,0.5}},
+	{"PanchioPantera", goPantera, {0.3,0.3,0.5}},
 	{"Unlock Levels", unlockLevels, {0.5,0.5,0.5},1},
 	{"Go Label", goLabel, {0.5,0.5,0.5}},
 	{"Go Home", goHome, {0.5,0.5,0.5}},
