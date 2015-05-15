@@ -55,6 +55,7 @@ local function startGame()
 end
 
 local function stopGame()
+	nextSceneButton:toFront()
 	sound.play("correct")
 	nextSceneButton:setEnabled(true)
 	transition.to(nextSceneButton, {alpha = 1, time = 300})
@@ -129,8 +130,8 @@ local function createPuzzle(group)
 	puzzlePieces = display.newGroup()
 	
 	descriptionRect = display.newRoundedRect(screenWidth * 0.7,screenTop + 170, screenWidth * 0.5, screenHeight * 0.4 , 30)
-	descriptionRect.anchorY = 0.15
-	descriptionRect.x = centerX
+	descriptionRect.x = display.contentCenterX
+	descriptionRect.y = display.contentCenterY * 0.8
 	descriptionRect:setFillColor(0)
 	descriptionRect.alpha = 0
 	group:insert(descriptionRect)
@@ -145,8 +146,10 @@ local function createPuzzle(group)
 		fontSize = 32,
 		align = "center"
 	})
-	descriptionText.x = centerX
-	descriptionText.y = centerY
+	
+	descriptionText.anchorY = 0
+	descriptionText.x = descriptionRect.x 
+	descriptionText.y = descriptionRect.y - (descriptionRect.contentHeight * 0.4)
 	descriptionText.alpha = 0
 	group:insert(descriptionText)
 	
@@ -244,8 +247,8 @@ local function createNextSceneButton(parentGroup)
 	buttonData.onRelease = nextSceneButtonListener
 	nextSceneButton = widget.newButton(buttonData)
 	nextSceneButton.alpha = 0
-	nextSceneButton.x = display.contentWidth - (nextSceneButton.contentWidth)
-	nextSceneButton.y = display.contentHeight - (nextSceneButton.contentHeight * 0.80)
+	nextSceneButton.x = display.contentCenterX
+	nextSceneButton.y = display.contentCenterY * 1.25
 	nextSceneButton:setEnabled(false)
 	parentGroup:insert(nextSceneButton)
 end 
@@ -260,7 +263,7 @@ function game:create(event)
 	backgroundLayer:insert(bgElements)
 	
 	createButton(backgroundLayer)
-	createNextSceneButton(backgroundLayer)
+	createNextSceneButton(sceneGroup)
 end
 
 function game:show(event)
