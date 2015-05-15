@@ -72,7 +72,7 @@ function scene:show( event )
 	local params = event.params or {}
 	worldIndex = params.worldIndex
 	levelIndex = params.levelIndex
-	nextScene = event.params.nextScene or "scenes.game.shooter"
+	nextScene = event.params.nextScene or "scenes.menus.loading"
 	
     if ( phase == "will" ) then
 		

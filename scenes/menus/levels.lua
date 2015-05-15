@@ -13,6 +13,7 @@ local extramath = require( "libs.helpers.extramath" )
 local settings = require( "settings" )
 local scene = director.newScene() 
 local spaceships = require( "entities.spaceships" )
+local loading = require("scenes.menus.loading")
 
 ----------------------------------------------- Variables
 local buttonBack
@@ -90,6 +91,7 @@ local function levelIconTapped(event)
 --			scene = "scenes.game.questionquiz"
 			scene = "scenes.minigames.front"
 		end
+		loading.setLevel(worldIndex, levelIndex)
 		director.gotoScene(scene, {effect = "fade", time = 500, params = {worldIndex = worldIndex, levelIndex = levelIndex}})
 		--director.gotoScene("scenes.game.shooter", { effect = "zoomInOutFade", time = 600, ,})
 	else

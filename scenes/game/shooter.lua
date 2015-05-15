@@ -1040,6 +1040,7 @@ local function createBorders()
 	wallPositionX = -halfLevelWidth - halfBoundarySize
 	wallPositionY = 0
 	local leftWall = display.newRect(wallPositionX, wallPositionY, BOUNDARY_SIZE, levelHeight + doubleBoundarySize)
+	leftWall:setFillColor(0,0)
 	physics.addBody( leftWall, {density = 1.0, friction = 0.1, bounce = 0.5})
 	leftWall.bodyType = "static"
 	camera:add(leftWall)
@@ -1047,6 +1048,7 @@ local function createBorders()
 	wallPositionX = halfLevelWidth + halfBoundarySize
 	wallPositionY = 0
 	local rightWall = display.newRect(wallPositionX, wallPositionY ,BOUNDARY_SIZE, levelHeight + doubleBoundarySize)
+	rightWall:setFillColor(0,0)
 	physics.addBody( rightWall, {density = 1.0, friction = 0.1, bounce = 0.5})
 	rightWall.bodyType = "static"
 	camera:add(rightWall)
@@ -1054,6 +1056,7 @@ local function createBorders()
 	wallPositionX = 0
 	wallPositionY = -halfLevelHeight - halfBoundarySize
 	local bottomWall = display.newRect(wallPositionX, wallPositionY, levelWidth, BOUNDARY_SIZE)
+	bottomWall:setFillColor(0,0)
 	physics.addBody( bottomWall, {density = 1.0, friction = 0.1, bounce = 0.5})
 	bottomWall.bodyType = "static"
 	camera:add(bottomWall)
@@ -1061,6 +1064,7 @@ local function createBorders()
 	wallPositionX = 0
 	wallPositionY = halfLevelHeight + halfBoundarySize
 	local topWall = display.newRect(wallPositionX, wallPositionY, levelWidth, BOUNDARY_SIZE)
+	topWall:setFillColor(0,0)
 	physics.addBody( topWall, {density = 1.0, friction = 0.1, bounce = 0.5})
 	topWall.bodyType = "static"
 	camera:add(topWall)
@@ -1678,7 +1682,6 @@ local function destroyGame()
 		end
 		
 		physicsObjectList[index] = nil
-		
 	end
 	
 	physicsObjectList = nil
@@ -1781,6 +1784,7 @@ function scene:show( event )
 
     if ( phase == "will" ) then
 		
+		director.purgeScene("scenes.menus.loading")
 		initialize(event)
 		createGame()
 		setUpCamera()
