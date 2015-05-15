@@ -1,4 +1,4 @@
-require "CiderDebugger";------------------------------------------------ Main
+------------------------------------------------ Main
 local extrafile = require( "libs.helpers.extrafile" )
 local director = require( "libs.helpers.director" )
 local logger = require( "libs.helpers.logger" )
