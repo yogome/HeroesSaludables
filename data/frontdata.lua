@@ -1,4 +1,4 @@
-local assetPath = "images/label/front"
+local assetPath = "images/label/front/"
 local frontdata = {
 	[1] = {
 		name = "Frituras de Queso",
