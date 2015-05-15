@@ -23,7 +23,8 @@ local buttonlist = {
 	powercubes = { width = 256, height = 137, defaultFile = "images/selecthero/new/morePowercubes_1.png", overFile = "images/selecthero/new/morePowercubes_2.png", onPress = playSound},
 	pause = { width = 128, height = 128, defaultFile = "images/buttons/pause_1.png", overFile = "images/buttons/pause_2.png", onPress = playSound},
 	minigamestart = { width = 256, height = 70, defaultFile = "images/buttons/comenzar_01.png", overFile = "images/buttons/comenzar_02.png", onPress = playSound},
-	recipe = { width = 128, height = 150, defaultFile = "images/buttons/menu1.png", overFile = "images/buttons/menu2.png", onPress = playSound}
+	recipe = { width = 128, height = 150, defaultFile = "images/buttons/menu1.png", overFile = "images/buttons/menu2.png", onPress = playSound},
+	imc = { width = 128, height = 110, defaultFile = "images/buttons/imc_01.png", overFile = "images/buttons/imc_02.png", onPress = playSound}
 }
 
 return buttonlist

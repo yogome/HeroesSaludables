@@ -26,6 +26,7 @@ local prevLastUnlockedLevel, lastUnlockedLevel
 local playerCharacter
 local coinText, starText
 local sizeScroll
+local mapGroup
 ----------------------------------------------- Constants
 local screenLeft = display.screenOriginX
 local screenWidth = display.viewableContentWidth - screenLeft * 2
@@ -354,10 +355,13 @@ end
 function scene:create(event)
 	local sceneGroup = self.view
 	
+	mapGroup = display.newGroup()
+	sceneGroup:insert(mapGroup)
+	
 	buttonlist.back.onRelease = onReleasedBack
 	buttonBack = widget.newButton(buttonlist.back)
-	buttonBack.x = display.screenOriginX + buttonBack.width * 0.5 + MARGIN
-	buttonBack.y = display.screenOriginY + buttonBack.height * 0.5 + MARGIN
+	buttonBack.x = display.screenOriginX + buttonBack.contentWidth * 0.5 + MARGIN
+	buttonBack.y = display.screenOriginY + buttonBack.contentHeight * 0.5 + MARGIN
 	sceneGroup:insert(buttonBack)
 	
 	createUI(sceneGroup)
@@ -377,7 +381,7 @@ function scene:show( event )
     if ( phase == "will" ) then
 		physics.start()
 		language = database.config("language") or "en"
-		createMapAssets(sceneGroup)
+		createMapAssets(mapGroup)
 		currentPlayer = players.getCurrent()
 		createLevels(sceneGroup)
 		loadLevelData()

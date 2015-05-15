@@ -5,7 +5,7 @@ local tutorialdata = {
 		name = "Control",
 		pages = 1,
 		description = {
-			[1] = "Intenta moverte por el mapa tocando en cualquier parte de la pantalla, intenta salir del circulo",
+			[1] = "Intenta moverte por el mapa tocando en cualquier parte de la pantalla, intenta salir del círculo.",
 		},
 		animationId = 1,
 	},
@@ -13,7 +13,7 @@ local tutorialdata = {
 		id = "moveToBase",
 		name = "Bases",
 		description = {
-			[1] = "Muy bien, ahora muevete a la base de la derecha",
+			[1] = "Muy bien, ahora muévete a la base de la derecha.",
 		},
 		animationId = 2,
 	},
@@ -21,7 +21,7 @@ local tutorialdata = {
 		id = "baseTutorial",
 		name = "Bases de porciones",
 		description = {
-			[1] = "Cuando te acercas a una base, esta soltará una porción, recoje la porción que acaba de salir",
+			[1] = "Cuando te acercas a una base, está soltará una porción, recoje la porción que acaba de salir.",
 		},
 		animationId = 3,
 	},
@@ -29,7 +29,7 @@ local tutorialdata = {
 		id = "collectPortion",
 		name = "¡Muy bien!",
 		description = {
-			[1] = "Ahora lleva la porcion al planeta de la izquierda",
+			[1] = "Ahora lleva la porción al planeta de la izquierda.",
 		},
 		animationId = 4,
 	},
@@ -37,7 +37,7 @@ local tutorialdata = {
 		id = "finishLevel",
 		name = "¡Excelente!",
 		description = {
-			[1] = "Ahora ya sabes como entregar porciones, entrega la porción restante para terminar el nivel",
+			[1] = "Ahora ya sabes como entregar porciones, entrega la porción restante para terminar el nivel.",
 		}
 	},
 }

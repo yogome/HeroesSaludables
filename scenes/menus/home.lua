@@ -272,10 +272,10 @@ local function createButtons(group)
 	menuBtn.tag = "menu"
 	group:insert(menuBtn)
 	
-	buttonList.back.onRelease = pressButton
-	backBtn = widget.newButton(buttonList.back)
+	buttonList.imc.onRelease = pressButton
+	backBtn = widget.newButton(buttonList.imc)
 	backBtn.x = screenLeft + 100
-	backBtn.y = screenBottom - 100
+	backBtn.y = screenBottom - 70
 	backBtn.tag = "back"
 	group:insert(backBtn)
 	

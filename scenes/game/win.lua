@@ -17,6 +17,7 @@ local parent
 local starAmount, coinsAmount
 local stars, coinsText
 local backFunction, retryFunction, resumeFunction
+local isRetryEnabled
 ----------------------------------------------- Constants
 local TAG_WIN_TRANSITION = "tagStarsTransition"
 local DEFAULT_STARS = 3
@@ -236,11 +237,11 @@ function scene:create(event)
 	coinsText.anchorX = 1
 	sceneGroup:insert(coinsText)
 	
-	buttonlist.back.onRelease = backReleased
-	back = widget.newButton(buttonlist.back)
-	back.x = display.contentCenterX + OFFSETS_BUTTONS.BACK.x
-	back.y = display.contentCenterY + OFFSETS_BUTTONS.BACK.y
-	sceneGroup:insert(back)
+--	buttonlist.back.onRelease = backReleased
+--	back = widget.newButton(buttonlist.back)
+--	back.x = display.contentCenterX + OFFSETS_BUTTONS.BACK.x
+--	back.y = display.contentCenterY + OFFSETS_BUTTONS.BACK.y
+--	sceneGroup:insert(back)
 	
 	buttonlist.retry.onPress = retryPressed
 	buttonlist.retry.onRelease = retryReleased
