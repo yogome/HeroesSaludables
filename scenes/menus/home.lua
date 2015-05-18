@@ -396,9 +396,8 @@ function scene:hide( event )
 		disableButtons()
 		
     if ( phase == "will" ) then
-		Runtime:removeEventListener("enterFrame", updateGameLoop)
 	elseif ( phase == "did" ) then
-		--cancelPlayTransition()
+		Runtime:removeEventListener("enterFrame", updateGameLoop)
 	end
 end
 

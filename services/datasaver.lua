@@ -20,6 +20,11 @@ function dataSaver:getFirstTime()
 	return self.currentPlayer.isFirstTimePlay
 end
 
+function dataSaver:unlockMenu(indexMenu)
+	self.currentPlayer.unlockedMenus[indexMenu] = indexMenu
+    players.save(self.currentPlayer)
+end
+
 function dataSaver:setCoins(coins)
     if coins then
         self.currentPlayer.coins = coins

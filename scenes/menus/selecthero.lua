@@ -6,7 +6,7 @@ local buttonList = require( "data.buttonlist" )
 local hatlist = require( "data.hatlist" )
 local herolist = require( "data.herolist" )
 local settings = require( "settings" )
-local colors = require( "libs.helpers.colors" )
+--local colors = require( "libs.helpers.colors" )
 local music = require("libs.helpers.music")
 --local ui = require("services.ui")
 local localization = require("libs.helpers.localization")
@@ -16,7 +16,7 @@ local textbox = require("libs.helpers.textbox")
 local dataSaver = require("services.datasaver")
 local sound = require("libs.helpers.sound")
 local music = require("libs.helpers.music")
-local logger = require( "libs.helpers.logger" )
+--local logger = require( "libs.helpers.logger" )
 local shiplist = require("data.shiplist")
 --local map = require("scenes.menus.map")
 --local manager = require( "scenes.minigames.manager" )
@@ -926,7 +926,8 @@ local function animateScene(params)
 	
 	timer.performWithDelay(2000, function()
 		sound.play("yogotarBrake")
-	end)	
+	end)
+	
     local transitionOffset = 0
 	--Uncomment this code to add animation to backgrounds
 --    for indexLayer = 1, 1 do
@@ -977,9 +978,9 @@ local function animateScene(params)
 --				uiGroup:insert(tutorialGroup)
 --			end
 			
-			if params.fromManager and params.gotPowercubes and earnedCubes > 0 then
-				showpopup()
-			end
+--			if params.fromManager and params.gotPowercubes and earnedCubes > 0 then
+--				showpopup()
+--			end
 			
 		end})
 	end)

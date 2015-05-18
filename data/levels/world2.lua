@@ -37,7 +37,7 @@ local worldData = {
 		earth = {
 			position = { x = -1400, y = 0},
 			name = "earth",
-			assetPath = "images/planets/earth/",
+			assetPath = "images/planets/pinky/",
 			scaleFactor = 1.5,
 		},
 		planets = {
@@ -53,7 +53,7 @@ local worldData = {
 	--World = 2, Level = 2
 
 	[2] = {
-		x = scale * .117,
+		x = scale * .12,
 		y = -100,
 		background = "images/backgrounds/space.png",
 		levelDescription = "Recolecta las porciones necesarias",
@@ -144,7 +144,7 @@ local worldData = {
 		earth = {
 			position = { x = 600, y = -500},
 			name = "earth",
-			assetPath = "images/planets/earth/",
+			assetPath = "images/planets/pinky/",
 			scaleFactor = 1.5,
 		},
 		planets = {
@@ -166,7 +166,7 @@ local worldData = {
 	--World = 3, Level = 2
 
 	[3] = {
-		x = scale * .167,
+		x = scale * .18,
 		y = 100,
 		background = "images/backgrounds/space.png",
 		levelDescription = "Recolecta las porciones necesarias",
@@ -242,7 +242,7 @@ local worldData = {
 		earth = {
 			position = { x = 1600, y = 0},
 			name = "earth",
-			assetPath = "images/planets/earth/",
+			assetPath = "images/planets/pinky/",
 			scaleFactor = 1.5,
 		},
 		planets = {
@@ -258,7 +258,7 @@ local worldData = {
 	--World = 4, Level = 2
 
 	[4] = {
-		x = scale * .217,
+		x = scale * .24,
 		y = -100,
 		background = "images/backgrounds/space.png",
 		levelDescription = "Recolecta las porciones necesarias",
@@ -301,7 +301,7 @@ local worldData = {
 		earth = {
 			position = { x = 1700, y = 0},
 			name = "earth",
-			assetPath = "images/planets/earth/",
+			assetPath = "images/planets/pinky/",
 			scaleFactor = 1.5,
 		},
 		planets = {
@@ -317,7 +317,7 @@ local worldData = {
 	--World = 5, Level = 2
 
 	[5] = {
-		x = scale * .267,
+		x = scale * 0.3,
 		y = 100,
 		background = "images/backgrounds/space.png",
 		levelDescription = "Recolecta las porciones necesarias",
@@ -367,7 +367,7 @@ local worldData = {
 		earth = {
 			position = { x = 1700, y = 700},
 			name = "earth",
-			assetPath = "images/planets/earth/",
+			assetPath = "images/planets/pinky/",
 			scaleFactor = 1.5,
 		},
 		planets = {
@@ -382,7 +382,7 @@ local worldData = {
 	--World = 6, Level = 2
 
 	[6] = {
-		x = scale * .317,
+		x = scale * 0.36,
 		y = -100,
 		background = "images/backgrounds/space.png",
 		levelDescription = "Recolecta las porciones necesarias",
@@ -466,7 +466,7 @@ local worldData = {
 		earth = {
 			position = { x = 0, y = 0},
 			name = "earth",
-			assetPath = "images/planets/earth/",
+			assetPath = "images/planets/pinky/",
 			scaleFactor = 1.5,
 		},
 		planets = {
@@ -486,7 +486,7 @@ local worldData = {
 	--World = 7, Level = 2
 
 	[7] = {
-		x = scale * .367,
+		x = scale * 0.42,
 		y = 100,
 		background = "images/backgrounds/space.png",
 		levelDescription = "Recolecta las porciones necesarias",
@@ -533,7 +533,7 @@ local worldData = {
 		earth = {
 			position = { x = -1500, y = -1200},
 			name = "earth",
-			assetPath = "images/planets/earth/",
+			assetPath = "images/planets/pinky/",
 			scaleFactor = 1.5,
 		},
 		planets = {
@@ -573,7 +573,7 @@ local worldData = {
 	--World = 8, Level = 2
 
 	[8] = {
-		x = scale * .417,
+		x = scale * 0.48,
 		y = -100,
 		background = "images/backgrounds/space.png",
 		levelDescription = "Recolecta las porciones necesarias",
@@ -626,7 +626,7 @@ local worldData = {
 		earth = {
 			position = { x = 100, y = -1700},
 			name = "earth",
-			assetPath = "images/planets/earth/",
+			assetPath = "images/planets/pinky/",
 			scaleFactor = 1.5,
 		},
 		planets = {
@@ -700,7 +700,7 @@ local worldData = {
 	--World = 9, Level = 2
 
 	[9] = {
-		x = scale * .467,
+		x = scale * 0.54,
 		y = 100,
 		background = "images/backgrounds/space.png",
 		levelDescription = "Recolecta las porciones necesarias",
@@ -746,7 +746,7 @@ local worldData = {
 		earth = {
 			position = { x = 0, y = 0},
 			name = "earth",
-			assetPath = "images/planets/earth/",
+			assetPath = "images/planets/pinky/",
 			scaleFactor = 1.5,
 		},
 		planets = {
@@ -812,7 +812,7 @@ local worldData = {
 	--World = 10, Level = 2
 
 	[10] = {
-		x = scale * .517,
+		x = scale * 0.6,
 		y = -100,
 		background = "images/backgrounds/space.png",
 		levelDescription = "Recolecta las porciones necesarias",
@@ -883,7 +883,7 @@ local worldData = {
 		earth = {
 			position = { x = 0, y = 0},
 			name = "earth",
-			assetPath = "images/planets/earth/",
+			assetPath = "images/planets/pinky/",
 			scaleFactor = 1.5,
 		},
 		planets = {
@@ -907,7 +907,7 @@ local worldData = {
 	--World = 11, Level = 2
 
 	[11] = {
-		x = scale * .567,
+		x = scale * 0.66,
 		y = 100,
 		background = "images/backgrounds/space.png",
 		levelDescription = "Recolecta las porciones necesarias",
@@ -944,7 +944,7 @@ local worldData = {
 		earth = {
 			position = { x = 0, y = 0},
 			name = "earth",
-			assetPath = "images/planets/earth/",
+			assetPath = "images/planets/pinky/",
 			scaleFactor = 1.5,
 		},
 		planets = {
@@ -1016,7 +1016,7 @@ local worldData = {
 	--World = 12, Level = 2
 
 	[12] = {
-		x = scale * .617,
+		x = scale * 0.72,
 		y = -100,
 		background = "images/backgrounds/space.png",
 		levelDescription = "Recolecta las porciones necesarias",
@@ -1147,7 +1147,7 @@ local worldData = {
 		earth = {
 			position = { x = 0, y = 0},
 			name = "earth",
-			assetPath = "images/planets/earth/",
+			assetPath = "images/planets/pinky/",
 			scaleFactor = 1.5,
 		},
 		planets = {
@@ -1171,7 +1171,7 @@ local worldData = {
 	--World = 13, Level = 2
 
 	[13] = {
-		x = scale * .667,
+		x = scale * 0.78,
 		y = 100,
 		background = "images/backgrounds/space.png",
 		levelDescription = "Recolecta las porciones necesarias",
@@ -1232,7 +1232,7 @@ local worldData = {
 		earth = {
 			position = { x = -900, y = 1000},
 			name = "earth",
-			assetPath = "images/planets/earth/",
+			assetPath = "images/planets/pinky/",
 			scaleFactor = 1.5,
 		},
 		planets = {
@@ -1274,7 +1274,7 @@ local worldData = {
 	--World = 14, Level = 2
 
 	[14] = {
-		x = scale * .717,
+		x = scale * 0.86,
 		y = -100,
 		background = "images/backgrounds/space.png",
 		levelDescription = "Recolecta las porciones necesarias",
@@ -1345,7 +1345,7 @@ local worldData = {
 		earth = {
 			position = { x = -1400, y = 1500},
 			name = "earth",
-			assetPath = "images/planets/earth/",
+			assetPath = "images/planets/pinky/",
 			scaleFactor = 1.5,
 		},
 		planets = {
@@ -1381,7 +1381,7 @@ local worldData = {
 	--World = 15, Level = 2
 
 	[15] = {
-		x = scale * .767,
+		x = scale * 0.92,
 		y = 100,
 		background = "images/backgrounds/space.png",
 		levelDescription = "Recolecta las porciones necesarias",
@@ -1622,7 +1622,7 @@ local worldData = {
 		earth = {
 			position = { x = 0, y = 0},
 			name = "earth",
-			assetPath = "images/planets/earth/",
+			assetPath = "images/planets/pinky/",
 			scaleFactor = 1.5,
 		},
 		planets = {

@@ -12,7 +12,7 @@ local function goGame()
 end	
 
 local function goMinigame1()
-	director.gotoScene("scenes.menus.loading", { params = { worldIndex = 3, levelIndex = 12}})
+	director.gotoScene("scenes.menus.end", { params = { worldIndex = 3, levelIndex = 12}})
 end
 
 local function goObjetives()
@@ -34,10 +34,10 @@ end
 local function unlockLevels()
 	dataSaver:initialize()
 	
-	for indexWorld = 1, 3 do
-		dataSaver:unlockWorld(indexWorld)
+	for worldIndex = 1, 3 do
+		dataSaver:unlockWorld(worldIndex)
 		for indexLevel = 1, 15 do
-			dataSaver:unlockLevel(indexWorld, indexLevel)
+			dataSaver:unlockLevel(worldIndex, indexLevel)
 		end
 	end
 	

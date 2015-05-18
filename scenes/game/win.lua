@@ -129,7 +129,6 @@ local function initialize(event)
 	parent = event.parent
 	scene.disableButtons()
 	
-	back.alpha = 0
 	retry.alpha = 0
 	play.alpha = 0
 		
@@ -183,13 +182,11 @@ function scene.retrySetEnabled(enabled)
 end
 
 function scene.enableButtons()
-	back:setEnabled(true)
 	retry:setEnabled(true)
 	play:setEnabled(true)
 end
 
 function scene.disableButtons()
-	back:setEnabled(false)
 	retry:setEnabled(false)
 	play:setEnabled(false)
 end
@@ -273,9 +270,8 @@ function scene.show(...)
 
 		if ( phase == "will" ) then
 			initialize(event)
-			--createTitle()
-			startTransitions()
 		elseif ( phase == "did" ) then
+			startTransitions()
 			self.enableButtons()
 		end
 	else
@@ -294,8 +290,8 @@ function scene:hide( event )
 
     if ( phase == "will" ) then
 		self.disableButtons()
-	elseif ( phase == "did" ) then
 		
+	elseif ( phase == "did" ) then
 		for index = 1, starAmount do
 			stars[index].alpha = 0
 		end

@@ -50,7 +50,7 @@ local function disableMenu()
 end
 
 local function onReleasedBack()
-	director.gotoScene( "scenes.menus.selecthero", { effect = "zoomInOutFade", time = 600, } )
+	director.gotoScene( "scenes.menus.selecthero", { effect = "fade", time = 200, } )
 	--director.gotoScene( "scenes.menus.profiles", { effect = "zoomInOutFade", time = 600, } )
 end
 
@@ -124,14 +124,14 @@ end
 
 local function fillWorldData()
 	
-	for indexWorld = 1, #items do
-		local currentWorld = currentPlayer.unlockedWorlds[indexWorld]
+	for indexWorldload = 1, #items do
+		local currentWorld = currentPlayer.unlockedWorlds[indexWorldload]
 		if currentWorld.unlocked then
 		--sceneGroup:insert(menu)
 			
 			local totalStars = 0
 
-			for indexLevel = 1, #worldsData[indexWorld] do
+			for indexLevel = 1, #worldsData[indexWorldload] do
 				totalStars = totalStars + MAX_STARS_PER_LEVEL
 			end
 
@@ -145,11 +145,11 @@ local function fillWorldData()
 				end
 			end
 
-			local currentItem = items[indexWorld]
+			local currentItem = items[indexWorldload]
 			currentItem.unlockedGroup.completionText.text = playerStars.."/"..totalStars
 			currentItem.locked = false
-			items[indexWorld].unlockedGroup.alpha = 1
-			items[indexWorld].lockedGroup.alpha = 1
+			items[indexWorldload].unlockedGroup.alpha = 1
+			items[indexWorldload].lockedGroup.alpha = 1
 		end
 		
 					

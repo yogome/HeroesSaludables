@@ -48,7 +48,7 @@ local worldData = {
 	--Level 2
 	[2] = {
 		x = scale * .12,
-		y = -50,
+		y = -100,
 		background = "images/backgrounds/space.png",
 		levelWidth = 3000,
 		levelHeight = 1500,
@@ -117,7 +117,7 @@ local worldData = {
 	--Level 3
 	[3] = {
 		x = scale * .18,
-		y = 80,
+		y = 100,
 		background = "images/backgrounds/space.png",
 		levelWidth = 3000,
 		levelHeight = 1500,
@@ -160,7 +160,7 @@ local worldData = {
 	--Level 4
 	[4] = {
 		x = scale * .24,
-		y = -80,
+		y = -100,
 		background = "images/backgrounds/space.png",
 		levelWidth = 3000,
 		levelHeight = 1500,
@@ -236,7 +236,7 @@ local worldData = {
 	},
 	--Level 5
 	[5] = {
-		x = scale * .3,
+		x = scale * 0.3,
 		y = 100,
 		background = "images/backgrounds/space.png",
 		levelWidth = 3000,
@@ -290,8 +290,8 @@ local worldData = {
 	},
 	--Level 6
 	[6] = {
-		x = scale * .36,
-		y = -110,
+		x = scale * 0.36,
+		y = -100,
 		background = "images/backgrounds/space.png",
 		levelWidth = 3000,
 		levelHeight = 1500,
@@ -340,7 +340,7 @@ local worldData = {
 	},
 	--Level 7
 	[7] = {
-		x = scale * .42,
+		x = scale * 0.42,
 		y = 100,
 		background = "images/backgrounds/space.png",
 		levelWidth = 3000,
@@ -396,8 +396,8 @@ local worldData = {
 	},
 	--Level 8
 	[8] = {
-		x = scale * .48,
-		y = 0,
+		x = scale * 0.48,
+		y = -100,
 		background = "images/backgrounds/space.png",
 		levelWidth = 3000,
 		levelHeight = 1500,
@@ -442,8 +442,8 @@ local worldData = {
 	},
 	--Level 9
 	[9] = {
-		x = scale * .54,
-		y = 130,
+		x = scale * 0.54,
+		y = 100,
 		background = "images/backgrounds/space.png",
 		levelWidth = 3000,
 		levelHeight = 1500,
@@ -505,8 +505,8 @@ local worldData = {
 	},
 	--Level 10
 	[10] = {
-		x = scale * .6,
-		y = -130,
+		x = scale * 0.6,
+		y = -100,
 		background = "images/backgrounds/space.png",
 		levelWidth = 3000,
 		levelHeight = 1500,
@@ -548,7 +548,7 @@ local worldData = {
 	},
 	--Level 11
 	[11] = {
-		x = scale * .66,
+		x = scale * 0.66,
 		y = 100,
 		background = "images/backgrounds/space.png",
 		levelWidth = 4000,
@@ -617,8 +617,8 @@ local worldData = {
 	},
 	--Level 12
 	[12] = {
-		x = scale * .72,
-		y = -80,
+		x = scale * 0.72,
+		y = -100,
 		background = "images/backgrounds/space.png",
 		levelWidth = 4000,
 		levelHeight = 2000,
@@ -692,8 +692,8 @@ local worldData = {
 	},
 	--Level 13
 	[13] = {
-		x = scale * .78 ,
-		y = 70,
+		x = scale * 0.78,
+		y = 100,
 		background = "images/backgrounds/space.png",
 		levelWidth = 4000,
 		levelHeight = 2000,
@@ -788,8 +788,8 @@ local worldData = {
 	},
 	--Level 14
 	[14] = {
-		x = scale * .86,
-		y = -80,
+		x = scale * 0.86,
+		y = -100,
 		background = "images/backgrounds/space.png",
 		levelWidth = 4000,
 		levelHeight = 2000,
@@ -860,7 +860,7 @@ local worldData = {
 	},
 	--Level 15
 	[15] = {
-		x = scale * .92,
+		x = scale * 0.92,
 		y = 100,
 		background = "images/backgrounds/space.png",
 		levelWidth = 4000,

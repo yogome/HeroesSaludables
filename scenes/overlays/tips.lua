@@ -12,7 +12,7 @@ local worldIndex, levelIndex
 local okButton
 
 ----------------------------Constants
-local NUMBER_TIPS = 45
+local NUMBER_TIPS = 204
 -- -------------------------------------------------------------------------------
 
 local function closeOverlay(event)
@@ -75,7 +75,6 @@ function scene:show( event )
 	nextScene = event.params.nextScene or "scenes.menus.loading"
 	
     if ( phase == "will" ) then
-		
 		showTip()
 	elseif ( phase == "did" ) then
 	

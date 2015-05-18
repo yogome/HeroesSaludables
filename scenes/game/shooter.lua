@@ -561,7 +561,7 @@ local function checkAmounts(foodType)
 				winScene.disableButtons()
 					
 				if levelIndex >= 15 and worldIndex >= 3 then
-					director.gotoScene("scenes.menus.home", {effect = "fade", time = 500})
+					director.gotoScene("scenes.menus.end", {effect = "fade", time = 500})
 					return
 				end
 					
@@ -574,6 +574,7 @@ local function checkAmounts(foodType)
 				if levelIndex >= #worldsData[worldIndex] then
 					if worldIndex + 1 <= #worldsData then
 						dataSaver:unlockWorld(worldIndex + 1)
+						dataSaver:unlockMenu(worldIndex)
 						director.gotoScene("scenes.menus.worlds", {params = {worldIndex = worldIndex}, effect = "fade", time = 500})
 					end
 				else

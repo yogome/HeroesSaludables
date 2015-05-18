@@ -5,6 +5,7 @@ local physics = require( "physics" )
 local animator = require( "services.animator" )
 local heroList = require( "data.herolist" )
 local players = require( "models.players" )
+local hatlist = require( "data.hatlist" )
 
 local spaceships = {}
 ---------------------------------------------- Variables
@@ -16,7 +17,7 @@ local MAX_SHIP_VELOCITY = 1000
 local THRESHOLD_ROTATION_ANIMATION = 0.1
 local SCALE_SHIP = 0.6
 local SCALE_YOGOTAR = 0.15
-local OFFSET_YOGOTAR = {x = 16, y = 32}
+local OFFSET_YOGOTAR = {x = 18, y = 35}
 ---------------------------------------------- Caches
 local mathAbs = math.abs 
 
@@ -63,9 +64,10 @@ local function createNewShip(newShip, shipData)
 	newShip:insert(shipBack)
 	
 	local heroSkin = heroList[currentPlayer.yogotarType][currentPlayer.yogotarId].skinName
+	local currentHat = hatlist[currentPlayer.hatId]
 	
 	local characterData = {
-        skin = "Eagle",
+        skin = heroSkin,
         skeletonFile = "units/heroes/skeleton.json",
         imagePath = "units/heroes/",
         attachmentPath = "units/attachments/",
@@ -73,7 +75,7 @@ local function createNewShip(newShip, shipData)
     }
 	
 	local playerCharacter = animator.newCharacter(characterData)
-	--playerCharacter:setHat(string.format("hat_extra_%02d", (currentPlayer.hatIndex-1)))
+	playerCharacter:setNewAttachment(currentHat.name, "hat")
 	playerCharacter:setAnimation("SITIDLE")
 	playerCharacter.group.x = OFFSET_YOGOTAR.x
 	playerCharacter.group.y = OFFSET_YOGOTAR.y

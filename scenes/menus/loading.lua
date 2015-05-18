@@ -36,6 +36,7 @@ local function animateBubble(sceneGroup, options)
 	transition.to(bubble, {tag = "rotate", time = 2000, y = display.contentHeight - 100, transition = easing.outBounce})
 	transition.to(bubble, {tag = "rotate", rotation = 360, iterations = -1})
 	transition.to(bubble, {tag = "rotate", delay = 1500, time = 500, alpha = 0, onComplete = function()
+		director.removeHidden(true)
 		director.gotoScene("scenes.game.shooter", {params = {worldIndex = worldIndex, levelIndex = levelIndex}})
 	end})
 	
@@ -61,9 +62,9 @@ function game:create(event)
 	
 end
 
-function game:setLevel(world, level)
+function game.setLevel(world, level)
 	worldIndex = world
-	levelIndex = world
+	levelIndex = level
 end
 
 function game:destroy()
@@ -77,7 +78,7 @@ function game:show( event )
 	if ( phase == "will" ) then
 		animateBubble(sceneGroup)
 	elseif ( phase == "did" ) then
-
+		
 	end
 end
 

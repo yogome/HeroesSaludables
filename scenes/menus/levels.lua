@@ -378,7 +378,7 @@ function scene:show( event )
     local phase = event.phase
 	
 	local params = event.params or {}
-	worldIndex = params.indexWorld or 1
+	worldIndex = params.worldIndex or 1
 
     if ( phase == "will" ) then
 		physics.start()
