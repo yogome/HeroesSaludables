@@ -160,7 +160,6 @@ end
 local function pressButton(event)
 	local tag = event.target.tag
 	local genre = "niño"
---	print( " " .. heightSlider.value .. " " .. weightSlider.value )
 	if tag == "next" then
 		if textCompleted == "" then
 			turnOnAlert("Nombre")
@@ -206,17 +205,7 @@ local function pressButton(event)
 		nextButton:setEnabled(true)
 	elseif tag == "ok" then
 		sound.play("flip")
---		okButton:setEnabled(false)
---		for i=1, #activityBtnNames do
---			local practice
---			if not activityBooleans[i] then
---				practice = "no"
---			else
---				practice = "si"
---			end
---			print( activityBtnNames[i] .. " " .. practice)
---		end
-		print ( hourSlider.value .. "horas")
+		
 		kidCalories = getCalories(kidAge)
 		currentPlayer.playerCalories = kidCalories
 		if isBoy then
@@ -225,7 +214,6 @@ local function pressButton(event)
 			genre = "niña"
 		end
 		checkSecond = false
-		print("Nombre= " .. kidName .. ", Género= " .. genre .. ", Peso=" .. kdWeight ..  ", Edad= " .. kidAge ..  ",IMC= " .. kidImc .. ", Estado del niño= " .. kidStatus .. ", Calorías a consumir= " .. kidCalories .. " .")
 		transition.to(secondPlane,{x = screenWidth + screenWidth, time = 500,rotation = 90 })
 		transition.to(thirdPlane,{delay = 400, x = screenLeft, time = 500,rotation = 0 })
 		finalText.text = kidCalories .. " kcal"
@@ -326,8 +314,6 @@ local function createSlider(options)
 				end
 			elseif event.phase == "ended" or event.phase == "cancelled" then
 				transition.cancel(knob)
---				print(slider.value)
---				print((knob.x + halfWidth) / width)
 				local knobColor = positions[slider.currentIndex].color
 				director.to(scenePath, knob, {time = 200, r = knobColor[1], g = knobColor[2], b = knobColor[3]})
 				if not options.floatingSlider then
@@ -741,7 +727,7 @@ local function createScene(sceneGrp)
 			{x = 0.75417153877124	, value = 3, color = colors.white},
 			{x = 0.81460038867378	, value = 4, color = colors.white},
 			{x = 0.87665693197566	, value = 5, color = colors.white},
-			{x = 0.93604223537631	, value = "+", color = colors.white},
+			{x = 0.93604223537631	, value = 6, color = colors.white},
 		},
 	}
 	hourSlider = createSlider(ageSliderOptions)
