@@ -1,7 +1,7 @@
 local soundlist = {
 	{id = "pop", path = "sounds/pop.mp3"},
 	{id = "wrongAnswer", path = "sounds/wrongAnswer.mp3"},
-	{id = "yogomekids", path = "sounds/yogomekids.mp3"},
+	{id = "introYogome", path = "sounds/yogomekids.mp3"},
 	{id = "jackpot", path = "sounds/jackpot.mp3"},
 	{id = "fly2", path = "sounds/fly2.mp3"},
 	{id = "star1", path = "sounds/star1.mp3"},

@@ -53,16 +53,12 @@ local nameTextbox
 local buttonBack
 local playerUnlockedHats, playerUnlockedYogotars, playerInventoryYogotars, playerInventoryHats, playerInventoryShips
 local currentYogotarType, currentSelectedYogotar, currentCoins, currentPowercubes, currentHat
-local currentPlayerLevel, upgradePrice, currentShip, playerUnlockedShips
+local currentPlayerLevel, currentShip, playerUnlockedShips
 local coinText
-local powercubeText
 local powercubeBar
 local isAnimatingBar
 local frameCounter = 0
 local earnedCubes
-local upgradeText
-local powerUp
-local upgradeGroup
 local showTutorial
 local tutorialGroup
 local shipGroup
@@ -124,7 +120,7 @@ end
 local function buyItem(event)
 	
 	local buttonType = event.target.id
-	sound.play("cashier")
+	sound.play("jackpot")
 	
 	if buttonType == "item" then
 		
@@ -188,9 +184,6 @@ local function gotoLevel()
 --		end})
 --	end
 	
-    currentPowercubes = currentPowercubes - LEVEL_COST
-    powercubeText.text = currentPowercubes
-    
     local barUnits = powercubeBar.fullWidth / 300
     local newSize = currentPowercubes * barUnits
     
@@ -774,10 +767,6 @@ local function createUI()
     powercubeUI.y = display.contentHeight - (powercubeUI.contentHeight * 0.5)
     uiGroup:insert(powercubeUI)
     
-    powercubeText = display.newText("0", powercubeUI.x + (powercubeUI.contentWidth * 0.28), powercubeUI.y - (powercubeUI.contentHeight * 0.21), settings.fontName, 32 )
-	powercubeText.isVisible = false
-    uiGroup:insert(powercubeText)
-    
     powercubeBar = display.newRect(powercubeUI.x + (powercubeUI.contentWidth * 0.32), powercubeUI.y + powercubeUI.contentHeight * 0.14, powercubeUI.contentWidth * 0.68, powercubeUI.contentHeight * 0.30)
 	powercubeBar.isVisible = false
     powercubeBar.fullWidth = powercubeUI.contentWidth * 0.76
@@ -835,12 +824,8 @@ local function createUI()
     buttonGoLevel.y = 0
     buttonGoLevelGroup:insert(buttonGoLevel)
     
-    local levelCost = display.newText("-" .. LEVEL_COST, 0, buttonGoLevel.contentHeight * -0.29, settings.fontName, 38)
-    buttonGoLevelGroup.cost = levelCost
-    buttonGoLevelGroup:insert(levelCost)
-    
     buttonGoLevelGroup.x = display.contentWidth - (buttonGoLevelGroup.contentWidth * 0.5)
-    buttonGoLevelGroup.y = display.contentHeight - (buttonGoLevelGroup.contentHeight * 0.4)
+    buttonGoLevelGroup.y = display.contentHeight - (buttonGoLevelGroup.contentHeight * 0.5)
     
     uiGroup:insert(buttonGoLevelGroup)
     
@@ -911,22 +896,7 @@ local function animateUI()
 	selectPanelGroup.isVisible = true
 end
 
-local function showpopup()
-	scene.disableButtons()
-	popupGroup.isVisible = true
-        
-        
-	local barUnits = powercubeBar.fullWidth / 300
-	powercubeBar.width = (currentPowercubes - earnedCubes) * barUnits
-	powercubeText.text = currentPowercubes - earnedCubes
-	transition.to(popupGroup, {x = display.contentCenterX, y = display.contentCenterY, time = 300, transition = easing.outBounce})
-end
-
 local function animateScene(params)
-	
-	timer.performWithDelay(2000, function()
-		sound.play("yogotarBrake")
-	end)
 	
     local transitionOffset = 0
 	--Uncomment this code to add animation to backgrounds
@@ -1021,7 +991,6 @@ local function initialize(params)
 	currentShip = dataSaver:getCurrentShip()
 	showTutorial = false
 	
-    powercubeText.text = currentPowercubes
     nameTextbox.text.text = dataSaver:getName()
     coinText.text = currentCoins
     animatedCircle.rotation = 0
@@ -1135,7 +1104,6 @@ local function createPopup()
 		end
 		
 		transition.to(powercubeBar, {width = newSize, time = 1000, onComplete = function()
-			powercubeText.text = currentPowercubes
 			powercubeBar:setFillColor(0, 0.4, 1)
 			isAnimatingBar = false
                         transition.to(popupGroup, {time = 300, alpha = 0, onComplete = function()
