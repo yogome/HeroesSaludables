@@ -74,6 +74,7 @@ local function createSpriteAnimation()
 	return  masterWinSprite
 end
 local function getKidStatus(age,imc)
+	age = (age <= 12 and age) or 12
 	local index = age - 4
 	local tableToUse
 	if index < 1 or index > 12 then
