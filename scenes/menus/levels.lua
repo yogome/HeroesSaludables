@@ -80,7 +80,7 @@ local function levelIconTapped(event)
 		scene.disableButtons()
 		local levelIcon = event.target
 		local levelIndex = levelIcon.index
-		local randomTool = math.random(1,3)
+		local randomTool = math.random(1,4)
 		local scene
 		if randomTool == 1 then
 			scene = "scenes.minigames.label1"
@@ -90,6 +90,12 @@ local function levelIconTapped(event)
 		elseif randomTool == 3 then
 --			scene = "scenes.game.questionquiz"
 			scene = "scenes.minigames.front"
+		elseif randomTool == 4 then
+			if worldIndex >= 3 then
+				scene = "scenes.minigames.tutorialquiz"
+			else
+				scene = "scenes.minigames.front"
+			end
 		end
 		loading.setLevel(worldIndex, levelIndex)
 		director.gotoScene(scene, {effect = "fade", time = 500, params = {worldIndex = worldIndex, levelIndex = levelIndex}})

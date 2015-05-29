@@ -12,7 +12,7 @@ local function goGame()
 end	
 
 local function goMinigame1()
-	director.gotoScene("scenes.menus.end", { params = { worldIndex = 3, levelIndex = 12}})
+	director.gotoScene("scenes.minigames.tutorialquiz", { params = { worldIndex = 3, levelIndex = 12}})
 end
 
 local function goObjetives()

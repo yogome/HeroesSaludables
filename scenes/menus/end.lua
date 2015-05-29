@@ -15,10 +15,6 @@ local buttonOK
 ----------------------------------------------- Variables
 
 ------------------------------------------------- Constants
-
-------------------------------------------------- Functions
---
-
 local TRANSITION_TIME = 1000
 local imageElements = {
 	[1] = {
@@ -96,6 +92,9 @@ local imageElements = {
 		}
 	},
 }
+------------------------------------------------- Functions
+--
+
 
 local function goNextScene()
 	director.gotoScene("scenes.menus.home", {effect = "fade", time = 500})
