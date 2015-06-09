@@ -37,6 +37,7 @@ settings = {
 	android = {
 		largeHeap = true,
 		versionCode = "1",
+		usesExpansionFile = true,
 		permissions = {
 			{ name = ".permission.C2D_MESSAGE", protectionLevel = "signature" },
 		},
