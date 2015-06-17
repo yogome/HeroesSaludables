@@ -12,8 +12,8 @@ local dataSaver = require("services.datasaver")
 
 local game = director.newScene() 
 ----------------------------------------------- Variables
-local pauseGroup = display.newGroup()
-local pauseQuit = display.newGroup()
+local pauseGroup
+local pauseQuit
 local losePrompt
 local losePromptText
 local winPromptText
@@ -118,7 +118,10 @@ local function createFade()
 end
 
 local function setupDisplay(grp,event)
+	pauseGroup = display.newGroup()
     pauseGroup:insert(createFade())
+	
+	pauseQuit = display.newGroup()
     
     local pauseWindow = display.newImage("images/Win-lose/ventana.png")
     pauseWindow.x = centerX
@@ -272,13 +275,13 @@ function game:show( event )
 	
 	if ( phase == "will" ) then
 	    dataSaver:initialize()
-            --print(params)
-            pauseGroup.alpha = 0
-            pauseQuit.alpha = 0
+		--print(params)
+		pauseGroup.alpha = 0
+		pauseQuit.alpha = 0
 
-			pauseGroup.alpha = 1
-			retryBtnPause:setEnabled(true)
-			retryBtnPause.alpha=1
+		pauseGroup.alpha = 1
+		retryBtnPause:setEnabled(true)
+		retryBtnPause.alpha=1
 	elseif ( phase == "did" ) then
 
 	end
@@ -290,7 +293,7 @@ function game:hide( event )
 	if ( phase == "will" ) then
 	    Runtime:removeEventListener("enterFrame", hero)
 	    if hero then
-		display.remove(hero.group)
+			display.remove(hero.group)
 	    end
 	    hero=nil
 	elseif ( phase == "did" ) then
