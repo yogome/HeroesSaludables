@@ -4,7 +4,6 @@ local database = require( "libs.helpers.database" )
 local logger = require( "libs.helpers.logger" )
 local settings = require( "settings" )
 local json = require("json") 
-local mixpanel = require( "libs.helpers.mixpanel" )
 
 local notifications = {}
 -------------------------------------------- Variables
@@ -21,7 +20,6 @@ function notifications.check(event)
 	if event.type == "remoteRegistration" then
 		local pushToken = event.token
 		database.config("pushToken", pushToken)
-		mixpanel.setPushToken(pushToken)
 		
 		local deviceType = TYPE_DEVICE_IOS
 		if system.getInfo("platformName") == "Android" then
@@ -62,10 +60,6 @@ function notifications.check(event)
 	
 	if event.custom then
 
-	end
-	
-	if event.type then
-		mixpanel.logEvent("notificationReceived", {eventType = event.type, applicationState = event.applicationState})
 	end
 end
 

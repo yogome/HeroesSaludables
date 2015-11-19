@@ -1,7 +1,6 @@
 ---------------------------------------------- Player model
 local database = require( "libs.helpers.database" ) 
 local logger = require( "libs.helpers.logger" )
-local offlinequeue = require( "libs.helpers.offlinequeue" )
 local json = require( "json" )
 local settings = require( "settings" )
 

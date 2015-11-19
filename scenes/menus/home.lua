@@ -4,11 +4,7 @@ local widget = require( "widget" )
 local buttonList = require( "data.buttonlist" )
 local database = require( "libs.helpers.database" )
 local sound = require( "libs.helpers.sound" )
-local parentgate = require( "libs.helpers.parentgate" )
-local logger = require( "libs.helpers.logger" )
 local music = require( "libs.helpers.music" )
-local players = require( "models.players" )
-local mixpanel = require( "libs.helpers.mixpanel" )
 
 local scene = director.newScene() 
 ----------------------------------------------- Variables

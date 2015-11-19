@@ -92,10 +92,6 @@ end
 local function goOperations()
 	director.gotoScene("scenes.game.operationquiz")
 end
-local function goEditor()
-	require("libs.helpers.editor")
-	director.gotoScene("editor")
-end
 
 local function giveCoins()
 	local player = players.getCurrent()
@@ -139,7 +135,6 @@ local testActions = {
 	{"Give Coins", giveCoins,{0.2,0.8,0.2}},
 	{"Toggle FPS", toggleFPS,{0.3,0.3,0.8}},
 	{"Reset player", resetPlayer,{0.8,0.2,0.2}},
-	{"Go Editor", goEditor, {0.5,0.5,0.5}, 2},
 	{"Minigame1", goMinigame1, {0.5,0.5,0.5}, 2},
 	{"Food Menu", goMenus, {0.5,0.5,1}, 2},
 }
