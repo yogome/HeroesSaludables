@@ -81,7 +81,6 @@ local colors = {
 }
 ------------------------------------------- Variables
 ------------------------------------------- Constants
-local ONE_DIVIDED_BY_256 = 0.00390625 
 ------------------------------------------- Functions
 local function modifyObject(object)
 	local oldMetatable = getmetatable(object)
@@ -150,48 +149,6 @@ function colors.addColorTransition(displayObject)
 	if displayObject and "table" == type(displayObject) and displayObject.setFillColor then
 		modifyObject(displayObject)
 	end
-end
-
-function colors.convertFrom256(color)
-	if color then
-		local newColor = extratable.deepcopy(color)
-		for index = 1, #newColor do
-			newColor[index] = newColor[index] * ONE_DIVIDED_BY_256
-		end
-		return newColor
-	end
-end
-
-function colors.convertFromHex(hex)
-	if hex and "string" == type(hex) then
-		local colorAmount = math.ceil(string.len(hex) * 0.5)
-		if colorAmount > 0 then
-			local color = {}
-			for index = 1, colorAmount do
-				local offset = ((index - 1) * 2)
-				local hexColor = string.sub(hex, 1 + offset, 2 + offset)
-				local color256 = tonumber(hexColor, 16)
-				color[index] = color256
-			end
-			return colors.convertFrom256(color)
-		end
-	end
-end
-
-function colors.HSLToRGB(h, s, l)
-	if s == 0 then return l*.01,l*.01,l*.01 end
-	local c, h = (1-math.abs(2*(l*.01)-1))*(s*.01), (h%360)/60
-	local x, m = (1-math.abs(h%2-1))*c, ((l*.01)-.5*c)
-	c = ({{c,x,0},{x,c,0},{0,c,x},{0,x,c},{x,0,c},{c,0,x}})[math.ceil(h)] or {c,x,0}
-	return (c[1]+m),(c[2]+m),(c[3]+m)
-end
-
-function colors.HSVToRGB(h,s,v)
-	if s == 0 then return v*.01,v*.01,v*.01 end
-	local c, h = ((s*.01)*(v*.01)), (h%360)/60
-	local x, m = c*(1-math.abs(h%2-1)), (v*.01)-c
-	c = ({{c,x,0},{x,c,0},{0,c,x},{0,x,c},{x,0,c},{c,0,x}})[math.ceil(h)] or {c,x,0}
-	return (c[1]+m),(c[2]+m),(c[3]+m)
 end
 
 setupMetatable()

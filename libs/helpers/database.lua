@@ -16,7 +16,6 @@ local debugDatabase
 local configurationModel, configurationObject
 local models
 
-local overrideChecksum
 local onDatabaseClose
 ---------------------------------------------- Constants
 local FILENAME_DATABASE = "default.db"
@@ -28,41 +27,12 @@ function database.count(tableName)
 	return tonumber(count)
 end
 
-local function generateChecksum()
-	local sql = [[SELECT name FROM sqlite_master WHERE type="table";]]
-	local result = database.getColumns("name", sql)
-	
-	local checkString = ""
-	for indexA = 1, #result do
-		if result[indexA] ~= "sqlite_sequence" then
-			local dbTable = database.getTable(result[indexA])
-			for indexB = 1, #dbTable do
-				local row = dbTable[indexB]
-				local skip = false
-				for key, value in pairs(row) do
-					if not skip then
-						if "checksum" == value then
-							skip = true
-						else
-							checkString = checkString..value
-						end
-					else
-						skip = false
-					end
-				end
-			end
-		end
-	end
-	return crypto.digest( crypto.md5, checkString )
-end
-
 local function onSystemEvent( event )
 	if event.type == "applicationExit" then
 		if databaseObject and databaseObject:isopen() then
 			if onDatabaseClose and "function" == type(onDatabaseClose) then
 				onDatabaseClose()
 			end
-			database.calculateChecksum()
 			logger.log("[Database] Closing database.")
 			databaseObject:close()
 			databaseObject = nil
@@ -94,22 +64,6 @@ function database.setOnDatabaseClose(onCloseFunction)
 	onDatabaseClose = onCloseFunction
 end
 
-function database.compareChecksum()
-	database.initialize()
-	local dbChecksum = database.config("checksum")
-	local currentChecksum = generateChecksum()
-	
-	local result = dbChecksum == currentChecksum or overrideChecksum
-	overrideChecksum = false
-	return  result
-end
-
-function database.calculateChecksum()
-	database.initialize()
-	local currentChecksum = generateChecksum()
-	database.config("checksum", currentChecksum)
-end
-
 function database.exec(sql, args)
 	database.initialize()
 	local result
@@ -132,7 +86,6 @@ function database.initialize()
 		
 		models = {}
 		if not extrafile.exists(FILENAME_DATABASE, system.DocumentsDirectory) then
-			overrideChecksum = true
 			logger.log("[Database] Creating database.")
 		else
 			logger.log("[Database] Opening database.")

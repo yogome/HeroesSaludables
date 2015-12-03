@@ -10,9 +10,4 @@ application = {
 		  ["@2x"] = 1.3,
 	   },
 	},
-	notification = {
-		iphone = {
-			types = { "badge", "sound", "alert" }
-		}
-	},
 }

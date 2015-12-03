@@ -1,5 +1,4 @@
 local configurationList = {
-	["checksum"] = "",
 	["version"] = "",
 	["language"] = "",
 	["music"] = "",

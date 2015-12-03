@@ -9,10 +9,4 @@ function robot.press(object)
 	end
 end
 
-function robot.tap(object)
-	if object and object.dispatchEvent then
-		object:dispatchEvent({name = "tap", target = object})
-	end
-end
-
 return robot

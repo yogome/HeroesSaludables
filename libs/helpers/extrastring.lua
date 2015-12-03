@@ -22,8 +22,4 @@ function extraString.firstToUpper(str)
 	return (str:gsub("^%l", string.upper))
 end
 
-function extraString.isValidEmail(str)
-	return str:match("[A-Za-z0-9%.%%%+%-]+@[A-Za-z0-9%.%%%+%-]+%.%w%w%w?%w?")
-end
-
 return extraString

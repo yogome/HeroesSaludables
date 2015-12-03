@@ -2,7 +2,6 @@
 local path = ...
 local folder = path:match("(.-)[^%.]+$")  
 local director = require( folder.."director" )
-local internet = require( folder.."internet" )
 local logger = require( folder.."logger" )
 local widget = require( "widget" )
 local settings = require( "settings" )
@@ -26,11 +25,6 @@ local SIZE_TEXT = 45
 ----------------------------------------------- Functions
 local function toggleFPS()
 	if fpsCounter.alpha <= 0 then fpsCounter.alpha = 0.7 else fpsCounter.alpha = 0 end
-end
-
-local function testInternet(event)
-	local result = internet.isConnected()
-	event.target.text.text = tostring(result)
 end
 
 local function createBackButton()
@@ -130,8 +124,6 @@ function scene:create(event)
 	
 	menuView = createMenuView()
 	self.view:insert(menuView)
-	
-	self.addButton("Test internet", testInternet, {0.6,0.8,0.4})
 end
 
 function scene:destroy()

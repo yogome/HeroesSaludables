@@ -3,15 +3,12 @@ local path = ...
 local folder = path:match("(.-)[^%.]+$")
 local logger = require( folder.."logger" ) 
 local extrastring = require( folder.."extrastring" )
-local extratime = require( folder.."extratime" )
 local lfs = require( "lfs" )
 local json = require( "json" )
 
 local extrafile = {}
 ---------------------------------------------- Variables
 local cacheFilesystem 
-local gitRemoteSHA, gitLastAuthor
-local gitTimestamp
 ---------------------------------------------- Constants 
 local DATA_DIRECTORY = "data"
 local FILESYSTEM_CACHE_FILENAME = "filesystem.json"
@@ -44,46 +41,6 @@ local function getFiles(directoryName)
 	end
 	if #filenames == 0 then return false end
 	return filenames
-end
-
-local function showGraphicGitVersion()
-	if gitTimestamp and gitRemoteSHA and gitLastAuthor then
-		local gitGroup = display.newGroup()
-		gitGroup.x = display.screenOriginX + display.viewableContentWidth
-		gitGroup.y = display.screenOriginY
-		gitGroup.isHitTestable = true
-
-		local gitBG = display.newRect(0, 0, 20, 20)
-		gitBG.anchorX = 1
-		gitBG.anchorY = 0
-		gitBG:setFillColor(0.5, 0.8)
-		gitGroup:insert(gitBG)
-
-		local gitDate = display.newText(gitTimestamp, 0, 0, native.systemFont, 25)
-		gitDate.anchorX = 1
-		gitDate.anchorY = 0
-		gitGroup:insert(gitDate)
-
-		local clippedSHA = string.sub(gitRemoteSHA, 1, 12)
-		local gitCommit = display.newText(clippedSHA, 0, gitDate.height + 1, native.systemFont, 25)
-		gitCommit.anchorX = 1
-		gitCommit.anchorY = 0
-		gitGroup:insert(gitCommit)
-		
-		local gitAuthor = display.newText(gitLastAuthor, 0, gitCommit.y + gitCommit.height + 1, native.systemFont, 25)
-		gitAuthor.anchorX = 1
-		gitAuthor.anchorY = 0
-		gitGroup:insert(gitAuthor)
-
-		gitBG.width = gitDate.width + 2
-		gitBG.height = gitDate.height * 3 + 3
-
-		gitGroup:addEventListener("tap", function()
-			gitGroup.isVisible = not gitGroup.isVisible
-		end)
-	else
-		logger.error("[Extrafile] Git version was not available")
-	end
 end
 ---------------------------------------------- Module functions
 function extrafile.exists(fileName, directory)
@@ -171,36 +128,10 @@ function extrafile.cacheFileSystem(showGitVersion)
 		local fileSystemFile = io.open(baseDir..DATA_DIRECTORY.."/"..FILESYSTEM_CACHE_FILENAME, "w")
 		if fileSystemFile then
 			cacheFilesystem = getFileSystemTable("")
-			
-			pcall(function()
-				local currentPath = system.pathForFile(nil, system.ResourceDirectory)
-				local commitHandle = io.popen("git --git-dir "..currentPath.."/.git rev-parse master")
-				gitRemoteSHA = commitHandle:read("*a")
-				commitHandle:close()
-
-				local dateHandle = io.popen("git --git-dir "..currentPath.."/.git show -s --format=%ct "..gitRemoteSHA)
-				local unixDate = dateHandle:read("*a")
-				dateHandle:close()
-
-				local commitDate = os.date("*t", unixDate)
-				gitTimestamp = string.format("%s-%s-%s %s:%s", tostring(commitDate.day), extratime.getMonthName(tonumber(commitDate.month)), tostring(commitDate.year), tostring(commitDate.hour), tostring(commitDate.min))
 				
-				local authorHandle = io.popen("git --git-dir "..currentPath.."/.git show -s --format=%cn "..gitRemoteSHA)
-				gitLastAuthor = authorHandle:read("*a")
-				authorHandle:close()
-			end)
-			
 			local filesystemData = {
 				cacheFilesystem = cacheFilesystem,
-				commitSHA = gitRemoteSHA,
-				timeStamp = gitTimestamp,
 			}
-			
-			if showGitVersion then
-				showGraphicGitVersion()
-			end
-			
-			logger.log("[Extrafile] Cache git timestamp: "..(gitTimestamp ~= nil and tostring(gitTimestamp) or ""))
 			
 			local fileSystemJson = json.encode(filesystemData)
 			fileSystemFile:write(tostring(fileSystemJson))
@@ -214,26 +145,11 @@ function extrafile.cacheFileSystem(showGitVersion)
 				local fileString = fileSystemFile:read("*a")
 				local filesystemData = json.decode(fileString)
 				cacheFilesystem = filesystemData.cacheFilesystem
-				
-				gitRemoteSHA = filesystemData.commitSHA
-				gitTimestamp = filesystemData.timeStamp
-				
-				if gitTimestamp then
-					logger.log("[Extrafile] Cache git timestamp: "..tostring(gitTimestamp))
-					
-					if showGitVersion then
-						showGraphicGitVersion()
-					end
-				end
 			else
 				logger.error("[Extrafile] Could not load filesystem cache")
 			end
 		end
 	end
-end
-
-function extrafile.getGitData()
-	return {gitRemoteSHA = gitRemoteSHA, gitTimestamp = gitTimestamp}
 end
 
 function extrafile.getLines(fileName)
