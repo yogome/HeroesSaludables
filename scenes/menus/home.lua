@@ -154,7 +154,7 @@ local function createLogo(group)
 	
 	local logo = display.newImage("images/general/logo.png")
 	logo.x = display.contentCenterX
-	logo.y = display.contentCenterY * 0.75
+	logo.y = display.contentCenterY * 0.80
 	logo:scale(0.80, 0.80)
 	logoGroup:insert(logo)
 	
