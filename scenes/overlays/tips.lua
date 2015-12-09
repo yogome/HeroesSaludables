@@ -53,6 +53,12 @@ function scene:create( event )
 	tipbg.height = display.contentHeight
 	sceneGroup:insert(tipbg)
 	
+	local logoProfeco = display.newImage("images/profeco_02.png")
+	logoProfeco:scale(0.7, 0.7)
+	logoProfeco.x = display.screenOriginX + logoProfeco.contentWidth * 0.6
+	logoProfeco.y = display.screenOriginY + logoProfeco.contentHeight * 0.6
+	sceneGroup:insert(logoProfeco)
+	
 	tipGroup = display.newGroup()
 	sceneGroup:insert(tipGroup)
 	

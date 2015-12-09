@@ -13,6 +13,7 @@ local buttonsEnabled
 local yogome
 local extraScript, nextSceneName
 local pitch
+local joinTheSquad
 ----------------------------------------------- Constants 
 local ANCHOR_YOG = {x = 1, y = 0.5}
 local ANCHOR_MAGENTA = {x = 0.5, y = 0.5}
@@ -78,10 +79,6 @@ end
 local function startAnimation()
 	transition.cancel(yogome)
 	
-	yogome.alpha = 0
-	yogome.xScale = SCALE_LOGO
-	yogome.yScale = SCALE_LOGO
-	
 	yogome.yog.xScale, yogome.yog.yScale = SCALE_YOG.x, SCALE_YOG.y
 	yogome.magenta.xScale, yogome.magenta.yScale = SCALE_MAGENTA.x, SCALE_MAGENTA.y
 	yogome.helmet.xScale, yogome.helmet.yScale = SCALE_HELMET.x, SCALE_HELMET.y
@@ -141,8 +138,18 @@ local function initialize(event)
 	
 	pitch = 1
 	
+	joinTheSquad.alpha = 0
+	yogome.alpha = 0
+	yogome.xScale = SCALE_LOGO
+	yogome.yScale = SCALE_LOGO
 	nextSceneName = nextSceneName or director.getSceneName("previous")
 	
+end
+
+local function fadeSplash()
+	transition.to(joinTheSquad, {alpha = 1, onComplete = function()
+		transition.to(joinTheSquad, {delay = 1000, alpha = 0, onComplete = startAnimation})
+	end})
 end
 ----------------------------------------------- Class functions 
 function scene.setExtraScript(newExtraScript)
@@ -168,6 +175,14 @@ function scene:create(event)
 	background:setFillColor(unpack(colors.white))
 	background:addEventListener("touch", easterEgg)
 	sceneView:insert(background)
+	
+	joinTheSquad = display.newImage("images/intro/join.png")
+	local ratio = 768 / joinTheSquad.contentWidth
+	joinTheSquad:scale(ratio, ratio)
+	joinTheSquad.x = display.contentCenterX
+	joinTheSquad.y = display.contentCenterY
+	joinTheSquad.rotation = -90
+	sceneView:insert(joinTheSquad)
 	
 	yogome = display.newGroup()
 	yogome.x, yogome.y = display.contentCenterX, display.contentCenterY
@@ -201,8 +216,9 @@ function scene:show( event )
     local phase = event.phase
 
     if phase == "will" then
+		display.setDefault("background", 1)
 		initialize(event)
-		startAnimation()
+		fadeSplash()
 		self.disableButtons()
 	elseif phase == "did" then
 		self.enableButtons()
@@ -216,6 +232,7 @@ function scene:hide( event )
     if phase == "will" then
 		self.disableButtons()
 	elseif phase == "did" then
+		display.setDefault("background", 0)
 		transition.cancel(yogome)
 		sound.stopPitch()
 	end

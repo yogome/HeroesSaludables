@@ -145,10 +145,16 @@ end
 local function createLogo(group)
 	
 	logoGroup = display.newGroup()
-	logoGroup.x = display.contentCenterX
-	logoGroup.y = display.contentCenterY * 0.75
+	
+	local logoProfeco = display.newImage("images/profeco_01.png")
+	logoProfeco:scale(0.6,0.6)
+	logoProfeco.x = display.screenOriginX + logoProfeco.contentWidth * 0.6
+	logoProfeco.y = display.screenOriginY + logoProfeco.contentHeight * 0.6
+	logoGroup:insert(logoProfeco)
 	
 	local logo = display.newImage("images/general/logo.png")
+	logo.x = display.contentCenterX
+	logo.y = display.contentCenterY * 0.75
 	logo:scale(0.80, 0.80)
 	logoGroup:insert(logo)
 	

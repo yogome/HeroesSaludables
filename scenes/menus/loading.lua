@@ -52,6 +52,12 @@ function game:create(event)
 	background.y = display.contentCenterY
 	sceneGroup:insert(background)
 	
+	local logoProfeco = display.newImage("images/profeco_01.png")
+	logoProfeco:scale(0.7, 0.7)
+	logoProfeco.x = display.screenOriginX + logoProfeco.contentWidth * 0.6
+	logoProfeco.y = display.screenOriginY + logoProfeco.contentHeight * 0.6
+	sceneGroup:insert(logoProfeco)
+	
 	local ship = display.newImage("images/loading/nave.png")
 	ship.x = display.contentCenterX
 	ship.y = display.contentCenterY * 0.8
