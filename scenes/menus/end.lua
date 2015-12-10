@@ -12,6 +12,8 @@ local worldIndex, levelIndex
 local displayElements
 local canTap
 local buttonOK
+local profecoGroup
+ 
 ----------------------------------------------- Variables
 
 ------------------------------------------------- Constants
@@ -97,7 +99,12 @@ local imageElements = {
 
 
 local function goNextScene()
-	director.gotoScene("scenes.menus.home", {effect = "fade", time = 500})
+	
+	transition.to(profecoGroup, {alpha = 1, onComplete = function()
+		timer.performWithDelay(2000, function()
+			director.gotoScene("scenes.menus.home", {effect = "fade", time = 500})
+		end)
+	end})
 end
 
 local function animateElements()
@@ -161,6 +168,19 @@ function game:create(event)
 	buttonOK.y = display.contentHeight - buttonOK.contentHeight * 0.6
 	sceneGroup:insert(buttonOK)
 	
+	profecoGroup = display.newGroup()
+	profecoGroup.alpha = 0
+	
+	local background = display.newRect(display.contentCenterX, display.contentCenterY, display.contentWidth, display.contentHeight)
+	profecoGroup:insert(background)
+	
+	local logo = display.newImage("images/profeco_02.png")
+	logo:scale(1.2, 1.2)
+	logo.x = display.contentCenterX
+	logo.y = display.contentCenterY
+	profecoGroup:insert(logo)
+	
+	sceneGroup:insert(profecoGroup)
 end
 
 function game:setLevel(world, level)
@@ -178,6 +198,7 @@ function game:show( event )
 	local params = event.params
 	
 	if ( phase == "will" ) then
+		profecoGroup.alpha = 0
 		canTap = false
 		buttonOK.alpha = 0
 	elseif ( phase == "did" ) then

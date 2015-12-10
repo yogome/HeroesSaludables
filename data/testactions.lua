@@ -70,7 +70,7 @@ end
 
 local function goPantera()
 	--director.gotoScene("scenes.minigames.lluvia")
-	director.gotoScene("scenes.minigames.front")
+	director.gotoScene("scenes.menus.end")
 end
 
 local function goLabel()
