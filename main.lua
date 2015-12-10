@@ -84,8 +84,8 @@ local function startGame()
 	else
 		local currentPlayer = players.getCurrent()
 		if currentPlayer.isFirstTimePlay then
-			intro.setNextScene("scenes.game.infoscreen")
-		else
+		--	intro.setNextScene("scenes.game.infoscreen")
+		--else
 			intro.setNextScene("scenes.menus.home")
 		end
 		director.gotoScene( "scenes.intro.yogome", { effect = "fade", time = 800} )
