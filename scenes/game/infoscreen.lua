@@ -96,6 +96,9 @@ end
 local function getCalories(age)
 	local index = age - 4
 	local tableToUsed
+	if hourSlider.value == "none" then
+		hourSlider.value = 0
+	end
 	if kidStatus == "Obeso" then
 		if isBoy then
 			tableToUsed = tableCalBoys
