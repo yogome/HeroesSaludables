@@ -297,6 +297,8 @@ end
 
 local function enableButtons()
 	buttonPlay:setEnabled(true)
+	backBtn:setEnabled(true)
+	menuBtn:setEnabled(true)
 end
 
 local function disableButtons()
