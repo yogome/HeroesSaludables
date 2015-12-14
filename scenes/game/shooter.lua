@@ -645,7 +645,7 @@ local function gameOver()
 	
 		local function onBackReleased()
 			loseScene.disableButtons()
-			director.gotoScene("scenes.menus.levels", {effect = "fade", time = 500})
+			director.gotoScene("scenes.menus.levels", {params = {worldIndex = worldIndex}, effect = "fade", time = 500})
 		end
 		local function onRetryReleased()
 			loseScene.disableButtons()
