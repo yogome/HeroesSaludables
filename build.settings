@@ -6,9 +6,6 @@ settings = {
 	},
 
 	plugins = {
-		["plugin.mohound"] = {
-			publisherId = "com.mohound",
-		},
 	},
 	
 	iphone = {
